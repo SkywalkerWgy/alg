@@ -1,0 +1,1109 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_10.c
+----------Code----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    /*@
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    /*@
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant k == n - i/2;
+loop invariant n <= INT_MAX;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i; i_1:i % 2 == 0; i_2:k == n - i/2; i_3:n <= INT_MAX; 
+    - Post-condition: 1:k > 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant n <= INT_MAX;
+loop invariant 0 <= j;
+loop invariant n <= 0 ==> k == n - j;
+loop invariant n > 0 ==> k == n/2 - j;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i
+i_1: i % 2 == 0
+i_2: k == n - i/2
+i_3: n <= INT_MAX
+LOOP B:
+i_4: 0 <= i
+i_5: i % 2 == 0
+i_6: n <= INT_MAX
+i_7: 0 <= j
+i_8: n <= 0 ==> k == n - j
+i_9: n > 0 ==> k == n/2 - j
+------------------------------------
+---------- Code with Invariants ----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_22_24), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: i_4:0 <= i; i_5:i % 2 == 0; i_6:n <= INT_MAX; i_7:0 <= j; i_8:n <= 0 ==> k == n - j; i_9:n > 0 ==> k == n/2 - j; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant k == n - i/2;
+loop invariant n <= INT_MAX;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i; i_1:i % 2 == 0; i_2:k == n - i/2; i_3:n <= INT_MAX; 
+    - Post-condition: 1:k > 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant n <= INT_MAX;
+loop invariant 0 <= j;
+loop invariant n <= 0 ==> k == n - j;
+loop invariant n > 0 ==> k == n/2 - j;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i
+i_1: i % 2 == 0
+i_2: k == n - i/2
+i_3: n <= INT_MAX
+LOOP B:
+i_4: 0 <= i
+i_5: i % 2 == 0
+i_6: n <= INT_MAX
+i_7: 0 <= j
+i_8: n <= 0 ==> k == n - j
+i_9: n > 0 ==> k == n/2 - j
+------------------------------------
+---------- Code with Invariants ----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_22_24), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: i_4:0 <= i; i_5:i % 2 == 0; i_6:n <= INT_MAX; i_7:0 <= j; i_8:n <= 0 ==> k == n - j; i_9:n > 0 ==> k == n/2 - j; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant k == n - i/2;
+loop invariant n <= INT_MAX;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i; i_1:i % 2 == 0; i_2:k == n - i/2; i_3:n <= INT_MAX; 
+    - Post-condition: 1:k > 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant n <= INT_MAX;
+loop invariant 0 <= j;
+loop invariant n <= 0 ==> k == n - j;
+loop invariant n > 0 ==> k == n/2 - j;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i
+i_1: i % 2 == 0
+i_2: k == n - i/2
+i_3: n <= INT_MAX
+LOOP B:
+i_4: 0 <= i
+i_5: i % 2 == 0
+i_6: n <= INT_MAX
+i_7: 0 <= j
+i_8: n <= 0 ==> k == n - j
+i_9: n > 0 ==> k == n/2 - j
+------------------------------------
+---------- Code with Invariants ----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_22_24), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: i_4:0 <= i; i_5:i % 2 == 0; i_6:n <= INT_MAX; i_7:0 <= j; i_8:n <= 0 ==> k == n - j; i_9:n > 0 ==> k == n/2 - j; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant k == n - i/2;
+loop invariant n <= INT_MAX;
+loop invariant n <= 0 ==> k == n;
+loop invariant n > 0 ==> i <= n + 1;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+        loop invariant i_10: n <= 0 ==> k == n;
+
+        loop invariant i_11: n > 0 ==> i <= n + 1;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i; i_1:i % 2 == 0; i_2:k == n - i/2; i_3:n <= INT_MAX; i_10:n <= 0 ==> k == n; i_11:n > 0 ==> i <= n + 1; 
+    - Post-condition: 1:k > 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant i % 2 == 0;
+loop invariant n <= INT_MAX;
+loop invariant n > 0 ==> i <= n + 1;
+loop invariant 0 <= j;
+loop invariant n <= 0 ==> k == n - j;
+loop invariant n > 0 ==> k == n/2 - j;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i
+i_1: i % 2 == 0
+i_2: k == n - i/2
+i_3: n <= INT_MAX
+i_10: n <= 0 ==> k == n
+i_11: n > 0 ==> i <= n + 1
+LOOP B:
+i_4: 0 <= i
+i_5: i % 2 == 0
+i_6: n <= INT_MAX
+i_7: 0 <= j
+i_8: n <= 0 ==> k == n - j
+i_9: n > 0 ==> k == n/2 - j
+i_12: n > 0 ==> i <= n + 1
+------------------------------------
+---------- Code with Invariants ----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+        loop invariant i_10: n <= 0 ==> k == n;
+
+        loop invariant i_11: n > 0 ==> i <= n + 1;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+        loop invariant i_12: n > 0 ==> i <= n + 1;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 827.1705350875854
+Proposal number: 4
+Verified code:
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i;
+
+        loop invariant i_1: i % 2 == 0;
+
+        loop invariant i_2: k == n - i/2;
+
+        loop invariant i_3: n <= INT_MAX;
+
+        loop invariant i_10: n <= 0 ==> k == n;
+
+        loop invariant i_11: n > 0 ==> i <= n + 1;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: i % 2 == 0;
+
+        loop invariant i_6: n <= INT_MAX;
+
+        loop invariant i_7: 0 <= j;
+
+        loop invariant i_8: n <= 0 ==> k == n - j;
+
+        loop invariant i_9: n > 0 ==> k == n/2 - j;
+
+        loop invariant i_12: n > 0 ==> i <= n + 1;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------

@@ -1,0 +1,2932 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_08.c
+----------Code----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    /*@
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x >= 0;
+loop invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant y >= 0;
+loop invariant x >= 4 ==> y >= 100 * (x - 4) + 4;
+loop invariant x < 4 ==> y >= 0;
+loop invariant x <= 4 || y >= 100 * (x - 4) + 4;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the analysis, here are the additional invariants needed to make the preservation step succeed:
+
+```
+loop invariant x <= y / 25 + 4;
+loop invariant (x >= 4 && unknown3()) ==> y >= 100 * (x - 4) + 4 + 1;
+loop invariant (x < 4 && unknown3()) ==> y >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_7: (x >= 4 && unknown3()) ==> y >= 100 * (x - 4) + 4 + 1
+i_8: (x < 4 && unknown3()) ==> y >= 0
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_7: (x >= 4 && unknown3()) ==> y >= 100 * (x - 4) + 4 + 1;
+
+        loop invariant i_8: (x < 4 && unknown3()) ==> y >= 0;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_8: (x < 4 && unknown3()) ==> y >= 0
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_8: (x < 4 && unknown3()) ==> y >= 0;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the analysis, here are the necessary additional invariants to make the preservation step succeed:
+
+```
+loop invariant y >= 100 * (x - 4) + 4 || x < 4;
+loop invariant x <= y / 100 + 4;
+loop invariant y >= 0;
+loop invariant x >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant y >= 0;
+loop invariant x >= 0;
+loop invariant x < 4 ==> y >= 0;
+loop invariant x >= 4 ==> y >= 100*(x-4);
+loop invariant y >= 100*(x-4);
+loop invariant (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_new1: x >= 0 && y >= 0;
+loop invariant i_new2: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+loop invariant i_new3: x <= y / 100 + 4;
+loop invariant i_new4: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_1: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the analysis of the loop behavior and the preservation failure, here are the corrected and additional invariants needed:
+
+```
+loop invariant x >= 0 && y >= 0;
+loop invariant (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+loop invariant x <= y / 100 + 4;
+loop invariant (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0)
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_1: (x >= 4 ==> y >= 100 * (x - 4) + 4) && (x < 4 ==> y >= 0);
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant x >= 4 ==> y >= 100 * (x - 4) + 4 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x >= 4 ==> y >= 100 * (x - 4) + 4
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x == 0 ==> y == 0;
+loop invariant x <= y;
+loop invariant x >= 5 ==> y >= 100*(x-4) + 4;
+loop invariant x < 4 || y >= 100*(x-4) + 4;
+loop invariant x <= 4 || y >= 100*(x-5) + 104;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant x >= 4 ==> y >= 100 * (x - 4) + 4 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x >= 4 ==> y >= 100 * (x - 4) + 4
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the analysis of the loop behavior and the failure to preserve the invariant, here are the necessary additional invariants:
+
+```
+loop invariant i_new_1: x <= y / 100 + 4;
+loop invariant i_new_2: x <= y / 25 + 4;
+loop invariant i_new_3: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+loop invariant i_new_4: x >= 0 && y >= 0;
+loop invariant i_new_5: x <= y;
+loop invariant i_new_6: x == 0 ==> y == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        [Hint] Invariant x >= 4 ==> y >= 100 * (x - 4) + 4 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x >= 4 ==> y >= 100 * (x - 4) + 4
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if(unknown2()) { x++; y += 100; else if (unknown3()){ if (x >= 4) { x++; y++; if (x < 0) { y--;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_new1: x <= y / 100 + 4;
+loop invariant i_new2: x >= 4 ==> y >= 100 * (x - 4);
+loop invariant i_new3: x < 4 ==> y >= 0;
+loop invariant i_new4: x >= 5 ==> y >= 100 * (x - 4) + 4;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_3: x >= 4 ==> y >= 100 * (x - 4) + 4
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_3: x >= 4 ==> y >= 100 * (x - 4) + 4;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_5: x <= 4 || y >= 100 * (x - 4) + 4
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_5: x <= 4 || y >= 100 * (x - 4) + 4;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_6: x <= y / 25 + 4
+i_9: y >= 100 * (x - 4) + 4 || x < 4
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_6: x <= y / 25 + 4;
+
+        loop invariant i_9: y >= 100 * (x - 4) + 4 || x < 4;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_10: x <= y / 100 + 4
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4)
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_10: x <= y / 100 + 4;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_15: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4) + 4);
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_11: x >= 4 ==> y >= 100*(x-4)
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_20: x >= 5 ==> y >= 100*(x-4) + 4
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_11: x >= 4 ==> y >= 100*(x-4);
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_20: x >= 5 ==> y >= 100*(x-4) + 4;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_12: y >= 100*(x-4)
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_21: x < 4 || y >= 100*(x-4) + 4
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_12: y >= 100*(x-4);
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_21: x < 4 || y >= 100*(x-4) + 4;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4))
+i_14: x >= 0 && y >= 0
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_22: x <= 4 || y >= 100*(x-5) + 104
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_13: (x < 4 && y >= 0) || (x >= 4 && y >= 100*(x-4));
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_22: x <= 4 || y >= 100*(x-5) + 104;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_14: x >= 0 && y >= 0
+i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4))
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+i_24: x >= 5 ==> y >= 100 * (x - 4) + 4
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_16: (x < 4 ==> y >= 0) && (x >= 4 ==> y >= 100*(x-4));
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+        loop invariant i_24: x >= 5 ==> y >= 100 * (x - 4) + 4;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_14: x >= 0 && y >= 0
+i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4))
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_17: (x <= 4 && y >= 0) || (x > 4 && y >= 100*(x-4));
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_14: x >= 0 && y >= 0
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+i_23: x >= 4 ==> y >= 100 * (x - 4)
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+        loop invariant i_23: x >= 4 ==> y >= 100 * (x - 4);
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x >= 0
+i_2: y >= 0
+i_4: x < 4 ==> y >= 0
+i_14: x >= 0 && y >= 0
+i_18: x == 0 ==> y == 0
+i_19: x <= y
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+----------------------------------------
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 340.86417293548584
+Proposal number: 23
+Verified code:
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+
+/*
+ *  Based on "Automatically refining abstract interpretations" fig.1
+ */
+
+void oopsla_08() {
+    int x = 0, y = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: x >= 0;
+
+        loop invariant i_2: y >= 0;
+
+        loop invariant i_4: x < 4 ==> y >= 0;
+
+        loop invariant i_14: x >= 0 && y >= 0;
+
+        loop invariant i_18: x == 0 ==> y == 0;
+
+        loop invariant i_19: x <= y;
+
+
+        loop assigns y;
+        loop assigns x;
+    */
+    while(unknown1()) {
+        if(unknown2()) { 
+            x++; 
+            y += 100; 
+        }
+        else if (unknown3()){ 
+            if (x >= 4) { 
+                x++; 
+                y++; 
+            } 
+            if (x < 0) {
+                y--;
+            }
+        }
+    
+    }
+    //@ assert a_1: x < 4 || y > 2;
+}
+
+------------------------

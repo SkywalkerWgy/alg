@@ -1,0 +1,532 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_31.c
+----------Code----------
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    /*@
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        /*@
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                /*@
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        // Loop B
+        /*@
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                // Loop C
+                /*@
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant m + 1 < n;
+loop invariant n == \at(n,Pre);
+loop invariant m == \at(m,Pre);
+loop invariant 0 <= i;
+loop invariant i % 4 == 0;
+----------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    // Loop A
+    /*@
+        loop invariant i_0: m + 1 < n;
+
+        loop invariant i_1: n == \at(n,Pre);
+
+        loop invariant i_2: m == \at(m,Pre);
+
+        loop invariant i_3: 0 <= i;
+
+        loop invariant i_4: i % 4 == 0;
+
+
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                // Loop C
+                /*@
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant m + 1 < n;
+loop invariant n == \at(n,Pre);
+loop invariant m == \at(m,Pre);
+loop invariant 0 <= i;
+loop invariant i % 4 == 0;
+loop invariant 0 <= j;
+loop invariant i <= j;
+----------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    // Loop A
+    /*@
+        loop invariant i_0: m + 1 < n;
+
+        loop invariant i_1: n == \at(n,Pre);
+
+        loop invariant i_2: m == \at(m,Pre);
+
+        loop invariant i_3: 0 <= i;
+
+        loop invariant i_4: i % 4 == 0;
+
+
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        // Loop B
+        /*@
+            loop invariant i_5: m + 1 < n;
+
+            loop invariant i_6: n == \at(n,Pre);
+
+            loop invariant i_7: m == \at(m,Pre);
+
+            loop invariant i_8: 0 <= i;
+
+            loop invariant i_9: i % 4 == 0;
+
+            loop invariant i_10: 0 <= j;
+
+            loop invariant i_11: i <= j;
+
+
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                // Loop C
+                /*@
+                    [Hint] Please infer the loop invariant for the following loop.
+
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant m + 1 < n;
+loop invariant n == \at(n,Pre);
+loop invariant m == \at(m,Pre);
+loop invariant 0 <= i;
+loop invariant i % 4 == 0;
+loop invariant 1 <= j;
+loop invariant i <= j;
+loop invariant j <= m;
+loop invariant 0 <= k;
+loop invariant k <= j;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: m + 1 < n
+i_1: n == \at(n,Pre)
+i_2: m == \at(m,Pre)
+i_3: 0 <= i
+i_4: i % 4 == 0
+LOOP B:
+i_5: m + 1 < n
+i_6: n == \at(n,Pre)
+i_7: m == \at(m,Pre)
+i_8: 0 <= i
+i_9: i % 4 == 0
+i_10: 0 <= j
+i_11: i <= j
+LOOP C:
+i_12: m + 1 < n
+i_13: n == \at(n,Pre)
+i_14: m == \at(m,Pre)
+i_15: 0 <= i
+i_16: i % 4 == 0
+i_17: 1 <= j
+i_18: i <= j
+i_19: j <= m
+i_20: 0 <= k
+i_21: k <= j
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    // Loop A
+    /*@
+        loop invariant i_0: m + 1 < n;
+
+        loop invariant i_1: n == \at(n,Pre);
+
+        loop invariant i_2: m == \at(m,Pre);
+
+        loop invariant i_3: 0 <= i;
+
+        loop invariant i_4: i % 4 == 0;
+
+
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        // Loop B
+        /*@
+            loop invariant i_5: m + 1 < n;
+
+            loop invariant i_6: n == \at(n,Pre);
+
+            loop invariant i_7: m == \at(m,Pre);
+
+            loop invariant i_8: 0 <= i;
+
+            loop invariant i_9: i % 4 == 0;
+
+            loop invariant i_10: 0 <= j;
+
+            loop invariant i_11: i <= j;
+
+
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                // Loop C
+                /*@
+                    loop invariant i_12: m + 1 < n;
+
+                    loop invariant i_13: n == \at(n,Pre);
+
+                    loop invariant i_14: m == \at(m,Pre);
+
+                    loop invariant i_15: 0 <= i;
+
+                    loop invariant i_16: i % 4 == 0;
+
+                    loop invariant i_17: 1 <= j;
+
+                    loop invariant i_18: i <= j;
+
+                    loop invariant i_19: j <= m;
+
+                    loop invariant i_20: 0 <= k;
+
+                    loop invariant i_21: k <= j;
+
+
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+----------------------------------------
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 172.86108350753784
+Proposal number: 1
+Verified code:
+#include <assert.h>
+int unknown1();
+
+/*
+ * "nest-if8" from InvGen benchmark suite
+ */
+
+/*@
+    requires m + 1 < n;
+*/
+void oopsla_31(int i, int j, int k, int n, int m) {
+    // Loop A
+    /*@
+        loop invariant i_0: m + 1 < n;
+
+        loop invariant i_1: n == \at(n,Pre);
+
+        loop invariant i_2: m == \at(m,Pre);
+
+        loop invariant i_3: 0 <= i;
+
+        loop invariant i_4: i % 4 == 0;
+
+
+        loop assigns n, m, k, j, i;
+    */
+    for (i = 0; i < n; i += 4) {
+
+        // Loop B
+        /*@
+            loop invariant i_5: m + 1 < n;
+
+            loop invariant i_6: n == \at(n,Pre);
+
+            loop invariant i_7: m == \at(m,Pre);
+
+            loop invariant i_8: 0 <= i;
+
+            loop invariant i_9: i % 4 == 0;
+
+            loop invariant i_10: 0 <= j;
+
+            loop invariant i_11: i <= j;
+
+
+            loop assigns k, j;
+        */
+        for (j = i; j < m;) {
+            if (unknown1()) {
+                //@ assert j >= 0;
+                j++;
+                k = 0;
+
+                // Loop C
+                /*@
+                    loop invariant i_12: m + 1 < n;
+
+                    loop invariant i_13: n == \at(n,Pre);
+
+                    loop invariant i_14: m == \at(m,Pre);
+
+                    loop invariant i_15: 0 <= i;
+
+                    loop invariant i_16: i % 4 == 0;
+
+                    loop invariant i_17: 1 <= j;
+
+                    loop invariant i_18: i <= j;
+
+                    loop invariant i_19: j <= m;
+
+                    loop invariant i_20: 0 <= k;
+
+                    loop invariant i_21: k <= j;
+
+
+                    loop assigns k;
+                */
+                while (k < j) {
+                    k++;
+                }
+            } else {
+                //@ assert  a_1: n + j + 5 > i;
+                j += 2;
+            }
+        }
+    }
+}
+
+------------------------

@@ -1,0 +1,416 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_min_seq.c
+----------Code----------
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    /*@
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= min < n;
+loop invariant \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= min < n
+i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k]
+------------------------------------
+---------- Code with Invariants ----------
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+------------------------------------------
+Verification failed (Fail_13_14), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= min < n;
+loop invariant \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= min < n
+i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k]
+------------------------------------
+---------- Code with Invariants ----------
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+------------------------------------------
+Verification failed (Fail_13_14), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= min < n;
+loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+loop invariant i_2: 1 <= i <= n;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= min < n
+i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k]
+i_2: 1 <= i <= n
+------------------------------------
+---------- Code with Invariants ----------
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+        loop invariant i_2: 1 <= i <= n;
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 36.318596839904785
+Proposal number: 3
+Verified code:
+/*@ requires n >= 0;
+    requires \valid(a + (0..n-1));
+
+    assigns \nothing;
+
+    behavior empty:
+      assumes n == 0;
+      ensures e_1: \result == 0;
+    behavior not_empty:
+      assumes e_2: 0 < n;
+      ensures e_3: 0 <= \result < n;
+      ensures e_4: \forall integer i; 0 <= i < n ==> a[i] >= a[\result];
+    complete behaviors;
+    disjoint behaviors;
+*/
+int _min_seq(int *a, int n) {
+    if (n == 0) {
+        return 0;
+    }
+    int min = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= min < n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> a[min] <= a[k];
+
+        loop invariant i_2: 1 <= i <= n;
+
+
+        loop assigns min, i;
+    */
+    for (int i = 1; i < n; i++) {
+        if (a[min] > a[i]) {
+            min = i;
+        }
+    }
+    return min;
+}
+------------------------

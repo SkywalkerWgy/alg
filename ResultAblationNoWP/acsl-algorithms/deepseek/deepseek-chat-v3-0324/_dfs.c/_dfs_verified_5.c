@@ -1,0 +1,100 @@
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_75: 0 <= top <= n;
+
+        loop invariant i_76: \forall integer i; 0 <= i < top ==> 0 <= stack[i] < n;
+
+        loop invariant i_77: \forall integer i; 0 <= i < n && visited[i] == 1 ==> connect(graph, i, start, n);
+
+        loop invariant i_78: \forall integer i; 0 <= i < top ==> visited[stack[i]] == 1;
+
+        loop invariant i_79: \forall integer i; 0 <= i < n ==> (visited[i] == 1 <==> (\exists integer j; 0 <= j <= top && stack[j] == i)); loop invariant \forall integer i; 0 <= i < n && visited[i] == 1 ==> dist[i] >= 0;
+
+        loop invariant i_80: \forall integer i; 0 <= i < n && visited[i] == 1 ==> dist[i] >= 0;
+
+        loop invariant i_81: \forall integer i; 0 <= i < n && visited[i] == 0 ==> dist[i] == -1;
+
+        loop invariant i_82: visited[start] == 1 && dist[start] == 0;
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop invariant i_83: 0 <= i <= n;
+
+            loop invariant i_84: \forall integer k; 0 <= k < i ==> (graph[node][k] == 0 || visited[k] == 1 || top >= n);
+
+            loop invariant i_85: \forall integer k; 0 <= k < i && graph[node][k] == 1 && visited[k] == 0 && top < n ==> visited[k] == 1 && dist[k] == dist[node] + 1 && stack[top] == k;
+
+            loop invariant i_86: \forall integer k; 0 <= k < n && visited[k] == 1 ==> connect(graph, k, start, n);
+
+            loop invariant i_87: \forall integer k; 0 <= k < n ==> (visited[k] == 1 <==> (\exists integer j; 0 <= j <= top && stack[j] == k)); loop invariant \forall integer k; 0 <= k < n && visited[k] == 1 ==> dist[k] >= 0;
+
+            loop invariant i_88: \forall integer k; 0 <= k < n && visited[k] == 1 ==> dist[k] >= 0;
+
+            loop invariant i_89: \forall integer k; 0 <= k < n && visited[k] == 0 ==> dist[k] == -1;
+
+            loop invariant i_90: visited[start] == 1 && dist[start] == 0;
+
+            loop invariant i_91: 0 <= top <= n;
+
+            loop invariant i_92: \forall integer k; 0 <= k < top ==> 0 <= stack[k] < n;
+
+            loop invariant i_93: \forall integer k; 0 <= k < top ==> visited[stack[k]] == 1;
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}

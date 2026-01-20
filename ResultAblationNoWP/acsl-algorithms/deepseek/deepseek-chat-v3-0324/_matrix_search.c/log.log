@@ -1,0 +1,658 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_matrix_search.c
+----------Code----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    /*@
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target; e_2:\result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i && i <= n;
+loop invariant -1 <= j && j < n;
+loop invariant \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 <= n-1 ==> matrix[k1][k2] < target;
+loop invariant \forall integer k1, k2; i <= k1 < n && 0 <= k2 <= j ==> target < matrix[k1][k2];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i && i <= n
+i_1: -1 <= j && j < n
+i_2: \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 <= n-1 ==> matrix[k1][k2] < target
+i_3: \forall integer k1, k2; i <= k1 < n && 0 <= k2 <= j ==> target < matrix[k1][k2]
+------------------------------------
+---------- Code with Invariants ----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i && i <= n;
+
+        loop invariant i_1: -1 <= j && j < n;
+
+        loop invariant i_2: \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 <= n-1 ==> matrix[k1][k2] < target;
+
+        loop invariant i_3: \forall integer k1, k2; i <= k1 < n && 0 <= k2 <= j ==> target < matrix[k1][k2];
+
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_14_15), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target; e_2:\result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant -1 <= j < n;
+loop invariant \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 < n ==> matrix[k1][k2] < target;
+loop invariant \forall integer k1, k2; i <= k1 < n && j < k2 < n ==> matrix[k1][k2] > target;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: 0 <= i <= n
+i_5: -1 <= j < n
+i_6: \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 < n ==> matrix[k1][k2] < target
+i_7: \forall integer k1, k2; i <= k1 < n && j < k2 < n ==> matrix[k1][k2] > target
+------------------------------------
+---------- Code with Invariants ----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        loop invariant i_4: 0 <= i <= n;
+
+        loop invariant i_5: -1 <= j < n;
+
+        loop invariant i_6: \forall integer k1, k2; 0 <= k1 < i && 0 <= k2 < n ==> matrix[k1][k2] < target;
+
+        loop invariant i_7: \forall integer k1, k2; i <= k1 < n && j < k2 < n ==> matrix[k1][k2] > target;
+
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_14_15), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target; e_2:\result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant -1 <= j < n;
+loop invariant \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target;
+loop invariant \forall integer col, k; 0 <= col <= j && i <= k < n ==> matrix[k][col] > target;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_8: 0 <= i <= n
+i_9: -1 <= j < n
+i_10: \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target
+i_11: \forall integer col, k; 0 <= col <= j && i <= k < n ==> matrix[k][col] > target
+------------------------------------
+---------- Code with Invariants ----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        loop invariant i_8: 0 <= i <= n;
+
+        loop invariant i_9: -1 <= j < n;
+
+        loop invariant i_10: \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target;
+
+        loop invariant i_11: \forall integer col, k; 0 <= col <= j && i <= k < n ==> matrix[k][col] > target;
+
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_14_15), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target; e_2:\result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n && -1 <= j < n;
+loop invariant \forall integer row; 0 <= row < i ==> \forall integer col; 0 <= col < n ==> matrix[row][col] < target;
+loop invariant \forall integer col; j < col < n ==> \forall integer row; 0 <= row < n ==> matrix[row][col] > target;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_12: 0 <= i <= n && -1 <= j < n
+i_13: \forall integer row; 0 <= row < i ==> \forall integer col; 0 <= col < n ==> matrix[row][col] < target
+i_14: \forall integer col; j < col < n ==> \forall integer row; 0 <= row < n ==> matrix[row][col] > target
+------------------------------------
+---------- Code with Invariants ----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        loop invariant i_12: 0 <= i <= n && -1 <= j < n;
+
+        loop invariant i_13: \forall integer row; 0 <= row < i ==> \forall integer col; 0 <= col < n ==> matrix[row][col] < target;
+
+        loop invariant i_14: \forall integer col; j < col < n ==> \forall integer row; 0 <= row < n ==> matrix[row][col] > target;
+
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_11_13), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target; e_2:\result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant -1 <= j < n;
+loop invariant \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target;
+loop invariant \forall integer col, k; 0 <= col <= j && 0 <= k < n ==> matrix[k][col] > target;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_15: 0 <= i <= n
+i_16: -1 <= j < n
+i_17: \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target
+i_18: \forall integer col, k; 0 <= col <= j && 0 <= k < n ==> matrix[k][col] > target
+------------------------------------
+---------- Code with Invariants ----------
+
+
+/*@ 
+    requires n == 10;
+
+    requires \valid(matrix + (0..(n)));
+    requires \valid(matrix[0..(n)] + (0..(n)));
+
+    requires \forall integer row, k1, k2; 0 <= row < n && 0 <= k1 < k2 < n ==> matrix[row][k1] <= matrix[row][k2];
+    requires \forall integer col, k1, k2; 0 <= col < n && 0 <= k1 < k2 < n ==> matrix[k1][col] <= matrix[k2][col];
+
+    assigns \nothing;
+
+    ensures e_1: \result == 0 ==> \forall integer i, j; 0 <= i < n && 0 <= j < n ==> matrix[i][j] != target;
+    ensures e_2: \result == 1 ==> \exists integer i, j; 0 <= i < n && 0 <= j < n && matrix[i][j] == target;
+*/
+int _matrix_search(int** matrix, int n, int target){
+    int i = 0, j = n - 1;
+    // Loop A
+    /*@
+        loop invariant i_15: 0 <= i <= n;
+
+        loop invariant i_16: -1 <= j < n;
+
+        loop invariant i_17: \forall integer row, k; 0 <= row < i && 0 <= k < n ==> matrix[row][k] < target;
+
+        loop invariant i_18: \forall integer col, k; 0 <= col <= j && 0 <= k < n ==> matrix[k][col] > target;
+
+
+        loop assigns i, j;
+    */
+    while(i < n && j >= 0) {
+        if(matrix[i][j] == target) 
+            return 1;
+        else if(matrix[i][j] > target) 
+            j--;
+        else 
+            i++;
+    }
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_14_15), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 83.56296730041504
+Proposal number: 5
+Verified code:
+
+------------------------

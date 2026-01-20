@@ -1,0 +1,132 @@
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= up && up < length;
+
+        loop invariant i_2: \forall integer k; 0 <= k < up && a[k] <= a[up - 1];
+
+        loop invariant i_12: 0 < down;
+
+        loop invariant i_13: \at(a, down, L1) == \at(a, down - 1, L2);
+
+        loop invariant i_14: \forall integer k; k != down && k != down - 1 ==> \at(a,k, L1) == \at(a,k, L2);
+
+        loop invariant i_15: \forall integer k; k != down && k != down - 1 && \at(a,k, L1) == \at(a,k, L2) && \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+        loop invariant i_16: \at(a, down - 1, L2) == \at(a, down, L1);
+
+        loop invariant i_17: \at(a, down, L1) == \at(a, down - 1, L2) && \forall integer k; k != down && k != down - 1;
+
+        loop invariant i_18: \at(a, down, L2) == \at(a, down - 1, L1) && \forall integer k; k != down && k != down - 1;
+
+        loop invariant i_19: \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+        loop invariant i_20: \forall integer k; k != down && k != down - 1 && \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+        loop invariant i_21: \exists integer k; \at(a, k, End_l);
+
+        loop invariant i_22: \forall integer k; 0 <= k < length && \at(a,k, End_l) && k < down - 1 && a[k] == a[down - 1];
+
+        loop invariant i_23: \forall integer k; 0 <= k < length && \at(a,k, End_l) && k == down - 1 && a[k] == a[down - 1];
+
+        loop invariant i_24: \forall integer k; 0 <= k < length && \at(a,k, End_l) && k == down && a[k] == a[down - 1];
+
+        loop invariant i_25: \forall integer k; 0 <= k < length && \at(a,k, End_l) && k > down && k < down - 1 && a[k] == a[down - 1];
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_26: 0 <= up && up < length;
+
+          loop invariant i_27: \forall integer k; 0 <= k < up && a[k] == \at(a, k, Begin);
+
+          loop invariant i_28: \forall integer k; 0 <= k < up && a[k] <= a[up - 1];
+
+          loop invariant i_29: \forall integer k; 0 <= k < length && \at(a, k, End_l) ==> 0 >= down && k >= down;
+
+          loop invariant i_30: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k >= down - 1 ==> a[k] == a[down - 1];
+
+          loop invariant i_31: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k < down && a[k] == a[down - 1];
+
+          loop invariant i_32: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k < down - 1 ==> a[k] != a[down - 1];
+
+          loop invariant i_33: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k == down - 1 ==> a[k] == a[down - 1];
+
+          loop invariant i_34: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k == down && a[k] == a[down - 1];
+
+          loop invariant i_35: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k > down && k < down - 1 && a[k] == a[down - 1];
+
+          loop invariant i_36: \exists integer k; \at(a, k, End_l);
+
+          loop invariant i_37: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k < down - 1 && a[k] == a[down - 1];
+
+          loop invariant i_38: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k == down - 1 && a[k] == a[down - 1];
+
+          loop invariant i_39: \forall integer k; 0 <= k < length && \at(a, k, End_l) && k >= down && k < down - 1;
+
+          loop invariant i_40: 0 < down;
+
+          loop invariant i_41: \at(a, down, L1) == \at(a, down - 1, L2);
+
+          loop invariant i_42: \forall integer k; k != down && k != down - 1 ==> \at(a, k, L1) == \at(a, k, L2);
+
+          loop invariant i_43: \forall integer k; k != down && k != down - 1 && \at(a, k, L1) == \at(a, k, L2) && \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+          loop invariant i_44: \at(a, down - 1, L2) == \at(a, down, L1);
+
+          loop invariant i_45: \at(a, down, L1) == \at(a, down - 1, L2) && \forall integer k; k != down && k != down - 1;
+
+          loop invariant i_46: \at(a, down, L2) == \at(a, down - 1, L1) && \forall integer k; k != down && k != down - 1;
+
+          loop invariant i_47: \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+          loop invariant i_48: \forall integer k; k != down && k != down - 1 && \at(a, down, L1) == \at(a, down - 1, L2) && \at(a, down - 1, L2) == \at(a, down, L1);
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}

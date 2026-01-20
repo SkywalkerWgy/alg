@@ -1,0 +1,65 @@
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+void oopsla_25(){
+    int x = 0;
+    int y = 0;
+    int i = 0;
+    int j = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_10: x == y || x == y - 1;
+
+        loop invariant i_11: i >= 0;
+
+        loop invariant i_12: j >= 0;
+
+        loop invariant i_13: (x == y) ==> (i >= j);
+
+        loop invariant i_14: (x == y - 1) ==> (j > i);
+
+
+        loop assigns y;
+        loop assigns x;
+        loop assigns j;
+        loop assigns i;
+    */
+    while(unknown1()){
+
+        // Loop B
+        /*@
+            loop invariant i_15: (x == y) ==> (i + 1 >= j);
+
+            loop invariant i_16: (x == y - 1) ==> (j > i);
+
+            loop invariant i_17: i >= 0;
+
+            loop invariant i_18: j >= 0;
+
+
+            loop assigns j;
+            loop assigns i;
+        */
+        while(unknown2()){
+            if(x == y){
+                i++;
+            }
+            else{
+                j++;
+            }
+        }
+        if(i >= j){
+            x++;
+            y++;
+        }
+        else{
+            y++;
+        }
+    }
+
+    //@ assert  a_1: i >= j;
+}

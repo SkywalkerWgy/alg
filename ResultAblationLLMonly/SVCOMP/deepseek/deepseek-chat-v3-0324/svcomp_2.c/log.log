@@ -1,0 +1,120 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_2.c
+----------Code----------
+void svcomp_2() {
+    int A[2048];
+    int i;
+
+    /*@
+        loop assigns i;
+        loop assigns A[0..1023];
+    */
+    for (i = 0; i < 1024; i++) {
+        A[i] = i;
+    }
+
+    //@ assert A[1023] == 1023;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+void svcomp_2() {
+    int A[2048];
+    int i;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i;
+        loop assigns A[0..1023];
+    */
+    for (i = 0; i < 1024; i++) {
+        A[i] = i;
+    }
+
+    //@ assert A[1023] == 1023;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= 1024;
+loop invariant \forall integer k; 0 <= k < i ==> A[k] == k;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 1024
+i_1: \forall integer k; 0 <= k < i ==> A[k] == k
+------------------------------------
+---------- Code with Invariants ----------
+void svcomp_2() {
+    int A[2048];
+    int i;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 1024;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> A[k] == k;
+
+
+        loop assigns i;
+        loop assigns A[0..1023];
+    */
+    for (i = 0; i < 1024; i++) {
+        A[i] = i;
+    }
+
+    //@ assert A[1023] == 1023;
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 4.698857545852661
+Proposal number: 1
+Verified code:
+void svcomp_2() {
+    int A[2048];
+    int i;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 1024;
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> A[k] == k;
+
+
+        loop assigns i;
+        loop assigns A[0..1023];
+    */
+    for (i = 0; i < 1024; i++) {
+        A[i] = i;
+    }
+
+    //@ assert A[1023] == 1023;
+}
+------------------------

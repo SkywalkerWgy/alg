@@ -1,0 +1,5756 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_42.c
+----------Code----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    /*@
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: a_1:(a % 2 == 1); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 0 <= a;
+loop invariant y >= 0;
+loop invariant x == y || a == x;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_2: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x == y || a == x not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x == y || a == x
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+loop invariant i_1: y >= 0;
+loop invariant i_2: x == y || a == x || a == y;
+```
+----------------------------
+-------------Ensure Revise: a_1: (a % 2 == 1)---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  (a % 2 == 1)
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x + a >= 0 && y + a >= 0;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_2: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x == y || a == x not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x == y || a == x
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+loop invariant i_1: y >= 0;
+loop invariant i_2: x == y || a == x || a == y;
+loop invariant i_3: x + a >= 0 && y + a >= 0;
+```
+----------------------------
+-------------Ensure Revise: a_1: (a % 2 == 1)---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  (a % 2 == 1)
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x || a == y;
+
+loop invariant i_3: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+loop invariant i_4: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant i_0: 0 <= a;
+
+loop invariant i_1: 0 <= y;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x == y || a == x || a == y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + y == x + y;
+
+loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+----------------------------
+-------------Preservation_self: i_2: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x == y || a == x not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x == y || a == x
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x == y || a == x || a == y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + y == x + y;
+
+loop invariant i_6: x >= 0 && y >= 0;
+
+loop invariant i_7: 0 <= y;
+
+loop invariant i_8: x + y == x + y;
+```
+----------------------------
+-------------Ensure Revise: a_1: (a % 2 == 1)---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  (a % 2 == 1)
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x >= 0 && y >= 0 && x + y == x + y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+loop invariant i_6: x + y == x + y;
+
+loop invariant i_7: x >= 0 && y >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+
+loop invariant i_1: 0 <= y;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x == y || a == x || a == y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + y == x + y;
+
+loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+loop invariant i_7: 0 <= x;
+
+loop invariant i_8: 0 <= y;
+
+loop invariant i_9: x >= 0 && y >= 0 && x + y == x + y;
+```
+----------------------------
+-------------Preservation_self: i_2: preservation---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Invariant x == y || a == x not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] x == y || a == x
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (flag) { a = x + y; x++; } else { a = x + y + 1; y++; if (a % 2 == 1) y++; else x++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x == y || a == x || a == y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + y == x + y;
+
+loop invariant i_6: x >= 0 && y >= 0;
+
+loop invariant i_7: 0 <= y;
+
+loop invariant i_8: x + y == x + y;
+
+loop invariant i_9: x >= 0 && y >= 0 && x + y == x + y;
+```
+----------------------------
+-------------Ensure Revise: a_1: (a % 2 == 1)---------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  (a % 2 == 1)
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant i_0: 0 <= a;
+
+loop invariant i_1: y >= 0;
+
+loop invariant i_2: x == y || a == x;
+
+loop invariant i_3: x == y || a == x || a == y;
+
+loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+loop invariant i_6: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+loop invariant i_7: 0 <= y;
+
+loop invariant i_8: x + y == x + y;
+
+loop invariant i_9: x >= 0 && y >= 0;
+
+loop invariant i_10: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+loop invariant i_11: x >= 0 && y >= 0 && x + y == x + y;
+
+loop invariant i_12: 0 <= x;
+
+loop invariant i_13: x + y + a >= 0;
+
+loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+loop invariant i_15: x + y + a % 2 == x + y;
+
+loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+loop invariant i_17: x + y + a % 2 == x + y;
+
+loop invariant i_18: x + a >= 0 && y + a >= 0;
+
+loop invariant i_19: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+loop invariant i_20: (flag ? x + a : y + a) >= 0;
+
+loop invariant i_21: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+loop invariant i_22: x + y + a % 2 == x + y;
+
+loop invariant i_23: (flag ? x : y) + a >= 0;
+
+loop invariant i_24: x + y + a % 2 == x + y;
+
+loop invariant i_25: x + a >= 0 && y + a >= 0;
+
+loop invariant i_26: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_27: x + y + a % 2 == x + y;
+
+loop invariant i_28: (flag ? x : y) + a >= 0;
+
+loop invariant i_29: x + y + a % 2 == x + y;
+
+loop invariant i_30: x + a >= 0 && y + a >= 0;
+
+loop invariant i_31: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_32: x + y + a % 2 == x + y;
+
+loop invariant i_33: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_34: x + y + a % 2 == x + y;
+
+loop invariant i_35: (flag ? x : y) + a >= 0;
+
+loop invariant i_36: x + y + a % 2 == x + y;
+
+loop invariant i_37: x + a >= 0 && y + a >= 0;
+
+loop invariant i_38: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_39: x + y + a % 2 == x + y;
+
+loop invariant i_40: x + a >= 0 && y + a >= 0;
+
+loop invariant i_41: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_42: x + y + a % 2 == x + y;
+
+loop invariant i_43: x + a >= 0 && y + a >= 0;
+
+loop invariant i_44: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_45: x + y + a % 2 == x + y;
+
+loop invariant i_46: x + a >= 0 && y + a >= 0;
+
+loop invariant i_47: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_48: x + y + a % 2 == x + y;
+
+loop invariant i_49: x + a >= 0 && y + a >= 0;
+
+loop invariant i_50: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_51: x + y + a % 2 == x + y;
+
+loop invariant i_52: x + a >= 0 && y + a >= 0;
+
+loop invariant i_53: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_54: x + y + a % 2 == x + y;
+
+loop invariant i_55: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_56: x + y + a % 2 == x + y;
+
+loop invariant i_57: x + a >= 0 && y + a >= 0;
+
+loop invariant i_58: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_59: x + y + a % 2 == x + y;
+
+loop invariant i_60: x + a >= 0 && y + a >= 0;
+
+loop invariant i_61: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_62: x + y + a % 2 == x + y;
+
+loop invariant i_63: x + a >= 0 && y + a >= 0;
+
+loop invariant i_64: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_65: x + y + a % 2 == x + y;
+
+loop invariant i_66: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_67: x + y + a % 2 == x + y;
+
+loop invariant i_68: x + a >= 0 && y + a >= 0;
+
+loop invariant i_69: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_70: x + y + a % 2 == x + y;
+
+loop invariant i_71: x + a >= 0 && y + a >= 0;
+
+loop invariant i_72: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_73: x + y + a % 2 == x + y;
+
+loop invariant i_74: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_75: x + y + a % 2 == x + y;
+
+loop invariant i_76: x + a >= 0 && y + a >= 0;
+
+loop invariant i_77: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_78: x + y + a % 2 == x + y;
+
+loop invariant i_79: x + a >= 0 && y + a >= 0;
+
+loop invariant i_80: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_81: x + y + a % 2 == x + y;
+
+loop invariant i_82: x + a >= 0 && y + a >= 0;
+
+loop invariant i_83: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_84: x + y + a % 2 == x + y;
+
+loop invariant i_85: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_86: x + y + a % 2 == x + y;
+
+loop invariant i_87: x + a >= 0 && y + a >= 0;
+
+loop invariant i_88: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_89: x + y + a % 2 == x + y;
+
+loop invariant i_90: x + a >= 0 && y + a >= 0;
+
+loop invariant i_91: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_92: x + y + a % 2 == x + y;
+
+loop invariant i_93: x + a >= 0 && y + a >= 0;
+
+loop invariant i_94: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_95: x + y + a % 2 == x + y;
+
+loop invariant i_96: x + a >= 0 && y + a >= 0;
+
+loop invariant i_97: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_98: x + y + a % 2 == x + y;
+
+loop invariant i_99: x + a >= 0 && y + a >= 0;
+
+loop invariant i_100: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_101: x + y + a % 2 == x + y;
+
+loop invariant i_102: x + a >= 0 && y + a >= 0;
+
+loop invariant i_103: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_104: x + y + a % 2 == x + y;
+
+loop invariant i_105: x + a >= 0 && y + a >= 0;
+
+loop invariant i_106: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_107: x + y + a % 2 == x + y;
+
+loop invariant i_108: x + a >= 0 && y + a >= 0;
+
+loop invariant i_109: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_110: x + y + a % 2 == x + y;
+
+loop invariant i_111: x + a >= 0 && y + a >= 0;
+
+loop invariant i_112: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_113: x + y + a % 2 == x + y;
+
+loop invariant i_114: x + a >= 0 && y + a >= 0;
+
+loop invariant i_115: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_116: x + y + a % 2 == x + y;
+
+loop invariant i_117: x + a >= 0 && y + a >= 0;
+
+loop invariant i_118: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_119: x + y + a % 2 == x + y;
+
+loop invariant i_120: x + a >= 0 && y + a >= 0;
+
+loop invariant i_121: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_122: x + y + a % 2 == x + y;
+
+loop invariant i_123: x + a >= 0 && y + a >= 0;
+
+loop invariant i_124: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_125: x + y + a % 2 == x + y;
+
+loop invariant i_126: x + a >= 0 && y + a >= 0;
+
+loop invariant i_127: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_128: x + y + a % 2 == x + y;
+
+loop invariant i_129: x + a >= 0 && y + a >= 0;
+
+loop invariant i_130: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_131: x + y + a % 2 == x + y;
+
+loop invariant i_132: x + a >= 0 && y + a >= 0;
+
+loop invariant i_133: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_134: x + y + a % 2 == x + y;
+
+loop invariant i_135: x + a >= 0 && y + a >= 0;
+
+loop invariant i_136: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_137: x + y + a % 2 == x + y;
+
+loop invariant i_138: x + a >= 0 && y + a >= 0;
+
+loop invariant i_139: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_140: x + y + a % 2 == x + y;
+
+loop invariant i_141: x + a >= 0 && y + a >= 0;
+
+loop invariant i_142: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_143: x + y + a % 2 == x + y;
+
+loop invariant i_144: x + a >= 0 && y + a >= 0;
+
+loop invariant i_145: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_146: x + y + a % 2 == x + y;
+
+loop invariant i_147: x + a >= 0 && y + a >= 0;
+
+loop invariant i_148: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_149: x + y + a % 2 == x + y;
+
+loop invariant i_150: x + a >= 0 && y + a >= 0;
+
+loop invariant i_151: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_152: x + y + a % 2 == x + y;
+
+loop invariant i_153: x + a >= 0 && y + a >= 0;
+
+loop invariant i_154: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_155: x + y + a % 2 == x + y;
+
+loop invariant i_156: x + a >= 0 && y + a >= 0;
+
+loop invariant i_157: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_158: x + y + a % 2 == x + y;
+
+loop invariant i_159: x + a >= 0 && y + a >= 0;
+
+loop invariant i_160: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_161: x + y + a % 2 == x + y;
+
+loop invariant i_162: x + a >= 0 && y + a >= 0;
+
+loop invariant i_163: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_164: x + y + a % 2 == x + y;
+
+loop invariant i_165: x + a >= 0 && y + a >= 0;
+
+loop invariant i_166: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_167: x + y + a % 2 == x + y;
+
+loop invariant i_168: x + a >= 0 && y + a >= 0;
+
+loop invariant i_169: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_170: x + y + a % 2 == x + y;
+
+loop invariant i_171: x + a >= 0 && y + a >= 0;
+
+loop invariant i_172: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_173: x + y + a % 2 == x + y;
+
+loop invariant i_174: x + a >= 0 && y + a >= 0;
+
+loop invariant i_175: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_176: x + y + a % 2 == x + y;
+
+loop invariant i_177: x + a >= 0 && y + a >= 0;
+
+loop invariant i_178: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_179: x + y + a % 2 == x + y;
+
+loop invariant i_180: x + a >= 0 && y + a >= 0;
+
+loop invariant i_181: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_182: x + y + a % 2 == x + y;
+
+loop invariant i_183: x + a >= 0 && y + a >= 0;
+
+loop invariant i_184: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_185: x + y + a % 2 == x + y;
+
+loop invariant i_186: x + a >= 0 && y + a >= 0;
+
+loop invariant i_187: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_188: x + y + a % 2 == x + y;
+
+loop invariant i_189: x + a >= 0 && y + a >= 0;
+
+loop invariant i_190: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_191: x + y + a % 2 == x + y;
+
+loop invariant i_192: x + a >= 0 && y + a >= 0;
+
+loop invariant i_193: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_194: x + y + a % 2 == x + y;
+
+loop invariant i_195: x + a >= 0 && y + a >= 0;
+
+loop invariant i_196: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_197: x + y + a % 2 == x + y;
+
+loop invariant i_198: x + a >= 0 && y + a >= 0;
+
+loop invariant i_199: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_200: x + y + a % 2 == x + y;
+
+loop invariant i_201: x + a >= 0 && y + a >= 0;
+
+loop invariant i_202: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_203: x + y + a % 2 == x + y;
+
+loop invariant i_204: x + a >= 0 && y + a >= 0;
+
+loop invariant i_205: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_206: x + y + a % 2 == x + y;
+
+loop invariant i_207: x + a >= 0 && y + a >= 0;
+
+loop invariant i_208: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_209: x + y + a % 2 == x + y;
+
+loop invariant i_210: x + a >= 0 && y + a >= 0;
+
+loop invariant i_211: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_212: x + y + a % 2 == x + y;
+
+loop invariant i_213: x + a >= 0 && y + a >= 0;
+
+loop invariant i_214: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_215: x + y + a % 2 == x + y;
+
+loop invariant i_216: x + a >= 0 && y + a >= 0;
+
+loop invariant i_217: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_218: x + y + a % 2 == x + y;
+
+loop invariant i_219: x + a >= 0 && y + a >= 0;
+
+loop invariant i_220: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_221: x + y + a % 2 == x + y;
+
+loop invariant i_222: x + a >= 0 && y + a >= 0;
+
+loop invariant i_223: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_224: x + y + a % 2 == x + y;
+
+loop invariant i_225: x + a >= 0 && y + a >= 0;
+
+loop invariant i_226: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_227: x + y + a % 2 == x + y;
+
+loop invariant i_228: x + a >= 0 && y + a >= 0;
+
+loop invariant i_229: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_230: x + y + a % 2 == x + y;
+
+loop invariant i_231: x + a >= 0 && y + a >= 0;
+
+loop invariant i_232: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_233: x + y + a % 2 == x + y;
+
+loop invariant i_234: x + a >= 0 && y + a >= 0;
+
+loop invariant i_235: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_236: x + y + a % 2 == x + y;
+
+loop invariant i_237: x + a >= 0 && y + a >= 0;
+
+loop invariant i_238: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_239: x + y + a % 2 == x + y;
+
+loop invariant i_240: x + a >= 0 && y + a >= 0;
+
+loop invariant i_241: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_242: x + y + a % 2 == x + y;
+
+loop invariant i_243: x + a >= 0 && y + a >= 0;
+
+loop invariant i_244: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_245: x + y + a % 2 == x + y;
+
+loop invariant i_246: x + a >= 0 && y + a >= 0;
+
+loop invariant i_247: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_248: x + y + a % 2 == x + y;
+
+loop invariant i_249: x + a >= 0 && y + a >= 0;
+
+loop invariant i_250: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_251: x + y + a % 2 == x + y;
+
+loop invariant i_252: x + a >= 0 && y + a >= 0;
+
+loop invariant i_253: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_254: x + y + a % 2 == x + y;
+
+loop invariant i_255: x + a >= 0 && y + a >= 0;
+
+loop invariant i_256: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_257: x + y + a % 2 == x + y;
+
+loop invariant i_258: x + a >= 0 && y + a >= 0;
+
+loop invariant i_259: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_260: x + y + a % 2 == x + y;
+
+loop invariant i_261: x + a >= 0 && y + a >= 0;
+
+loop invariant i_262: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_263: x + y + a % 2 == x + y;
+
+loop invariant i_264: x + a >= 0 && y + a >= 0;
+
+loop invariant i_265: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_266: x + y + a % 2 == x + y;
+
+loop invariant i_267: x + a >= 0 && y + a >= 0;
+
+loop invariant i_268: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_269: x + y + a % 2 == x + y;
+
+loop invariant i_270: x + a >= 0 && y + a >= 0;
+
+loop invariant i_271: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_272: x + y + a % 2 == x + y;
+
+loop invariant i_273: x + a >= 0 && y + a >= 0;
+
+loop invariant i_274: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_275: x + y + a % 2 == x + y;
+
+loop invariant i_276: x + a >= 0 && y + a >= 0;
+
+loop invariant i_277: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_278: x + y + a % 2 == x + y;
+
+loop invariant i_279: x + a >= 0 && y + a >= 0;
+
+loop invariant i_280: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_281: x + y + a % 2 == x + y;
+
+loop invariant i_282: x + a >= 0 && y + a >= 0;
+
+loop invariant i_283: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_284: x + y + a % 2 == x + y;
+
+loop invariant i_285: x + a >= 0 && y + a >= 0;
+
+loop invariant i_286: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_287: x + y + a % 2 == x + y;
+
+loop invariant i_288: x + a >= 0 && y + a >= 0;
+
+loop invariant i_289: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_290: x + y + a % 2 == x + y;
+
+loop invariant i_291: x + a >= 0 && y + a >= 0;
+
+loop invariant i_292: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_293: x + y + a % 2 == x + y;
+
+loop invariant i_294: x + a >= 0 && y + a >= 0;
+
+loop invariant i_295: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_296: x + y + a % 2 == x + y;
+
+loop invariant i_297: x + a >= 0 && y + a >= 0;
+
+loop invariant i_298: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_299: x + y + a % 2 == x + y;
+
+loop invariant i_300: x + a >= 0 && y + a >= 0;
+
+loop invariant i_301: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_302: x + y + a % 2 == x + y;
+
+loop invariant i_303: x + a >= 0 && y + a >= 0;
+
+loop invariant i_304: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_305: x + y + a % 2 == x + y;
+
+loop invariant i_306: x + a >= 0 && y + a >= 0;
+
+loop invariant i_307: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_308: x + y + a % 2 == x + y;
+
+loop invariant i_309: x + a >= 0 && y + a >= 0;
+
+loop invariant i_310: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_311: x + y + a % 2 == x + y;
+
+loop invariant i_312: x + a >= 0 && y + a >= 0;
+
+loop invariant i_313: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_314: x + y + a % 2 == x + y;
+
+loop invariant i_315: x + a >= 0 && y + a >= 0;
+
+loop invariant i_316: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_317: x + y + a % 2 == x + y;
+
+loop invariant i_318: x + a >= 0 && y + a >= 0;
+
+loop invariant i_319: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_320: x + y + a % 2 == x + y;
+
+loop invariant i_321: x + a >= 0 && y + a >= 0;
+
+loop invariant i_322: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_323: x + y + a % 2 == x + y;
+
+loop invariant i_324: x + a >= 0 && y + a >= 0;
+
+loop invariant i_325: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_326: x + y + a % 2 == x + y;
+
+loop invariant i_327: x + a >= 0 && y + a >= 0;
+
+loop invariant i_328: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_329: x + y + a % 2 == x + y;
+
+loop invariant i_330: x + a >= 0 && y + a >= 0;
+
+loop invariant i_331: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_332: x + y + a % 2 == x + y;
+
+loop invariant i_333: x + a >= 0 && y + a >= 0;
+
+loop invariant i_334: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_335: x + y + a % 2 == x + y;
+
+loop invariant i_336: x + a >= 0 && y + a >= 0;
+
+loop invariant i_337: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_338: x + y + a % 2 == x + y;
+
+loop invariant i_339: x + a >= 0 && y + a >= 0;
+
+loop invariant i_340: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_341: x + y + a % 2 == x + y;
+
+loop invariant i_342: x + a >= 0 && y + a >= 0;
+
+loop invariant i_343: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_344: x + y + a % 2 == x + y;
+
+loop invariant i_345: x + a >= 0 && y + a >= 0;
+
+loop invariant i_346: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_347: x + y + a % 2 == x + y;
+
+loop invariant i_348: x + a >= 0 && y + a >= 0;
+
+loop invariant i_349: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_350: x + y + a % 2 == x + y;
+
+loop invariant i_351: x + a >= 0 && y + a >= 0;
+
+loop invariant i_352: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_353: x + y + a % 2 == x + y;
+
+loop invariant i_354: x + a >= 0 && y + a >= 0;
+
+loop invariant i_355: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_356: x + y + a % 2 == x + y;
+
+loop invariant i_357: x + a >= 0 && y + a >= 0;
+
+loop invariant i_358: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_359: x + y + a % 2 == x + y;
+
+loop invariant i_360: x + a >= 0 && y + a >= 0;
+
+loop invariant i_361: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_362: x + y + a % 2 == x + y;
+
+loop invariant i_363: x + a >= 0 && y + a >= 0;
+
+loop invariant i_364: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_365: x + y + a % 2 == x + y;
+
+loop invariant i_366: x + a >= 0 && y + a >= 0;
+
+loop invariant i_367: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_368: x + y + a % 2 == x + y;
+
+loop invariant i_369: x + a >= 0 && y + a >= 0;
+
+loop invariant i_370: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_371: x + y + a % 2 == x + y;
+
+loop invariant i_372: x + a >= 0 && y + a >= 0;
+
+loop invariant i_373: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_374: x + y + a % 2 == x + y;
+
+loop invariant i_375: x + a >= 0 && y + a >= 0;
+
+loop invariant i_376: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_377: x + y + a % 2 == x + y;
+
+loop invariant i_378: x + a >= 0 && y + a >= 0;
+
+loop invariant i_379: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_380: x + y + a % 2 == x + y;
+
+loop invariant i_381: x + a >= 0 && y + a >= 0;
+
+loop invariant i_382: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_383: x + y + a % 2 == x + y;
+
+loop invariant i_384: x + a >= 0 && y + a >= 0;
+
+loop invariant i_385: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_386: x + y + a % 2 == x + y;
+
+loop invariant i_387: x + a >= 0 && y + a >= 0;
+
+loop invariant i_388: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_389: x + y + a % 2 == x + y;
+
+loop invariant i_390: x + a >= 0 && y + a >= 0;
+
+loop invariant i_391: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_392: x + y + a % 2 == x + y;
+
+loop invariant i_393: x + a >= 0 && y + a >= 0;
+
+loop invariant i_394: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_395: x + y + a % 2 == x + y;
+
+loop invariant i_396: x + a >= 0 && y + a >= 0;
+
+loop invariant i_397: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_398: x + y + a % 2 == x + y;
+
+loop invariant i_399: x + a >= 0 && y + a >= 0;
+
+loop invariant i_400: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_401: x + y + a % 2 == x + y;
+
+loop invariant i_402: x + a >= 0 && y + a >= 0;
+
+loop invariant i_403: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_404: x + y + a % 2 == x + y;
+
+loop invariant i_405: x + a >= 0 && y + a >= 0;
+
+loop invariant i_406: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_407: x + y + a % 2 == x + y;
+
+loop invariant i_408: x + a >= 0 && y + a >= 0;
+
+loop invariant i_409: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_410: x + y + a % 2 == x + y;
+
+loop invariant i_411: x + a >= 0 && y + a >= 0;
+
+loop invariant i_412: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_413: x + y + a % 2 == x + y;
+
+loop invariant i_414: x + a >= 0 && y + a >= 0;
+
+loop invariant i_415: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_416: x + y + a % 2 == x + y;
+
+loop invariant i_417: x + a >= 0 && y + a >= 0;
+
+loop invariant i_418: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_419: x + y + a % 2 == x + y;
+
+loop invariant i_420: x + a >= 0 && y + a >= 0;
+
+loop invariant i_421: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_422: x + y + a % 2 == x + y;
+
+loop invariant i_423: x + a >= 0 && y + a >= 0;
+
+loop invariant i_424: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_425: x + y + a % 2 == x + y;
+
+loop invariant i_426: x + a >= 0 && y + a >= 0;
+
+loop invariant i_427: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_428: x + y + a % 2 == x + y;
+
+loop invariant i_429: x + a >= 0 && y + a >= 0;
+
+loop invariant i_430: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_431: x + y + a % 2 == x + y;
+
+loop invariant i_432: x + a >= 0 && y + a >= 0;
+
+loop invariant i_433: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_434: x + y + a % 2 == x + y;
+
+loop invariant i_435: x + a >= 0 && y + a >= 0;
+
+loop invariant i_436: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_437: x + y + a % 2 == x + y;
+
+loop invariant i_438: x + a >= 0 && y + a >= 0;
+
+loop invariant i_439: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_440: x + y + a % 2 == x + y;
+
+loop invariant i_441: x + a >= 0 && y + a >= 0;
+
+loop invariant i_442: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_443: x + y + a % 2 == x + y;
+
+loop invariant i_444: x + a >= 0 && y + a >= 0;
+
+loop invariant i_445: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_446: x + y + a % 2 == x + y;
+
+loop invariant i_447: x + a >= 0 && y + a >= 0;
+
+loop invariant i_448: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_449: x + y + a % 2 == x + y;
+
+loop invariant i_450: x + a >= 0 && y + a >= 0;
+
+loop invariant i_451: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_452: x + y + a % 2 == x + y;
+
+loop invariant i_453: x + a >= 0 && y + a >= 0;
+
+loop invariant i_454: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_455: x + y + a % 2 == x + y;
+
+loop invariant i_456: x + a >= 0 && y + a >= 0;
+
+loop invariant i_457: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_458: x + y + a % 2 == x + y;
+
+loop invariant i_459: x + a >= 0 && y + a >= 0;
+
+loop invariant i_460: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_461: x + y + a % 2 == x + y;
+
+loop invariant i_462: x + a >= 0 && y + a >= 0;
+
+loop invariant i_463: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_464: x + y + a % 2 == x + y;
+
+loop invariant i_465: x + a >= 0 && y + a >= 0;
+
+loop invariant i_466: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_467: x + y + a % 2 == x + y;
+
+loop invariant i_468: x + a >= 0 && y + a >= 0;
+
+loop invariant i_469: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_470: x + y + a % 2 == x + y;
+
+loop invariant i_471: x + a >= 0 && y + a >= 0;
+
+loop invariant i_472: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_473: x + y + a % 2 == x + y;
+
+loop invariant i_474: x + a >= 0 && y + a >= 0;
+
+loop invariant i_475: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_476: x + y + a % 2 == x + y;
+
+loop invariant i_477: x + a >= 0 && y + a >= 0;
+
+loop invariant i_478: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_479: x + y + a % 2 == x + y;
+
+loop invariant i_480: x + a >= 0 && y + a >= 0;
+
+loop invariant i_481: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_482: x + y + a % 2 == x + y;
+
+loop invariant i_483: x + a >= 0 && y + a >= 0;
+
+loop invariant i_484: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_485: x + y + a % 2 == x + y;
+
+loop invariant i_486: x + a >= 0 && y + a >= 0;
+
+loop invariant i_487: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_488: x + y + a % 2 == x + y;
+
+loop invariant i_489: x + a >= 0 && y + a >= 0;
+
+loop invariant i_490: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_491: x + y + a % 2 == x + y;
+
+loop invariant i_492: x + a >= 0 && y + a >= 0;
+
+loop invariant i_493: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_494: x + y + a % 2 == x + y;
+
+loop invariant i_495: x + a >= 0 && y + a >= 0;
+
+loop invariant i_496: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_497: x + y + a % 2 == x + y;
+
+loop invariant i_498: x + a >= 0 && y + a >= 0;
+
+loop invariant i_499: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_500: x + y + a % 2 == x + y;
+
+loop invariant i_501: x + a >= 0 && y + a >= 0;
+
+loop invariant i_502: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_503: x + y + a % 2 == x + y;
+
+loop invariant i_504: x + a >= 0 && y + a >= 0;
+
+loop invariant i_505: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_506: x + y + a % 2 == x + y;
+
+loop invariant i_507: x + a >= 0 && y + a >= 0;
+
+loop invariant i_508: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_509: x + y + a % 2 == x + y;
+
+loop invariant i_510: x + a >= 0 && y + a >= 0;
+
+loop invariant i_511: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_512: x + y + a % 2 == x + y;
+
+loop invariant i_513: x + a >= 0 && y + a >= 0;
+
+loop invariant i_514: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_515: x + y + a % 2 == x + y;
+
+loop invariant i_516: x + a >= 0 && y + a >= 0;
+
+loop invariant i_517: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_518: x + y + a % 2 == x + y;
+
+loop invariant i_519: x + a >= 0 && y + a >= 0;
+
+loop invariant i_520: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_521: x + y + a % 2 == x + y;
+
+loop invariant i_522: x + a >= 0 && y + a >= 0;
+
+loop invariant i_523: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_524: x + y + a % 2 == x + y;
+
+loop invariant i_525: x + a >= 0 && y + a >= 0;
+
+loop invariant i_526: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_527: x + y + a % 2 == x + y;
+
+loop invariant i_528: x + a >= 0 && y + a >= 0;
+
+loop invariant i_529: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_530: x + y + a % 2 == x + y;
+
+loop invariant i_531: x + a >= 0 && y + a >= 0;
+
+loop invariant i_532: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_533: x + y + a % 2 == x + y;
+
+loop invariant i_534: x + a >= 0 && y + a >= 0;
+
+loop invariant i_535: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_536: x + y + a % 2 == x + y;
+
+loop invariant i_537: x + a >= 0 && y + a >= 0;
+
+loop invariant i_538: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_539: x + y + a % 2 == x + y;
+
+loop invariant i_540: x + a >= 0 && y + a >= 0;
+
+loop invariant i_541: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_542: x + y + a % 2 == x + y;
+
+loop invariant i_543: x + a >= 0 && y + a >= 0;
+
+loop invariant i_544: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_545: x + y + a % 2 == x + y;
+
+loop invariant i_546: x + a >= 0 && y + a >= 0;
+
+loop invariant i_547: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_548: x + y + a % 2 == x + y;
+
+loop invariant i_549: x + a >= 0 && y + a >= 0;
+
+loop invariant i_550: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_551: x + y + a % 2 == x + y;
+
+loop invariant i_552: x + a >= 0 && y + a >= 0;
+
+loop invariant i_553: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_554: x + y + a % 2 == x + y;
+
+loop invariant i_555: x + a >= 0 && y + a >= 0;
+
+loop invariant i_556: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_557: x + y + a % 2 == x + y;
+
+loop invariant i_558: x + a >= 0 && y + a >= 0;
+
+loop invariant i_559: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_560: x + y + a % 2 == x + y;
+
+loop invariant i_561: x + a >= 0 && y + a >= 0;
+
+loop invariant i_562: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_563: x + y + a % 2 == x + y;
+
+loop invariant i_564: x + a >= 0 && y + a >= 0;
+
+loop invariant i_565: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_566: x + y + a % 2 == x + y;
+
+loop invariant i_567: x + a >= 0 && y + a >= 0;
+
+loop invariant i_568: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_569: x + y + a % 2 == x + y;
+
+loop invariant i_570: x + a >= 0 && y + a >= 0;
+
+loop invariant i_571: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_572: x + y + a % 2 == x + y;
+
+loop invariant i_573: x + a >= 0 && y + a >= 0;
+
+loop invariant i_574: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_575: x + y + a % 2 == x + y;
+
+loop invariant i_576: x + a >= 0 && y + a >= 0;
+
+loop invariant i_577: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_578: x + y + a % 2 == x + y;
+
+loop invariant i_579: x + a >= 0 && y + a >= 0;
+
+loop invariant i_580: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_581: x + y + a % 2 == x + y;
+
+loop invariant i_582: x + a >= 0 && y + a >= 0;
+
+loop invariant i_583: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_584: x + y + a % 2 == x + y;
+
+loop invariant i_585: x + a >= 0 && y + a >= 0;
+
+loop invariant i_586: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_587: x + y + a % 2 == x + y;
+
+loop invariant i_588: x + a >= 0 && y + a >= 0;
+
+loop invariant i_589: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_590: x + y + a % 2 == x + y;
+
+loop invariant i_591: x + a >= 0 && y + a >= 0;
+
+loop invariant i_592: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_593: x + y + a % 2 == x + y;
+
+loop invariant i_594: x + a >= 0 && y + a >= 0;
+
+loop invariant i_595: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_596: x + y + a % 2 == x + y;
+
+loop invariant i_597: x + a >= 0 && y + a >= 0;
+
+loop invariant i_598: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_599: x + y + a % 2 == x + y;
+
+loop invariant i_600: x + a >= 0 && y + a >= 0;
+
+loop invariant i_601: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_602: x + y + a % 2 == x + y;
+
+loop invariant i_603: x + a >= 0 && y + a >= 0;
+
+loop invariant i_604: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_605: x + y + a % 2 == x + y;
+
+loop invariant i_606: x + a >= 0 && y + a >= 0;
+
+loop invariant i_607: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_608: x + y + a % 2 == x + y;
+
+loop invariant i_609: x + a >= 0 && y + a >= 0;
+
+loop invariant i_610: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_611: x + y + a % 2 == x + y;
+
+loop invariant i_612: x + a >= 0 && y + a >= 0;
+
+loop invariant i_613: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_614: x + y + a % 2 == x + y;
+
+loop invariant i_615: x + a >= 0 && y + a >= 0;
+
+loop invariant i_616: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_617: x + y + a % 2 == x + y;
+
+loop invariant i_618: x + a >= 0 && y + a >= 0;
+
+loop invariant i_619: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_620: x + y + a % 2 == x + y;
+
+loop invariant i_621: x + a >= 0 && y + a >= 0;
+
+loop invariant i_622: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_623: x + y + a % 2 == x + y;
+
+loop invariant i_624: x + a >= 0 && y + a >= 0;
+
+loop invariant i_625: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_626: x + y + a % 2 == x + y;
+
+loop invariant i_627: x + a >= 0 && y + a >= 0;
+
+loop invariant i_628: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_629: x + y + a % 2 == x + y;
+
+loop invariant i_630: x + a >= 0 && y + a >= 0;
+
+loop invariant i_631: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_632: x + y + a % 2 == x + y;
+
+loop invariant i_633: x + a >= 0 && y + a >= 0;
+
+loop invariant i_634: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_635: x + y + a % 2 == x + y;
+
+loop invariant i_636: x + a >= 0 && y + a >= 0;
+
+loop invariant i_637: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_638: x + y + a % 2 == x + y;
+
+loop invariant i_639: x + a >= 0 && y + a >= 0;
+
+loop invariant i_640: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_641: x + y + a % 2 == x + y;
+
+loop invariant i_642: x + a >= 0 && y + a >= 0;
+
+loop invariant i_643: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_644: x + y + a % 2 == x + y;
+
+loop invariant i_645: x + a >= 0 && y + a >= 0;
+
+loop invariant i_646: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_647: x + y + a % 2 == x + y;
+
+loop invariant i_648: x + a >= 0 && y + a >= 0;
+
+loop invariant i_649: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_650: x + y + a % 2 == x + y;
+
+loop invariant i_651: x + a >= 0 && y + a >= 0;
+
+loop invariant i_652: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_653: x + y + a % 2 == x + y;
+
+loop invariant i_654: x + a >= 0 && y + a >= 0;
+
+loop invariant i_655: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_656: x + y + a % 2 == x + y;
+
+loop invariant i_657: x + a >= 0 && y + a >= 0;
+
+loop invariant i_658: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_659: x + y + a % 2 == x + y;
+
+loop invariant i_660: x + a >= 0 && y + a >= 0;
+
+loop invariant i_661: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_662: x + y + a % 2 == x + y;
+
+loop invariant i_663: x + a >= 0 && y + a >= 0;
+
+loop invariant i_664: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_665: x + y + a % 2 == x + y;
+
+loop invariant i_666: x + a >= 0 && y + a >= 0;
+
+loop invariant i_667: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_668: x + y + a % 2 == x + y;
+
+loop invariant i_669: x + a >= 0 && y + a >= 0;
+
+loop invariant i_670: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_671: x + y + a % 2 == x + y;
+
+loop invariant i_672: x + a >= 0 && y + a >= 0;
+
+loop invariant i_673: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_674: x + y + a % 2 == x + y;
+
+loop invariant i_675: x + a >= 0 && y + a >= 0;
+
+loop invariant i_676: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_677: x + y + a % 2 == x + y;
+
+loop invariant i_678: x + a >= 0 && y + a >= 0;
+
+loop invariant i_679: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_680: x + y + a % 2 == x + y;
+
+loop invariant i_681: x + a >= 0 && y + a >= 0;
+
+loop invariant i_682: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_683: x + y + a % 2 == x + y;
+
+loop invariant i_684: x + a >= 0 && y + a >= 0;
+
+loop invariant i_685: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_686: x + y + a % 2 == x + y;
+
+loop invariant i_687: x + a >= 0 && y + a >= 0;
+
+loop invariant i_688: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_689: x + y + a % 2 == x + y;
+
+loop invariant i_690: x + a >= 0 && y + a >= 0;
+
+loop invariant i_691: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_692: x + y + a % 2 == x + y;
+
+loop invariant i_693: x + a >= 0 && y + a >= 0;
+
+loop invariant i_694: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_695: x + y + a % 2 == x + y;
+
+loop invariant i_696: x + a >= 0 && y + a >= 0;
+
+loop invariant i_697: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_698: x + y + a % 2 == x + y;
+
+loop invariant i_699: x + a >= 0 && y + a >= 0;
+
+loop invariant i_700: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_701: x + y + a % 2 == x + y;
+
+loop invariant i_702: x + a >= 0 && y + a >= 0;
+
+loop invariant i_703: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_704: x + y + a % 2 == x + y;
+
+loop invariant i_705: x + a >= 0 && y + a >= 0;
+
+loop invariant i_706: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_707: x + y + a % 2 == x + y;
+
+loop invariant i_708: x + a >= 0 && y + a >= 0;
+
+loop invariant i_709: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_710: x + y + a % 2 == x + y;
+
+loop invariant i_711: x + a >= 0 && y + a >= 0;
+
+loop invariant i_712: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_713: x + y + a % 2 == x + y;
+
+loop invariant i_714: x + a >= 0 && y + a >= 0;
+
+loop invariant i_715: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_716: x + y + a % 2 == x + y;
+
+loop invariant i_717: x + a >= 0 && y + a >= 0;
+
+loop invariant i_718: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_719: x + y + a % 2 == x + y;
+
+loop invariant i_720: x + a >= 0 && y + a >= 0;
+
+loop invariant i_721: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_722: x + y + a % 2 == x + y;
+
+loop invariant i_723: x + a >= 0 && y + a >= 0;
+
+loop invariant i_724: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_725: x + y + a % 2 == x + y;
+
+loop invariant i_726: x + a >= 0 && y + a >= 0;
+
+loop invariant i_727: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_728: x + y + a % 2 == x + y;
+
+loop invariant i_729: x + a >= 0 && y + a >= 0;
+
+loop invariant i_730: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_731: x + y + a % 2 == x + y;
+
+loop invariant i_732: x + a >= 0 && y + a >= 0;
+
+loop invariant i_733: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_734: x + y + a % 2 == x + y;
+
+loop invariant i_735: x + a >= 0 && y + a >= 0;
+
+loop invariant i_736: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_737: x + y + a % 2 == x + y;
+
+loop invariant i_738: x + a >= 0 && y + a >= 0;
+
+loop invariant i_739: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_740: x + y + a % 2 == x + y;
+
+loop invariant i_741: x + a >= 0 && y + a >= 0;
+
+loop invariant i_742: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_743: x + y + a % 2 == x + y;
+
+loop invariant i_744: x + a >= 0 && y + a >= 0;
+
+loop invariant i_745: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_746: x + y + a % 2 == x + y;
+
+loop invariant i_747: x + a >= 0 && y + a >= 0;
+
+loop invariant i_748: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_749: x + y + a % 2 == x + y;
+
+loop invariant i_750: x + a >= 0 && y + a >= 0;
+
+loop invariant i_751: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_752: x + y + a % 2 == x + y;
+
+loop invariant i_753: x + a >= 0 && y + a >= 0;
+
+loop invariant i_754: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_755: x + y + a % 2 == x + y;
+
+loop invariant i_756: x + a >= 0 && y + a >= 0;
+
+loop invariant i_757: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_758: x + y + a % 2 == x + y;
+
+loop invariant i_759: x + a >= 0 && y + a >= 0;
+
+loop invariant i_760: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_761: x + y + a % 2 == x + y;
+
+loop invariant i_762: x + a >= 0 && y + a >= 0;
+
+loop invariant i_763: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_764: x + y + a % 2 == x + y;
+
+loop invariant i_765: x + a >= 0 && y + a >= 0;
+
+loop invariant i_766: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_767: x + y + a % 2 == x + y;
+
+loop invariant i_768: x + a >= 0 && y + a >= 0;
+
+loop invariant i_769: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_770: x + y + a % 2 == x + y;
+
+loop invariant i_771: x + a >= 0 && y + a >= 0;
+
+loop invariant i_772: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_773: x + y + a % 2 == x + y;
+
+loop invariant i_774: x + a >= 0 && y + a >= 0;
+
+loop invariant i_775: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_776: x + y + a % 2 == x + y;
+
+loop invariant i_777: x + a >= 0 && y + a >= 0;
+
+loop invariant i_778: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_779: x + y + a % 2 == x + y;
+
+loop invariant i_780: x + a >= 0 && y + a >= 0;
+
+loop invariant i_781: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_782: x + y + a % 2 == x + y;
+
+loop invariant i_783: x + a >= 0 && y + a >= 0;
+
+loop invariant i_784: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_785: x + y + a % 2 == x + y;
+
+loop invariant i_786: x + a >= 0 && y + a >= 0;
+
+loop invariant i_787: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_788: x + y + a % 2 == x + y;
+
+loop invariant i_789: x + a >= 0 && y + a >= 0;
+
+loop invariant i_790: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_791: x + y + a % 2 == x + y;
+
+loop invariant i_792: x + a >= 0 && y + a >= 0;
+
+loop invariant i_793: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_794: x + y + a % 2 == x + y;
+
+loop invariant i_795: x + a >= 0 && y + a >= 0;
+
+loop invariant i_796: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_797: x + y + a % 2 == x + y;
+
+loop invariant i_798: x + a >= 0 && y + a >= 0;
+
+loop invariant i_799: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_800: x + y + a % 2 == x + y;
+
+loop invariant i_801: x + a >= 0 && y + a >= 0;
+
+loop invariant i_802: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_803: x + y + a % 2 == x + y;
+
+loop invariant i_804: x + a >= 0 && y + a >= 0;
+
+loop invariant i_805: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_806: x + y + a % 2 == x + y;
+
+loop invariant i_807: x + a >= 0 && y + a >= 0;
+
+loop invariant i_808: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_809: x + y + a % 2 == x + y;
+
+loop invariant i_810: x + a >= 0 && y + a >= 0;
+
+loop invariant i_811: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_812: x + y + a % 2 == x + y;
+
+loop invariant i_813: x + a >= 0 && y + a >= 0;
+
+loop invariant i_814: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_815: x + y + a % 2 == x + y;
+
+loop invariant i_816: x + a >= 0 && y + a >= 0;
+
+loop invariant i_817: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_818: x + y + a % 2 == x + y;
+
+loop invariant i_819: x + a >= 0 && y + a >= 0;
+
+loop invariant i_820: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_821: x + y + a % 2 == x + y;
+
+loop invariant i_822: x + a >= 0 && y + a >= 0;
+
+loop invariant i_823: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_824: x + y + a % 2 == x + y;
+
+loop invariant i_825: x + a >= 0 && y + a >= 0;
+
+loop invariant i_826: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_827: x + y + a % 2 == x + y;
+
+loop invariant i_828: x + a >= 0 && y + a >= 0;
+
+loop invariant i_829: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_830: x + y + a % 2 == x + y;
+
+loop invariant i_831: x + a >= 0 && y + a >= 0;
+
+loop invariant i_832: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_833: x + y + a % 2 == x + y;
+
+loop invariant i_834: x + a >= 0 && y + a >= 0;
+
+loop invariant i_835: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_836: x + y + a % 2 == x + y;
+
+loop invariant i_837: x + a >= 0 && y + a >= 0;
+
+loop invariant i_838: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_839: x + y + a % 2 == x + y;
+
+loop invariant i_840: x + a >= 0 && y + a >= 0;
+
+loop invariant i_841: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_842: x + y + a % 2 == x + y;
+
+loop invariant i_843: x + a >= 0 && y + a >= 0;
+
+loop invariant i_844: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_845: x + y + a % 2 == x + y;
+
+loop invariant i_846: x + a >= 0 && y + a >= 0;
+
+loop invariant i_847: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_848: x + y + a % 2 == x + y;
+
+loop invariant i_849: x + a >= 0 && y + a >= 0;
+
+loop invariant i_850: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_851: x + y + a % 2 == x + y;
+
+loop invariant i_852: x + a >= 0 && y + a >= 0;
+
+loop invariant i_853: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_854: x + y + a % 2 == x + y;
+
+loop invariant i_855: x + a >= 0 && y + a >= 0;
+
+loop invariant i_856: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_857: x + y + a % 2 == x + y;
+
+loop invariant i_858: x + a >= 0 && y + a >= 0;
+
+loop invariant i_859: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_860: x + y + a % 2 == x + y;
+
+loop invariant i_861: x + a >= 0 && y + a >= 0;
+
+loop invariant i_862: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_863: x + y + a % 2 == x + y;
+
+loop invariant i_864: x + a >= 0 && y + a >= 0;
+
+loop invariant i_865: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_866: x + y + a % 2 == x + y;
+
+loop invariant i_867: x + a >= 0 && y + a >= 0;
+
+loop invariant i_868: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_869: x + y + a % 2 == x + y;
+
+loop invariant i_870: x + a >= 0 && y + a >= 0;
+
+loop invariant i_871: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_872: x + y + a % 2 == x + y;
+
+loop invariant i_873: x + a >= 0 && y + a >= 0;
+
+loop invariant i_874: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_875: x + y + a % 2 == x + y;
+
+loop invariant i_876: x + a >= 0 && y + a >= 0;
+
+loop invariant i_877: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_878: x + y + a % 2 == x + y;
+
+loop invariant i_879: x + a >= 0 && y + a >= 0;
+
+loop invariant i_880: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_881: x + y + a % 2 == x + y;
+
+loop invariant i_882: x + a >= 0 && y + a >= 0;
+
+loop invariant i_883: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_884: x + y + a % 2 == x + y;
+
+loop invariant i_885: x + a >= 0 && y + a >= 0;
+
+loop invariant i_886: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_887: x + y + a % 2 == x + y;
+
+loop invariant i_888: x + a >= 0 && y + a >= 0;
+
+loop invariant i_889: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_890: x + y + a % 2 == x + y;
+
+loop invariant i_891: x + a >= 0 && y + a >= 0;
+
+loop invariant i_892: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_893: x + y + a % 2 == x + y;
+
+loop invariant i_894: x + a >= 0 && y + a >= 0;
+
+loop invariant i_895: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_896: x + y + a % 2 == x + y;
+
+loop invariant i_897: x + a >= 0 && y + a >= 0;
+
+loop invariant i_898: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_899: x + y + a % 2 == x + y;
+
+loop invariant i_900: x + a >= 0 && y + a >= 0;
+
+loop invariant i_901: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_902: x + y + a % 2 == x + y;
+
+loop invariant i_903: x + a >= 0 && y + a >= 0;
+
+loop invariant i_904: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_905: x + y + a % 2 == x + y;
+
+loop invariant i_906: x + a >= 0 && y + a >= 0;
+
+loop invariant i_907: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_908: x + y + a % 2 == x + y;
+
+loop invariant i_909: x + a >= 0 && y + a >= 0;
+
+loop invariant i_910: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_911: x + y + a % 2 == x + y;
+
+loop invariant i_912: x + a >= 0 && y + a >= 0;
+
+loop invariant i_913: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_914: x + y + a % 2 == x + y;
+
+loop invariant i_915: x + a >= 0 && y + a >= 0;
+
+loop invariant i_916: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_917: x + y + a % 2 == x + y;
+
+loop invariant i_918: x + a >= 0 && y + a >= 0;
+
+loop invariant i_919: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_920: x + y + a % 2 == x + y;
+
+loop invariant i_921: x + a >= 0 && y + a >= 0;
+
+loop invariant i_922: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_923: x + y + a % 2 == x + y;
+
+loop invariant i_924: x + a >= 0 && y + a >= 0;
+
+loop invariant i_925: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_926: x + y + a % 2 == x + y;
+
+loop invariant i_927: x + a >= 0 && y + a >= 0;
+
+loop invariant i_928: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_929: x + y + a % 2 == x + y;
+
+loop invariant i_930: x + a >= 0 && y + a >= 0;
+
+loop invariant i_931: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_932: x + y + a % 2 == x + y;
+
+loop invariant i_933: x + a >= 0 && y + a >= 0;
+
+loop invariant i_934: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_935: x + y + a % 2 == x + y;
+
+loop invariant i_936: x + a >= 0 && y + a >= 0;
+
+loop invariant i_937: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_938: x + y + a % 2 == x + y;
+
+loop invariant i_939: x + a >= 0 && y + a >= 0;
+
+loop invariant i_940: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_941: x + y + a % 2 == x + y;
+
+loop invariant i_942: x + a >= 0 && y + a >= 0;
+
+loop invariant i_943: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_944: x + y + a % 2 == x + y;
+
+loop invariant i_945: x + a >= 0 && y + a >= 0;
+
+loop invariant i_946: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_947: x + y + a % 2 == x + y;
+
+loop invariant i_948: x + a >= 0 && y + a >= 0;
+
+loop invariant i_949: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_950: x + y + a % 2 == x + y;
+
+loop invariant i_951: x + a >= 0 && y + a >= 0;
+
+loop invariant i_952: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_953: x + y + a % 2 == x + y;
+
+loop invariant i_954: x + a >= 0 && y + a >= 0;
+
+loop invariant i_955: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_956: x + y + a % 2 == x + y;
+
+loop invariant i_957: x + a >= 0 && y + a >= 0;
+
+loop invariant i_958: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_959: x + y + a % 2 == x + y;
+
+loop invariant i_960: x + a >= 0 && y + a >= 0;
+
+loop invariant i_961: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_962: x + y + a % 2 == x + y;
+
+loop invariant i_963: x + a >= 0 && y + a >= 0;
+
+loop invariant i_964: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_965: x + y + a % 2 == x + y;
+
+loop invariant i_966: x + a >= 0 && y + a >= 0;
+
+loop invariant i_967: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_968: x + y + a % 2 == x + y;
+
+loop invariant i_969: x + a >= 0 && y + a >= 0;
+
+loop invariant i_970: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_971: x + y + a % 2 == x + y;
+
+loop invariant i_972: x + a >= 0 && y + a >= 0;
+
+loop invariant i_973: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_974: x + y + a % 2 == x + y;
+
+loop invariant i_975: x + a >= 0 && y + a >= 0;
+
+loop invariant i_976: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_977: x + y + a % 2 == x + y;
+
+loop invariant i_978: x + a >= 0 && y + a >= 0;
+
+loop invariant i_979: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_980: x + y + a % 2 == x + y;
+
+loop invariant i_981: x + a >= 0 && y + a >= 0;
+
+loop invariant i_982: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_983: x + y + a % 2 == x + y;
+
+loop invariant i_984: x + a >= 0 && y + a >= 0;
+
+loop invariant i_985: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_986: x + y + a % 2 == x + y;
+
+loop invariant i_987: x + a >= 0 && y + a >= 0;
+
+loop invariant i_988: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_989: x + y + a % 2 == x + y;
+
+loop invariant i_990: x + a >= 0 && y + a >= 0;
+
+loop invariant i_991: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_992: x + y + a % 2 == x + y;
+
+loop invariant i_993: x + a >= 0 && y + a >= 0;
+
+loop invariant i_994: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_995: x + y + a % 2 == x + y;
+
+loop invariant i_996: x + a >= 0 && y + a >= 0;
+
+loop invariant i_997: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_998: x + y + a % 2 == x + y;
+
+loop invariant i_999: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1000: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1001: x + y + a % 2 == x + y;
+
+loop invariant i_1002: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1003: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1004: x + y + a % 2 == x + y;
+
+loop invariant i_1005: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1006: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1007: x + y + a % 2 == x + y;
+
+loop invariant i_1008: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1009: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1010: x + y + a % 2 == x + y;
+
+loop invariant i_1011: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1012: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1013: x + y + a % 2 == x + y;
+
+loop invariant i_1014: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1015: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1016: x + y + a % 2 == x + y;
+
+loop invariant i_1017: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1018: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1019: x + y + a % 2 == x + y;
+
+loop invariant i_1020: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1021: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1022: x + y + a % 2 == x + y;
+
+loop invariant i_1023: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1024: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1025: x + y + a % 2 == x + y;
+
+loop invariant i_1026: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1027: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1028: x + y + a % 2 == x + y;
+
+loop invariant i_1029: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1030: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1031: x + y + a % 2 == x + y;
+
+loop invariant i_1032: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1033: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1034: x + y + a % 2 == x + y;
+
+loop invariant i_1035: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1036: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1037: x + y + a % 2 == x + y;
+
+loop invariant i_1038: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1039: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1040: x + y + a % 2 == x + y;
+
+loop invariant i_1041: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1042: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1043: x + y + a % 2 == x + y;
+
+loop invariant i_1044: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1045: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1046: x + y + a % 2 == x + y;
+
+loop invariant i_1047: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1048: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1049: x + y + a % 2 == x + y;
+
+loop invariant i_1050: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1051: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1052: x + y + a % 2 == x + y;
+
+loop invariant i_1053: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1054: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1055: x + y + a % 2 == x + y;
+
+loop invariant i_1056: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1057: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1058: x + y + a % 2 == x + y;
+
+loop invariant i_1059: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1060: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1061: x + y + a % 2 == x + y;
+
+loop invariant i_1062: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1063: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1064: x + y + a % 2 == x + y;
+
+loop invariant i_1065: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1066: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1067: x + y + a % 2 == x + y;
+
+loop invariant i_1068: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1069: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1070: x + y + a % 2 == x + y;
+
+loop invariant i_1071: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1072: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1073: x + y + a % 2 == x + y;
+
+loop invariant i_1074: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1075: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1076: x + y + a % 2 == x + y;
+
+loop invariant i_1077: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1078: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1079: x + y + a % 2 == x + y;
+
+loop invariant i_1080: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1081: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1082: x + y + a % 2 == x + y;
+
+loop invariant i_1083: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1084: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1085: x + y + a % 2 == x + y;
+
+loop invariant i_1086: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1087: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1088: x + y + a % 2 == x + y;
+
+loop invariant i_1089: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1090: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1091: x + y + a % 2 == x + y;
+
+loop invariant i_1092: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1093: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1094: x + y + a % 2 == x + y;
+
+loop invariant i_1095: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1096: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1097: x + y + a % 2 == x + y;
+
+loop invariant i_1098: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1099: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1100: x + y + a % 2 == x + y;
+
+loop invariant i_1101: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1102: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1103: x + y + a % 2 == x + y;
+
+loop invariant i_1104: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1105: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1106: x + y + a % 2 == x + y;
+
+loop invariant i_1107: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1108: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1109: x + y + a % 2 == x + y;
+
+loop invariant i_1110: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1111: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1112: x + y + a % 2 == x + y;
+
+loop invariant i_1113: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1114: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1115: x + y + a % 2 == x + y;
+
+loop invariant i_1116: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1117: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1118: x + y + a % 2 == x + y;
+
+loop invariant i_1119: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1120: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1121: x + y + a % 2 == x + y;
+
+loop invariant i_1122: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1123: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1124: x + y + a % 2 == x + y;
+
+loop invariant i_1125: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1126: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1127: x + y + a % 2 == x + y;
+
+loop invariant i_1128: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1129: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1130: x + y + a % 2 == x + y;
+
+loop invariant i_1131: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1132: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1133: x + y + a % 2 == x + y;
+
+loop invariant i_1134: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1135: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1136: x + y + a % 2 == x + y;
+
+loop invariant i_1137: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1138: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1139: x + y + a % 2 == x + y;
+
+loop invariant i_1140: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1141: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1142: x + y + a % 2 == x + y;
+
+loop invariant i_1143: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1144: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1145: x + y + a % 2 == x + y;
+
+loop invariant i_1146: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1147: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1148: x + y + a % 2 == x + y;
+
+loop invariant i_1149: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1150: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1151: x + y + a % 2 == x + y;
+
+loop invariant i_1152: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1153: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1154: x + y + a % 2 == x + y;
+
+loop invariant i_1155: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1156: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1157: x + y + a % 2 == x + y;
+
+loop invariant i_1158: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1159: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1160: x + y + a % 2 == x + y;
+
+loop invariant i_1161: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1162: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1163: x + y + a % 2 == x + y;
+
+loop invariant i_1164: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1165: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1166: x + y + a % 2 == x + y;
+
+loop invariant i_1167: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1168: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1169: x + y + a % 2 == x + y;
+
+loop invariant i_1170: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1171: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1172: x + y + a % 2 == x + y;
+
+loop invariant i_1173: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1174: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1175: x + y + a % 2 == x + y;
+
+loop invariant i_1176: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1177: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1178: x + y + a % 2 == x + y;
+
+loop invariant i_1179: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1180: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1181: x + y + a % 2 == x + y;
+
+loop invariant i_1182: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1183: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1184: x + y + a % 2 == x + y;
+
+loop invariant i_1185: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1186: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1187: x + y + a % 2 == x + y;
+
+loop invariant i_1188: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1189: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1190: x + y + a % 2 == x + y;
+
+loop invariant i_1191: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1192: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1193: x + y + a % 2 == x + y;
+
+loop invariant i_1194: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1195: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1196: x + y + a % 2 == x + y;
+
+loop invariant i_1197: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1198: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1199: x + y + a % 2 == x + y;
+
+loop invariant i_1200: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1201: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1202: x + y + a % 2 == x + y;
+
+loop invariant i_1203: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1204: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1205: x + y + a % 2 == x + y;
+
+loop invariant i_1206: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1207: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1208: x + y + a % 2 == x + y;
+
+loop invariant i_1209: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1210: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1211: x + y + a % 2 == x + y;
+
+loop invariant i_1212: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1213: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1214: x + y + a % 2 == x + y;
+
+loop invariant i_1215: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1216: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1217: x + y + a % 2 == x + y;
+
+loop invariant i_1218: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1219: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1220: x + y + a % 2 == x + y;
+
+loop invariant i_1221: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1222: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1223: x + y + a % 2 == x + y;
+
+loop invariant i_1224: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1225: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1226: x + y + a % 2 == x + y;
+
+loop invariant i_1227: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1228: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1229: x + y + a % 2 == x + y;
+
+loop invariant i_1230: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1231: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1232: x + y + a % 2 == x + y;
+
+loop invariant i_1233: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1234: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1235: x + y + a % 2 == x + y;
+
+loop invariant i_1236: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1237: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1238: x + y + a % 2 == x + y;
+
+loop invariant i_1239: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1240: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1241: x + y + a % 2 == x + y;
+
+loop invariant i_1242: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1243: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1244: x + y + a % 2 == x + y;
+
+loop invariant i_1245: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1246: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1247: x + y + a % 2 == x + y;
+
+loop invariant i_1248: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1249: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1250: x + y + a % 2 == x + y;
+
+loop invariant i_1251: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1252: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1253: x + y + a % 2 == x + y;
+
+loop invariant i_1254: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1255: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1256: x + y + a % 2 == x + y;
+
+loop invariant i_1257: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1258: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1259: x + y + a % 2 == x + y;
+
+loop invariant i_1260: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1261: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1262: x + y + a % 2 == x + y;
+
+loop invariant i_1263: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1264: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1265: x + y + a % 2 == x + y;
+
+loop invariant i_1266: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1267: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1268: x + y + a % 2 == x + y;
+
+loop invariant i_1269: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1270: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1271: x + y + a % 2 == x + y;
+
+loop invariant i_1272: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1273: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1274: x + y + a % 2 == x + y;
+
+loop invariant i_1275: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1276: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1277: x + y + a % 2 == x + y;
+
+loop invariant i_1278: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1279: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1280: x + y + a % 2 == x + y;
+
+loop invariant i_1281: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1282: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1283: x + y + a % 2 == x + y;
+
+loop invariant i_1284: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1285: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1286: x + y + a % 2 == x + y;
+
+loop invariant i_1287: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1288: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1289: x + y + a % 2 == x + y;
+
+loop invariant i_1290: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1291: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1292: x + y + a % 2 == x + y;
+
+loop invariant i_1293: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1294: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1295: x + y + a % 2 == x + y;
+
+loop invariant i_1296: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1297: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1298: x + y + a % 2 == x + y;
+
+loop invariant i_1299: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1300: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1301: x + y + a % 2 == x + y;
+
+loop invariant i_1302: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1303: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1304: x + y + a % 2 == x + y;
+
+loop invariant i_1305: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1306: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1307: x + y + a % 2 == x + y;
+
+loop invariant i_1308: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1309: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1310: x + y + a % 2 == x + y;
+
+loop invariant i_1311: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1312: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1313: x + y + a % 2 == x + y;
+
+loop invariant i_1314: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1315: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1316: x + y + a % 2 == x + y;
+
+loop invariant i_1317: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1318: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1319: x + y + a % 2 == x + y;
+
+loop invariant i_1320: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1321: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1322: x + y + a % 2 == x + y;
+
+loop invariant i_1323: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1324: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1325: x + y + a % 2 == x + y;
+
+loop invariant i_1326: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1327: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1328: x + y + a % 2 == x + y;
+
+loop invariant i_1329: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1330: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1331: x + y + a % 2 == x + y;
+
+loop invariant i_1332: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1333: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1334: x + y + a % 2 == x + y;
+
+loop invariant i_1335: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1336: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1337: x + y + a % 2 == x + y;
+
+loop invariant i_1338: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1339: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1340: x + y + a % 2 == x + y;
+
+loop invariant i_1341: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1342: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1343: x + y + a % 2 == x + y;
+
+loop invariant i_1344: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1345: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1346: x + y + a % 2 == x + y;
+
+loop invariant i_1347: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1348: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1349: x + y + a % 2 == x + y;
+
+loop invariant i_1350: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1351: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1352: x + y + a % 2 == x + y;
+
+loop invariant i_1353: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1354: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1355: x + y + a % 2 == x + y;
+
+loop invariant i_1356: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1357: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1358: x + y + a % 2 == x + y;
+
+loop invariant i_1359: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1360: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1361: x + y + a % 2 == x + y;
+
+loop invariant i_1362: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1363: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1364: x + y + a % 2 == x + y;
+
+loop invariant i_1365: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1366: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1367: x + y + a % 2 == x + y;
+
+loop invariant i_1368: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1369: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1370: x + y + a % 2 == x + y;
+
+loop invariant i_1371: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1372: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1373: x + y + a % 2 == x + y;
+
+loop invariant i_1374: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1375: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1376: x + y + a % 2 == x + y;
+
+loop invariant i_1377: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1378: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1379: x + y + a % 2 == x + y;
+
+loop invariant i_1380: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1381: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1382: x + y + a % 2 == x + y;
+
+loop invariant i_1383: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1384: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1385: x + y + a % 2 == x + y;
+
+loop invariant i_1386: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1387: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1388: x + y + a % 2 == x + y;
+
+loop invariant i_1389: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1390: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1391: x + y + a % 2 == x + y;
+
+loop invariant i_1392: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1393: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1394: x + y + a % 2 == x + y;
+
+loop invariant i_1395: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1396: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1397: x + y + a % 2 == x + y;
+
+loop invariant i_1398: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1399: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1300: x + y + a % 2 == x + y;
+
+loop invariant i_1301: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1302: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1303: x + y + a % 2 == x + y;
+
+loop invariant i_1304: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1305: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1306: x + y + a % 2 == x + y;
+
+loop invariant i_1307: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1308: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1309: x + y + a % 2 == x + y;
+
+loop invariant i_1310: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1311: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1312: x + y + a % 2 == x + y;
+
+loop invariant i_1313: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1314: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1315: x + y + a % 2 == x + y;
+
+loop invariant i_1316: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1317: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1318: x + y + a % 2 == x + y;
+
+loop invariant i_1319: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1320: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1321: x + y + a % 2 == x + y;
+
+loop invariant i_1322: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1323: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1324: x + y + a % 2 == x + y;
+
+loop invariant i_1325: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1326: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1327: x + y + a % 2 == x + y;
+
+loop invariant i_1328: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1329: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1330: x + y + a % 2 == x + y;
+
+loop invariant i_1331: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1332: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1333: x + y + a % 2 == x + y;
+
+loop invariant i_1334: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1335: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1336: x + y + a % 2 == x + y;
+
+loop invariant i_1337: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1338: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1339: x + y + a % 2 == x + y;
+
+loop invariant i_1340: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1341: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1342: x + y + a % 2 == x + y;
+
+loop invariant i_1343: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1344: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1345: x + y + a % 2 == x + y;
+
+loop invariant i_1346: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1347: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1348: x + y + a % 2 == x + y;
+
+loop invariant i_1349: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1350: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1351: x + y + a % 2 == x + y;
+
+loop invariant i_1352: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1353: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1354: x + y + a % 2 == x + y;
+
+loop invariant i_1355: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1356: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1357: x + y + a % 2 == x + y;
+
+loop invariant i_1358: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1359: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1360: x + y + a % 2 == x + y;
+
+loop invariant i_1361: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1362: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1363: x + y + a % 2 == x + y;
+
+loop invariant i_1364: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1365: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1366: x + y + a % 2 == x + y;
+
+loop invariant i_1367: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1368: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1369: x + y + a % 2 == x + y;
+
+loop invariant i_1370: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1371: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1372: x + y + a % 2 == x + y;
+
+loop invariant i_1373: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1374: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1375: x + y + a % 2 == x + y;
+
+loop invariant i_1376: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1377: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1378: x + y + a % 2 == x + y;
+
+loop invariant i_1379: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1380: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1381: x + y + a % 2 == x + y;
+
+loop invariant i_1382: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1383: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1384: x + y + a % 2 == x + y;
+
+loop invariant i_1385: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1386: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1387: x + y + a % 2 == x + y;
+
+loop invariant i_1388: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1389: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1390: x + y + a % 2 == x + y;
+
+loop invariant i_1391: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1392: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1393: x + y + a % 2 == x + y;
+
+loop invariant i_1394: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1395: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1396: x + y + a % 2 == x + y;
+
+loop invariant i_1397: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1398: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1399: x + y + a % 2 == x + y;
+
+loop invariant i_1300: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1301: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1302: x + y + a % 2 == x + y;
+
+loop invariant i_1303: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1304: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1305: x + y + a % 2 == x + y;
+
+loop invariant i_1306: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1307: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1308: x + y + a % 2 == x + y;
+
+loop invariant i_1309: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1310: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1311: x + y + a % 2 == x + y;
+
+loop invariant i_1312: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1313: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1314: x + y + a % 2 == x + y;
+
+loop invariant i_1315: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1316: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1317: x + y + a % 2 == x + y;
+
+loop invariant i_1318: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1319: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1320: x + y + a % 2 == x + y;
+
+loop invariant i_1321: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1322: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1323: x + y + a % 2 == x + y;
+
+loop invariant i_1324: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1325: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1326: x + y + a % 2 == x + y;
+
+loop invariant i_1327: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1328: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1329: x + y + a % 2 == x + y;
+
+loop invariant i_1330: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1331: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1332: x + y + a % 2 == x + y;
+
+loop invariant i_1333: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1334: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1335: x + y + a % 2 == x + y;
+
+loop invariant i_1336: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1337: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1338: x + y + a % 2 == x + y;
+
+loop invariant i_1339: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1340: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1341: x + y + a % 2 == x + y;
+
+loop invariant i_1342: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1343: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1344: x + y + a % 2 == x + y;
+
+loop invariant i_1345: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1346: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1347: x + y + a % 2 == x + y;
+
+loop invariant i_1348: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1349: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1350: x + y + a % 2 == x + y;
+
+loop invariant i_1351: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1352: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1353: x + y + a % 2 == x + y;
+
+loop invariant i_1354: x + a >= 0 && y + a >= 0;
+
+loop invariant i_1355: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+loop invariant i_1356: x + y + a % 2 == x + y;
+
+loop invariant i
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= a
+i_1: y >= 0
+i_2: x == y || a == x
+i_3: x == y || a == x || a == y
+i_4: x + a >= 0 && y + a >= 0
+i_5: x + a >= 0 && y + a >= 0 && x + y == x + y
+i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x)
+i_7: 0 <= y
+i_8: x + y == x + y
+i_9: x >= 0 && y >= 0
+i_10: x >= 0 && y >= 0 && x + y == x + y
+i_11: 0 <= x
+i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x))
+i_13: x + y + a >= 0
+i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0)
+i_15: x + y + a % 2 == x + y
+i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0
+i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0
+i_18: (flag ? x + a : y + a) >= 0
+i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1)
+i_20: (flag ? x : y) + a >= 0
+i_21: (flag ? x : y) + a == (flag ? x : y) + 1
+i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1
+i_23: i
+------------------------------------
+----------Code with Invariants----------
+int unknown1();
+int unknown2();
+
+void oopsla_42(int flag) {
+    int x = 1;
+    int y = 1;
+    int a;
+
+    if (flag)
+        a = 0;
+    else
+        a = 1;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= a;
+
+        loop invariant i_1: y >= 0;
+
+        loop invariant i_2: x == y || a == x;
+
+        loop invariant i_3: x == y || a == x || a == y;
+
+        loop invariant i_4: x + a >= 0 && y + a >= 0;
+
+        loop invariant i_5: x + a >= 0 && y + a >= 0 && x + y == x + y;
+
+        loop invariant i_6: x >= 0 && y >= 0 && a == x || a == y || (x == y + 1 || x + a == y || y + a == x);
+
+        loop invariant i_7: 0 <= y;
+
+        loop invariant i_8: x + y == x + y;
+
+        loop invariant i_9: x >= 0 && y >= 0;
+
+        loop invariant i_10: x >= 0 && y >= 0 && x + y == x + y;
+
+        loop invariant i_11: 0 <= x;
+
+        loop invariant i_12: x >= 0 && y >= 0 && (x == y || a == x || a == y || (x == y + 1 || x + a == y || y + a == x));
+
+        loop invariant i_13: x + y + a >= 0;
+
+        loop invariant i_14: (flag ? x + a == y : y + a == x) && (flag ? 1 : 0);
+
+        loop invariant i_15: x + y + a % 2 == x + y;
+
+        loop invariant i_16: (flag ? x : y) + a >= 0 && (flag ? y : x) + a >= 0;
+
+        loop invariant i_17: (flag ? x : y) >= 0 && (flag ? y : x) >= 0;
+
+        loop invariant i_18: (flag ? x + a : y + a) >= 0;
+
+        loop invariant i_19: (flag ? x : y) + a == (flag ? x + 1 : y + 1);
+
+        loop invariant i_20: (flag ? x : y) + a >= 0;
+
+        loop invariant i_21: (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_22: x + a >= 0 && y + a >= 0 && (flag ? x : y) + a == (flag ? x : y) + 1;
+
+        loop invariant i_23: i;
+
+
+        loop assigns a, x, y;
+    */
+    while (unknown1()) {
+        if (flag) {
+            a = x + y;
+            x++;
+        } else {
+            a = x + y + 1;
+            y++;
+        }
+        if (a % 2 == 1)
+            y++;
+        else
+            x++;
+    }
+
+    if (flag)
+        a++;
+
+    //@ assert a_1: (a % 2 == 1);
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 4746.375254869461
+Proposal number: 15
+Verified code:
+
+------------------------

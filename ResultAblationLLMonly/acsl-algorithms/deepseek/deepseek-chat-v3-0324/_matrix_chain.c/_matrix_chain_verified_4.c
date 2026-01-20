@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: 2 <= l <= n + 1;
+
+        loop invariant i_1: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop invariant i_6: s for Loop A: ``` loop invariant i_0: 2 <= l <= n + 1;
+
+        loop invariant i_13: s for the marked loops: For Loop A: ``` loop invariant 2 <= l <= n + 1;
+
+        loop invariant i_14: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i + 1 < l - 1 ==> m[i][j] == \min(\forall integer k; i <= k < j; m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); ``` For Loop B: ``` loop invariant 1 <= i <= n - l + 2; loop invariant \forall integer g; 1 <= g < i ==> (\forall integer h; g <= h < g + l - 1 ==> m[g][g + l - 1] <= m[g][h] + m[h + 1][g + l - 1] + p[g - 1] * p[h] * p[g + l - 1]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ``` For Loop C: ``` loop invariant i <= k <= end; loop invariant m[i][end] == \min(\forall integer j; i <= j < k; m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); loop invariant \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+        loop invariant i_15: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i + 1 < l - 1 ==> m[i][j] == \min(\forall integer k; i <= k < j; m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); ``` For Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+
+        loop invariant i_16: 1 <= i <= n - l + 2;
+
+        loop invariant i_17: \forall integer g; 1 <= g < i ==> (\forall integer h; g <= h < g + l - 1 ==> m[g][g + l - 1] <= m[g][h] + m[h + 1][g + l - 1] + p[g - 1] * p[h] * p[g + l - 1]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ``` For Loop C: ``` loop invariant i <= k <= end; loop invariant m[i][end] == \min(\forall integer j; i <= j < k; m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); loop invariant \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+        loop invariant i_18: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ``` For Loop C: ``` loop invariant i <= k <= end; loop invariant m[i][end] == \min(\forall integer j; i <= j < k; m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); loop invariant \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+        loop invariant i_19: i <= k <= end;
+
+        loop invariant i_20: m[i][end] == \min(\forall integer j; i <= j < k; m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); loop invariant \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+        loop invariant i_21: \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_2: 1 <= i <= n - l + 2;
+
+            loop invariant i_3: \forall integer j; 1 <= j < i ==> (\forall integer h; j <= h < j + l - 1 ==> m[j][j + l - 1] <= m[j][h] + m[h + 1][j + l - 1] + p[j - 1] * p[h] * p[j + l - 1]); ```;
+
+            loop invariant i_9: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+            loop invariant i_22: s for Loop B: ``` loop invariant 1 <= i <= n - l + 1;
+
+            loop invariant i_23: 1 <= i <= n - l + 1;
+
+            loop invariant i_24: \forall integer j; 1 <= j < i ==> (\forall integer k; j <= k < j + l - 1 ==> m[j][j + l - 1] <= m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_4: i <= k <= end - 1;
+
+                loop invariant i_5: m[i][end] == \min(\forall integer j; i <= j <= k ==> m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); ```;
+
+                loop invariant i_7: i <= k <= end;
+
+                loop invariant i_8: m[i][end] == \min(\forall integer j; i <= j < k ==> m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); ```;
+
+                loop invariant i_10: s for Loop C: ``` loop invariant i <= k <= end;
+
+                loop invariant i_11: m[i][end] == \min(\forall integer j; i <= j < k; m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end]); loop invariant \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+                loop invariant i_12: \forall integer j; i <= j < k ==> m[i][end] <= m[i][j] + m[j + 1][end] + p[i - 1] * p[j] * p[end];
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 

@@ -1,0 +1,1353 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_bellmanford.c
+----------Code----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    /*@
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k]));
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]);
+```
+----------------------------
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)));
+
+        loop invariant i_2: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k]));
+
+        loop invariant i_3: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```;
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:1 <= i <= n; i_1:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF))); i_2:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k])); i_3:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```; 
+    - Post-condition: i_0:1 <= i <= n; i_1:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF))); i_2:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k])); i_3:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= e;
+loop invariant \forall integer k; 0 <= k < j ==> (dist[edges[k].v] <= dist[edges[k].u] + edges[k].weight || dist[edges[k].u] == INF);
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j-1].weight == dist[k]));
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= n
+i_1: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)))
+i_2: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k]))
+i_3: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```
+LOOP B:
+i_4: 0 <= j <= e
+i_5: \forall integer k; 0 <= k < j ==> (dist[edges[k].v] <= dist[edges[k].u] + edges[k].weight || dist[edges[k].u] == INF)
+i_6: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)))
+i_7: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j-1].weight == dist[k]))
+i_8: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```
+------------------------------------
+---------- Code with Invariants ----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)));
+
+        loop invariant i_2: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j].weight == dist[k]));
+
+        loop invariant i_3: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```;
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop invariant i_4: 0 <= j <= e;
+
+            loop invariant i_5: \forall integer k; 0 <= k < j ==> (dist[edges[k].v] <= dist[edges[k].u] + edges[k].weight || dist[edges[k].u] == INF);
+
+            loop invariant i_6: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] == \min(\sum_{l=0}^{i-1} edges[l].weight, INF)));
+
+            loop invariant i_7: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] >= 0 && parent[k] < n && dist[parent[k]] + edges[j-1].weight == dist[k]));
+
+            loop invariant i_8: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && edges[p].v == k && dist[edges[p].u] + edges[p].weight == dist[k]); ```;
+
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start);
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0);
+loop invariant \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u);
+```
+----------------------------
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_9: 1 <= i <= n;
+
+        loop invariant i_10: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start);
+
+        loop invariant i_11: \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0);
+
+        loop invariant i_12: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u);
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_9:1 <= i <= n; i_10:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start); i_11:\forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0); i_12:\forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u); 
+    - Post-condition: i_9:1 <= i <= n; i_10:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start); i_11:\forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0); i_12:\forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= e;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start);
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0);
+loop invariant \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_9: 1 <= i <= n
+i_10: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start)
+i_11: \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0)
+i_12: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u)
+LOOP B:
+i_13: 0 <= j <= e
+i_14: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start)
+i_15: \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0)
+i_16: \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u)
+------------------------------------
+---------- Code with Invariants ----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_9: 1 <= i <= n;
+
+        loop invariant i_10: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start);
+
+        loop invariant i_11: \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0);
+
+        loop invariant i_12: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u);
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop invariant i_13: 0 <= j <= e;
+
+            loop invariant i_14: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> parent[k] != -1 || k == start);
+
+            loop invariant i_15: \forall integer k; 0 <= k < n ==> (parent[k] != -1 ==> parent[k] < n && parent[k] >= 0);
+
+            loop invariant i_16: \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> parent[edges[k].v] == edges[k].u);
+
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------
+Verification failed (Fail_21_27), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF);
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1);
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight);
+```
+----------------------------
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF);
+
+        loop invariant i_18: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1);
+
+        loop invariant i_19: 1 <= i <= n;
+
+        loop invariant i_20: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```;
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_17:\forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF); i_18:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1); i_19:1 <= i <= n; i_20:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```; 
+    - Post-condition: i_17:\forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF); i_18:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1); i_19:1 <= i <= n; i_20:\forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= e;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF);
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1);
+loop invariant \forall integer k; 0 <= k < e ==> edges[k].u < n && edges[k].v < n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_17: \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF)
+i_18: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1)
+i_19: 1 <= i <= n
+i_20: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```
+LOOP B:
+i_21: 0 <= j <= e
+i_22: \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF)
+i_23: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1)
+i_24: \forall integer k; 0 <= k < e ==> edges[k].u < n && edges[k].v < n
+i_25: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```
+------------------------------------
+---------- Code with Invariants ----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF);
+
+        loop invariant i_18: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1);
+
+        loop invariant i_19: 1 <= i <= n;
+
+        loop invariant i_20: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```;
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop invariant i_21: 0 <= j <= e;
+
+            loop invariant i_22: \forall integer k; 0 <= k < n ==> (dist[k] == INF || dist[k] < INF);
+
+            loop invariant i_23: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || parent[k] != -1);
+
+            loop invariant i_24: \forall integer k; 0 <= k < e ==> edges[k].u < n && edges[k].v < n;
+
+            loop invariant i_25: \forall integer k; 0 <= k < n ==> (dist[k] != INF ==> \exists integer p; 0 <= p < i && parent[k] == p && dist[k] == dist[p] + edges[p].weight); ```;
+
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+```
+----------------------------
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_26: 1 <= i <= n;
+
+        loop invariant i_27: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+        loop invariant i_28: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_26:1 <= i <= n; i_27:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight))); i_28:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight))); 
+    - Post-condition: i_26:1 <= i <= n; i_27:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight))); i_28:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight))); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= e;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < j && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_26: 1 <= i <= n
+i_27: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)))
+i_28: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)))
+LOOP B:
+i_29: 0 <= j <= e
+i_30: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < j && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)))
+i_31: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)))
+------------------------------------
+---------- Code with Invariants ----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_26: 1 <= i <= n;
+
+        loop invariant i_27: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < e && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+        loop invariant i_28: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop invariant i_29: 0 <= j <= e;
+
+            loop invariant i_30: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (\exists integer p; 0 <= p < j && edges[p].v == k && dist[edges[p].u] != INF && dist[k] >= dist[edges[p].u] + edges[p].weight)); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+            loop invariant i_31: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (0 <= parent[k] < n && dist[k] == dist[parent[k]] + (\sum integer p; 0 <= p < e && edges[p].u == parent[k] && edges[p].v == k; edges[p].weight)));
+
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre)));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre)));
+loop invariant \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u);
+```
+----------------------------
+----------Prompt----------
+
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_32: 1 <= i <= n;
+
+        loop invariant i_33: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre)));
+
+        loop invariant i_34: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre)));
+
+        loop invariant i_35: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u);
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_32:1 <= i <= n; i_33:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre))); i_34:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre))); i_35:\forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u); 
+    - Post-condition: i_32:1 <= i <= n; i_33:\forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre))); i_34:\forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre))); i_35:\forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= e;
+loop invariant \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u);
+loop invariant \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && (dist[k] == \at(dist[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && dist[edges[l].u] != INF && dist[edges[l].u] + edges[l].weight == dist[k]))));
+loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && (parent[k] == \at(parent[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && parent[k] == edges[l].u))));
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_32: 1 <= i <= n
+i_33: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre)))
+i_34: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre)))
+i_35: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u)
+LOOP B:
+i_36: 0 <= j <= e
+i_37: \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u)
+i_38: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && (dist[k] == \at(dist[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && dist[edges[l].u] != INF && dist[edges[l].u] + edges[l].weight == dist[k])))); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && (parent[k] == \at(parent[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && parent[k] == edges[l].u)))); ```
+i_39: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && (parent[k] == \at(parent[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && parent[k] == edges[l].u)))); ```
+------------------------------------
+---------- Code with Invariants ----------
+#include <limits.h>
+#define MAX_VERTICES 100
+#define INF INT_MAX
+struct Edge {
+    int u, v, weight;
+};
+
+/*@
+    requires e > 0;
+    requires n > 0;
+    requires \valid(edges+(0..(e - 1)));
+    requires \valid(dist+(0..(n - 1)));
+    requires \valid(parent+(0..(n - 1)));
+    requires 0 <= start < n;
+    requires \forall integer k; 0 <= k < e ==> 0 <= edges[k].u < n && 0 <= edges[k].v < n;
+    requires \forall integer k; 0 <= k < n ==> parent[k] == -1;
+    requires \forall integer k; 0 <= k < n ==> dist[k] == INF;
+    assigns dist[0..(n-1)], parent[0..(n-1)];
+*/
+int _bellmanford(int n, int e, struct Edge edges[], int start, int dist[], int parent[]) {
+    dist[start] = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_32: 1 <= i <= n;
+
+        loop invariant i_33: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && dist[k] == \at(dist[k], Pre)));
+
+        loop invariant i_34: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && parent[k] == \at(parent[k], Pre)));
+
+        loop invariant i_35: \forall integer k; 0 <= k < e ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u);
+
+
+        loop assigns dist[0..(n-1)], parent[0..(n-1)], i;
+    */
+    for (int i = 1; i < n; i++) {
+        // Loop B
+        /*@
+            loop invariant i_36: 0 <= j <= e;
+
+            loop invariant i_37: \forall integer k; 0 <= k < j ==> (dist[edges[k].u] != INF && dist[edges[k].u] + edges[k].weight < dist[edges[k].v] ==> dist[edges[k].v] == dist[edges[k].u] + edges[k].weight && parent[edges[k].v] == edges[k].u);
+
+            loop invariant i_38: \forall integer k; 0 <= k < n ==> (dist[k] == INF || (dist[k] != INF && (dist[k] == \at(dist[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && dist[edges[l].u] != INF && dist[edges[l].u] + edges[l].weight == dist[k])))); loop invariant \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && (parent[k] == \at(parent[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && parent[k] == edges[l].u)))); ```;
+
+            loop invariant i_39: \forall integer k; 0 <= k < n ==> (parent[k] == -1 || (parent[k] != -1 && (parent[k] == \at(parent[k], Pre) || (\exists integer l; 0 <= l < j && edges[l].v == k && parent[k] == edges[l].u)))); ```;
+
+
+            loop assigns dist[0..(n-1)];
+            loop assigns parent[0..(n-1)];
+            loop assigns j;
+        */
+        for (int j = 0; j < e; j++) {
+            int u = edges[j].u;
+            int v = edges[j].v;
+            int weight = edges[j].weight;
+            if (dist[u] != INF && dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                parent[v] = u;
+            }
+        }
+    }
+
+    return 0;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 98.96601963043213
+Proposal number: 5
+Verified code:
+
+------------------------

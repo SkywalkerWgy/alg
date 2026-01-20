@@ -1,0 +1,2511 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_merge.c
+----------Code----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    /*@
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant 0 <= j <= b;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= a;
+
+        loop invariant i_1: 0 <= j <= b;
+
+        loop invariant i_2: k == i + j;
+
+        loop invariant i_3: Sorted(res, 0, k);
+
+        loop invariant i_4: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_5: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:Sorted(res, 0, a + b); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j <= b;
+loop invariant k == (a + j);
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= a;
+
+        loop invariant i_1: 0 <= j <= b;
+
+        loop invariant i_2: k == i + j;
+
+        loop invariant i_3: Sorted(res, 0, k);
+
+        loop invariant i_4: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_5: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_6: j <= b;
+
+        loop invariant i_7: k == (a + j);
+
+        loop invariant i_8: Sorted(res, 0, k);
+
+        loop invariant i_9: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i <= a; i_1:0 <= j <= b; i_2:k == i + j; i_3:Sorted(res, 0, k); i_4:\forall integer p; 0 <= p < i ==> A[p] <= res[p + j]; i_5:\forall integer p; 0 <= p < j ==> B[p] <= res[p + i]; 
+    - Post-condition: i_6:j <= b; i_7:k == (a + j); i_8:Sorted(res, 0, k); i_9:\forall integer p; 0 <= p < j ==> B[p] <= res[a + p]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the pre- and post-conditions and the program logic, here are the loop invariants for Loop B:
+
+```
+loop invariant i <= a;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[i + p];
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= a
+i_1: 0 <= j <= b
+i_2: k == i + j
+i_3: Sorted(res, 0, k)
+i_4: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j]
+i_5: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i]
+LOOP B:
+i_10: s for Loop B: ``` loop invariant i <= a
+i_11: i <= a
+i_12: k == i + j
+i_13: Sorted(res, 0, k)
+i_14: \forall integer p; 0 <= p < j ==> B[p] <= res[i + p]
+i_15: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j]
+i_16: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l)
+LOOP C:
+i_6: j <= b
+i_7: k == (a + j)
+i_8: Sorted(res, 0, k)
+i_9: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= a;
+
+        loop invariant i_1: 0 <= j <= b;
+
+        loop invariant i_2: k == i + j;
+
+        loop invariant i_3: Sorted(res, 0, k);
+
+        loop invariant i_4: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_5: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop invariant i_10: s for Loop B: ``` loop invariant i <= a;
+
+        loop invariant i_11: i <= a;
+
+        loop invariant i_12: k == i + j;
+
+        loop invariant i_13: Sorted(res, 0, k);
+
+        loop invariant i_14: \forall integer p; 0 <= p < j ==> B[p] <= res[i + p];
+
+        loop invariant i_15: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_16: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_6: j <= b;
+
+        loop invariant i_7: k == (a + j);
+
+        loop invariant i_8: Sorted(res, 0, k);
+
+        loop invariant i_9: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant 0 <= j <= b;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+loop invariant \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j]));
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_17: 0 <= i <= a;
+
+        loop invariant i_18: 0 <= j <= b;
+
+        loop invariant i_19: k == i + j;
+
+        loop invariant i_20: Sorted(res, 0, k);
+
+        loop invariant i_21: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_22: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+        loop invariant i_23: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j]));
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:Sorted(res, 0, a + b); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Here are the loop invariants for Loop C:
+
+```
+loop invariant 0 <= j <= b;
+loop invariant k == a + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+loop invariant \forall integer p; 0 <= p < k ==> res[p] <= (j < b ? B[j] : res[k-1]);
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_17: 0 <= i <= a;
+
+        loop invariant i_18: 0 <= j <= b;
+
+        loop invariant i_19: k == i + j;
+
+        loop invariant i_20: Sorted(res, 0, k);
+
+        loop invariant i_21: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_22: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+        loop invariant i_23: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j]));
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_24: s for Loop C: ``` loop invariant 0 <= j <= b;
+
+        loop invariant i_25: 0 <= j <= b;
+
+        loop invariant i_26: k == a + j;
+
+        loop invariant i_27: Sorted(res, 0, k);
+
+        loop invariant i_28: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+
+        loop invariant i_29: \forall integer p; 0 <= p < k ==> res[p] <= (j < b ? B[j] : res[k-1]);
+
+        loop invariant i_30: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_17:0 <= i <= a; i_18:0 <= j <= b; i_19:k == i + j; i_20:Sorted(res, 0, k); i_21:\forall integer p; 0 <= p < i ==> A[p] <= res[p + j]; i_22:\forall integer p; 0 <= p < j ==> B[p] <= res[p + i]; i_23:\forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j])); 
+    - Post-condition: i_24:s for Loop C: ``` loop invariant 0 <= j <= b; i_25:0 <= j <= b; i_26:k == a + j; i_27:Sorted(res, 0, k); i_28:\forall integer p; 0 <= p < j ==> B[p] <= res[a + p]; i_29:\forall integer p; 0 <= p < k ==> res[p] <= (j < b ? B[j] : res[k-1]); i_30:\forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < k ==> res[p] <= (i < a ? A[i] : B[j]);
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_17: 0 <= i <= a
+i_18: 0 <= j <= b
+i_19: k == i + j
+i_20: Sorted(res, 0, k)
+i_21: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j]
+i_22: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i]
+i_23: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j]))
+LOOP B:
+i_31: 0 <= i <= a
+i_32: k == i + j
+i_33: Sorted(res, 0, k)
+i_34: \forall integer p; 0 <= p < k ==> res[p] <= (i < a ? A[i] : B[j])
+i_35: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j]
+i_36: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l)
+LOOP C:
+i_24: s for Loop C: ``` loop invariant 0 <= j <= b
+i_25: 0 <= j <= b
+i_26: k == a + j
+i_27: Sorted(res, 0, k)
+i_28: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p]
+i_29: \forall integer p; 0 <= p < k ==> res[p] <= (j < b ? B[j] : res[k-1])
+i_30: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l)
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_17: 0 <= i <= a;
+
+        loop invariant i_18: 0 <= j <= b;
+
+        loop invariant i_19: k == i + j;
+
+        loop invariant i_20: Sorted(res, 0, k);
+
+        loop invariant i_21: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_22: \forall integer p; 0 <= p < j ==> B[p] <= res[p + i];
+
+        loop invariant i_23: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= (i < a ? A[i] : B[j]));
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop invariant i_31: 0 <= i <= a;
+
+        loop invariant i_32: k == i + j;
+
+        loop invariant i_33: Sorted(res, 0, k);
+
+        loop invariant i_34: \forall integer p; 0 <= p < k ==> res[p] <= (i < a ? A[i] : B[j]);
+
+        loop invariant i_35: \forall integer p; 0 <= p < i ==> A[p] <= res[p + j];
+
+        loop invariant i_36: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_24: s for Loop C: ``` loop invariant 0 <= j <= b;
+
+        loop invariant i_25: 0 <= j <= b;
+
+        loop invariant i_26: k == a + j;
+
+        loop invariant i_27: Sorted(res, 0, k);
+
+        loop invariant i_28: \forall integer p; 0 <= p < j ==> B[p] <= res[a + p];
+
+        loop invariant i_29: \forall integer p; 0 <= p < k ==> res[p] <= (j < b ? B[j] : res[k-1]);
+
+        loop invariant i_30: \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Here are the loop invariants for the first loop (Loop A):
+
+```
+loop invariant 0 <= i <= a;
+loop invariant 0 <= j <= b;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+loop invariant \forall integer q; 0 <= q < j ==> B[q] <= res[k-1];
+loop invariant \forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q];
+loop invariant \forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_37: s for the first loop (Loop A): ``` loop invariant 0 <= i <= a;
+
+        loop invariant i_38: 0 <= i <= a;
+
+        loop invariant i_39: 0 <= j <= b;
+
+        loop invariant i_40: k == i + j;
+
+        loop invariant i_41: Sorted(res, 0, k);
+
+        loop invariant i_42: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_43: \forall integer q; 0 <= q < j ==> B[q] <= res[k-1];
+
+        loop invariant i_44: \forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q];
+
+        loop invariant i_45: \forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:Sorted(res, 0, a + b); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Here are the loop invariants for Loop C:
+
+```
+loop invariant 0 <= j <= b;
+loop invariant k == \at(k, End_l) + (j - \at(j, End_l));
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer q; \at(j, End_l) <= q < j ==> res[\at(k, End_l) + (q - \at(j, End_l))] == B[q];
+loop invariant \forall integer p; 0 <= p < \at(i, End_l) ==> res[p + \at(j, End_l)] == A[p] || \exists integer q; \at(j, End_l) <= q < j && res[p + q] == B[q];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_37: s for the first loop (Loop A): ``` loop invariant 0 <= i <= a;
+
+        loop invariant i_38: 0 <= i <= a;
+
+        loop invariant i_39: 0 <= j <= b;
+
+        loop invariant i_40: k == i + j;
+
+        loop invariant i_41: Sorted(res, 0, k);
+
+        loop invariant i_42: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_43: \forall integer q; 0 <= q < j ==> B[q] <= res[k-1];
+
+        loop invariant i_44: \forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q];
+
+        loop invariant i_45: \forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_46: s for Loop C: ``` loop invariant 0 <= j <= b;
+
+        loop invariant i_47: 0 <= j <= b;
+
+        loop invariant i_48: k == \at(k, End_l) + (j - \at(j, End_l));
+
+        loop invariant i_49: Sorted(res, 0, k);
+
+        loop invariant i_50: \forall integer q; \at(j, End_l) <= q < j ==> res[\at(k, End_l) + (q - \at(j, End_l))] == B[q];
+
+        loop invariant i_51: \forall integer p; 0 <= p < \at(i, End_l) ==> res[p + \at(j, End_l)] == A[p] || \exists integer q; \at(j, End_l) <= q < j && res[p + q] == B[q];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_37:s for the first loop (Loop A): ``` loop invariant 0 <= i <= a; i_38:0 <= i <= a; i_39:0 <= j <= b; i_40:k == i + j; i_41:Sorted(res, 0, k); i_42:\forall integer p; 0 <= p < i ==> A[p] <= res[k-1]; i_43:\forall integer q; 0 <= q < j ==> B[q] <= res[k-1]; i_44:\forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q]; i_45:\forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p]; 
+    - Post-condition: i_46:s for Loop C: ``` loop invariant 0 <= j <= b; i_47:0 <= j <= b; i_48:k == \at(k, End_l) + (j - \at(j, End_l)); i_49:Sorted(res, 0, k); i_50:\forall integer q; \at(j, End_l) <= q < j ==> res[\at(k, End_l) + (q - \at(j, End_l))] == B[q]; i_51:\forall integer p; 0 <= p < \at(i, End_l) ==> res[p + \at(j, End_l)] == A[p] || \exists integer q; \at(j, End_l) <= q < j && res[p + q] == B[q]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant k == \at(k, End_l) + (i - \at(i, End_l));
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; \at(i, End_l) <= p < i ==> res[\at(k, End_l) + (p - \at(i, End_l))] == A[p];
+loop invariant \forall integer q; 0 <= q < \at(j, End_l) ==> res[q + \at(i, End_l)] == B[q] || \exists integer p; \at(i, End_l) <= p < i && res[q + p] == A[p];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_37: s for the first loop (Loop A): ``` loop invariant 0 <= i <= a
+i_38: 0 <= i <= a
+i_39: 0 <= j <= b
+i_40: k == i + j
+i_41: Sorted(res, 0, k)
+i_42: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1]
+i_43: \forall integer q; 0 <= q < j ==> B[q] <= res[k-1]
+i_44: \forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q]
+i_45: \forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p]
+LOOP B:
+i_52: 0 <= i <= a
+i_53: k == \at(k, End_l) + (i - \at(i, End_l))
+i_54: Sorted(res, 0, k)
+i_55: \forall integer p; \at(i, End_l) <= p < i ==> res[\at(k, End_l) + (p - \at(i, End_l))] == A[p]
+i_56: \forall integer q; 0 <= q < \at(j, End_l) ==> res[q + \at(i, End_l)] == B[q] || \exists integer p; \at(i, End_l) <= p < i && res[q + p] == A[p]
+LOOP C:
+i_46: s for Loop C: ``` loop invariant 0 <= j <= b
+i_47: 0 <= j <= b
+i_48: k == \at(k, End_l) + (j - \at(j, End_l))
+i_49: Sorted(res, 0, k)
+i_50: \forall integer q; \at(j, End_l) <= q < j ==> res[\at(k, End_l) + (q - \at(j, End_l))] == B[q]
+i_51: \forall integer p; 0 <= p < \at(i, End_l) ==> res[p + \at(j, End_l)] == A[p] || \exists integer q; \at(j, End_l) <= q < j && res[p + q] == B[q]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_37: s for the first loop (Loop A): ``` loop invariant 0 <= i <= a;
+
+        loop invariant i_38: 0 <= i <= a;
+
+        loop invariant i_39: 0 <= j <= b;
+
+        loop invariant i_40: k == i + j;
+
+        loop invariant i_41: Sorted(res, 0, k);
+
+        loop invariant i_42: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_43: \forall integer q; 0 <= q < j ==> B[q] <= res[k-1];
+
+        loop invariant i_44: \forall integer p; 0 <= p < i ==> res[p + q] == A[p] || \exists integer q; 0 <= q < j && res[p + q] == B[q];
+
+        loop invariant i_45: \forall integer q; 0 <= q < j ==> res[p + q] == B[q] || \exists integer p; 0 <= p < i && res[p + q] == A[p];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop invariant i_52: 0 <= i <= a;
+
+        loop invariant i_53: k == \at(k, End_l) + (i - \at(i, End_l));
+
+        loop invariant i_54: Sorted(res, 0, k);
+
+        loop invariant i_55: \forall integer p; \at(i, End_l) <= p < i ==> res[\at(k, End_l) + (p - \at(i, End_l))] == A[p];
+
+        loop invariant i_56: \forall integer q; 0 <= q < \at(j, End_l) ==> res[q + \at(i, End_l)] == B[q] || \exists integer p; \at(i, End_l) <= p < i && res[q + p] == A[p];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_46: s for Loop C: ``` loop invariant 0 <= j <= b;
+
+        loop invariant i_47: 0 <= j <= b;
+
+        loop invariant i_48: k == \at(k, End_l) + (j - \at(j, End_l));
+
+        loop invariant i_49: Sorted(res, 0, k);
+
+        loop invariant i_50: \forall integer q; \at(j, End_l) <= q < j ==> res[\at(k, End_l) + (q - \at(j, End_l))] == B[q];
+
+        loop invariant i_51: \forall integer p; 0 <= p < \at(i, End_l) ==> res[p + \at(j, End_l)] == A[p] || \exists integer q; \at(j, End_l) <= q < j && res[p + q] == B[q];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant 0 <= j <= b;
+loop invariant k == i + j;
+loop invariant \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+loop invariant \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j]);
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_57: 0 <= i <= a;
+
+        loop invariant i_58: 0 <= j <= b;
+
+        loop invariant i_59: k == i + j;
+
+        loop invariant i_60: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_61: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_62: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+
+        loop invariant i_63: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j]);
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:Sorted(res, 0, a + b); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= b;
+loop invariant k == a + j;
+loop invariant \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+loop invariant \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_57: 0 <= i <= a;
+
+        loop invariant i_58: 0 <= j <= b;
+
+        loop invariant i_59: k == i + j;
+
+        loop invariant i_60: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_61: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_62: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+
+        loop invariant i_63: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j]);
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_64: 0 <= j <= b;
+
+        loop invariant i_65: k == a + j;
+
+        loop invariant i_66: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_67: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_57:0 <= i <= a; i_58:0 <= j <= b; i_59:k == i + j; i_60:\forall integer p; 0 <= p < k ==> res[p] <= res[p+1]; i_61:\forall integer p; 0 <= p < i ==> A[p] <= res[k-1]; i_62:\forall integer p; 0 <= p < j ==> B[p] <= res[k-1]; i_63:\forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j]); 
+    - Post-condition: i_64:0 <= j <= b; i_65:k == a + j; i_66:\forall integer p; 0 <= p < k ==> res[p] <= res[p+1]; i_67:\forall integer p; 0 <= p < j ==> B[p] <= res[k-1]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant k == i + j;
+loop invariant \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+loop invariant \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i]);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_57: 0 <= i <= a
+i_58: 0 <= j <= b
+i_59: k == i + j
+i_60: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1]
+i_61: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1]
+i_62: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1]
+i_63: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j])
+LOOP B:
+i_68: 0 <= i <= a
+i_69: k == i + j
+i_70: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1]
+i_71: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1]
+i_72: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i])
+LOOP C:
+i_64: 0 <= j <= b
+i_65: k == a + j
+i_66: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1]
+i_67: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_57: 0 <= i <= a;
+
+        loop invariant i_58: 0 <= j <= b;
+
+        loop invariant i_59: k == i + j;
+
+        loop invariant i_60: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_61: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_62: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+
+        loop invariant i_63: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i] || res[p] <= B[j]);
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop invariant i_68: 0 <= i <= a;
+
+        loop invariant i_69: k == i + j;
+
+        loop invariant i_70: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_71: \forall integer p; 0 <= p < i ==> A[p] <= res[k-1];
+
+        loop invariant i_72: \forall integer p; 0 <= p < k ==> (p < i + j ==> res[p] <= A[i]);
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_64: 0 <= j <= b;
+
+        loop invariant i_65: k == a + j;
+
+        loop invariant i_66: \forall integer p; 0 <= p < k ==> res[p] <= res[p+1];
+
+        loop invariant i_67: \forall integer p; 0 <= p < j ==> B[p] <= res[k-1];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------------------------
+Verification failed (Fail_39_46), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant 0 <= j <= b;
+loop invariant 0 <= k <= a + b;
+loop invariant k == i + j;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; 0 <= p < i ==> A[p] <= res[p];
+loop invariant \forall integer q; 0 <= q < j ==> B[q] <= res[q];
+loop invariant \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+loop invariant \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_73: 0 <= i <= a;
+
+        loop invariant i_74: 0 <= j <= b;
+
+        loop invariant i_75: 0 <= k <= a + b;
+
+        loop invariant i_76: k == i + j;
+
+        loop invariant i_77: Sorted(res, 0, k);
+
+        loop invariant i_78: \forall integer p; 0 <= p < i ==> A[p] <= res[p];
+
+        loop invariant i_79: \forall integer q; 0 <= q < j ==> B[q] <= res[q];
+
+        loop invariant i_80: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+        loop invariant i_81: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:Sorted(res, 0, a + b); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= b;
+loop invariant k == \at(k, End_l) + (j - \at(j, End_l));
+loop invariant \at(i, End_l) == a;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer q; \at(j, End_l) <= q < j ==> B[q] == res[\at(k, End_l) + (q - \at(j, End_l))];
+loop invariant \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+loop invariant \forall integer p; 0 <= p < \at(i, End_l) ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_73: 0 <= i <= a;
+
+        loop invariant i_74: 0 <= j <= b;
+
+        loop invariant i_75: 0 <= k <= a + b;
+
+        loop invariant i_76: k == i + j;
+
+        loop invariant i_77: Sorted(res, 0, k);
+
+        loop invariant i_78: \forall integer p; 0 <= p < i ==> A[p] <= res[p];
+
+        loop invariant i_79: \forall integer q; 0 <= q < j ==> B[q] <= res[q];
+
+        loop invariant i_80: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+        loop invariant i_81: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_82: 0 <= j <= b;
+
+        loop invariant i_83: k == \at(k, End_l) + (j - \at(j, End_l));
+
+        loop invariant i_84: \at(i, End_l) == a;
+
+        loop invariant i_85: Sorted(res, 0, k);
+
+        loop invariant i_86: \forall integer q; \at(j, End_l) <= q < j ==> B[q] == res[\at(k, End_l) + (q - \at(j, End_l))];
+
+        loop invariant i_87: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+        loop invariant i_88: \forall integer p; 0 <= p < \at(i, End_l) ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_73:0 <= i <= a; i_74:0 <= j <= b; i_75:0 <= k <= a + b; i_76:k == i + j; i_77:Sorted(res, 0, k); i_78:\forall integer p; 0 <= p < i ==> A[p] <= res[p]; i_79:\forall integer q; 0 <= q < j ==> B[q] <= res[q]; i_80:\forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r]; i_81:\forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r]; 
+    - Post-condition: i_82:0 <= j <= b; i_83:k == \at(k, End_l) + (j - \at(j, End_l)); i_84:\at(i, End_l) == a; i_85:Sorted(res, 0, k); i_86:\forall integer q; \at(j, End_l) <= q < j ==> B[q] == res[\at(k, End_l) + (q - \at(j, End_l))]; i_87:\forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r]; i_88:\forall integer p; 0 <= p < \at(i, End_l) ==> \exists integer r; 0 <= r < k && A[p] == res[r]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= a;
+loop invariant k == \at(k, End_l) + (i - \at(i, End_l));
+loop invariant \at(j, End_l) == b;
+loop invariant Sorted(res, 0, k);
+loop invariant \forall integer p; \at(i, End_l) <= p < i ==> A[p] == res[\at(k, End_l) + (p - \at(i, End_l))];
+loop invariant \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+loop invariant \forall integer q; 0 <= q < \at(j, End_l) ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_73: 0 <= i <= a
+i_74: 0 <= j <= b
+i_75: 0 <= k <= a + b
+i_76: k == i + j
+i_77: Sorted(res, 0, k)
+i_78: \forall integer p; 0 <= p < i ==> A[p] <= res[p]
+i_79: \forall integer q; 0 <= q < j ==> B[q] <= res[q]
+i_80: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r]
+i_81: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r]
+LOOP B:
+i_89: 0 <= i <= a
+i_90: k == \at(k, End_l) + (i - \at(i, End_l))
+i_91: \at(j, End_l) == b
+i_92: Sorted(res, 0, k)
+i_93: \forall integer p; \at(i, End_l) <= p < i ==> A[p] == res[\at(k, End_l) + (p - \at(i, End_l))]
+i_94: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r]
+i_95: \forall integer q; 0 <= q < \at(j, End_l) ==> \exists integer r; 0 <= r < k && B[q] == res[r]
+LOOP C:
+i_82: 0 <= j <= b
+i_83: k == \at(k, End_l) + (j - \at(j, End_l))
+i_84: \at(i, End_l) == a
+i_85: Sorted(res, 0, k)
+i_86: \forall integer q; \at(j, End_l) <= q < j ==> B[q] == res[\at(k, End_l) + (q - \at(j, End_l))]
+i_87: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r]
+i_88: \forall integer p; 0 <= p < \at(i, End_l) ==> \exists integer r; 0 <= r < k && A[p] == res[r]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(A + (0..a- 1));
+    requires \valid(B + (0..b - 1));
+    requires \valid(res + (0..a + b - 1));
+    requires \separated(&A[0..(a-1)], &B[0..(b-1)], &res[0..(a+b-1)]);
+    requires a > 0;
+    requires b > 0;
+    requires Sorted(A, 0, a);
+    requires Sorted(B, 0, b);
+    assigns res[0..a + b - 1];
+    ensures e_1: Sorted(res, 0, a + b);
+*/
+void _merge(int A[], int B[], int res[], int a, int b) {
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    // Loop A
+    /*@
+        loop invariant i_73: 0 <= i <= a;
+
+        loop invariant i_74: 0 <= j <= b;
+
+        loop invariant i_75: 0 <= k <= a + b;
+
+        loop invariant i_76: k == i + j;
+
+        loop invariant i_77: Sorted(res, 0, k);
+
+        loop invariant i_78: \forall integer p; 0 <= p < i ==> A[p] <= res[p];
+
+        loop invariant i_79: \forall integer q; 0 <= q < j ==> B[q] <= res[q];
+
+        loop invariant i_80: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+        loop invariant i_81: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+
+        loop assigns i, j, k;
+        loop assigns res[0..a + b - 1];
+    */
+    while (i < a && j < b) {
+        if (A[i] <= B[j]) {
+            res[k] = A[i];
+            k = k + 1;
+            i = i + 1;
+        } 
+        else {
+            res[k] = B[j];
+            k = k + 1;
+            j = j + 1;
+        }
+    }
+    //@ ghost End_l: ;
+    
+    // Loop B
+    /*@
+        loop invariant i_89: 0 <= i <= a;
+
+        loop invariant i_90: k == \at(k, End_l) + (i - \at(i, End_l));
+
+        loop invariant i_91: \at(j, End_l) == b;
+
+        loop invariant i_92: Sorted(res, 0, k);
+
+        loop invariant i_93: \forall integer p; \at(i, End_l) <= p < i ==> A[p] == res[\at(k, End_l) + (p - \at(i, End_l))];
+
+        loop invariant i_94: \forall integer p; 0 <= p < i ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+        loop invariant i_95: \forall integer q; 0 <= q < \at(j, End_l) ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns i, k;
+    */
+    while (i < a) {
+        res[k] = A[i];
+        k = k + 1;
+        i = i + 1;
+    }
+
+    // Loop C
+    /*@
+        loop invariant i_82: 0 <= j <= b;
+
+        loop invariant i_83: k == \at(k, End_l) + (j - \at(j, End_l));
+
+        loop invariant i_84: \at(i, End_l) == a;
+
+        loop invariant i_85: Sorted(res, 0, k);
+
+        loop invariant i_86: \forall integer q; \at(j, End_l) <= q < j ==> B[q] == res[\at(k, End_l) + (q - \at(j, End_l))];
+
+        loop invariant i_87: \forall integer q; 0 <= q < j ==> \exists integer r; 0 <= r < k && B[q] == res[r];
+
+        loop invariant i_88: \forall integer p; 0 <= p < \at(i, End_l) ==> \exists integer r; 0 <= r < k && A[p] == res[r];
+
+
+        loop assigns res[0..a + b - 1];
+        loop assigns j, k;
+    */
+    while (j < b) {
+        res[k] = B[j];
+        k = k + 1;
+        j = j + 1;
+    }
+}
+------------------------------------------
+Verification failed (Fail_50_60), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 149.92686319351196
+Proposal number: 5
+Verified code:
+
+------------------------

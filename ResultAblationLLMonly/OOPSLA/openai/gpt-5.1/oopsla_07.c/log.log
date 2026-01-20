@@ -1,0 +1,194 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_07.c
+----------Code----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * From "Path Invariants" PLDI 07 by Beyer et al.
+ */
+/*@
+    requires n > 0;
+*/
+void oopsla_07(int n) {
+    int i, a, b;
+    i = 0; a = 0; b = 0;
+    /*@
+        loop assigns i;
+        loop assigns b;
+        loop assigns a;
+    */
+    while( i < n ) {
+        if(unknown1()) {
+            a = a + 1;
+            b = b + 2;
+        } else {
+            a = a + 2;
+            b = b + 1;
+        }
+        i = i + 1;
+    }
+    //@ assert a_1: a + b == 3*n ;
+}
+
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * From "Path Invariants" PLDI 07 by Beyer et al.
+ */
+/*@
+    requires n > 0;
+*/
+void oopsla_07(int n) {
+    int i, a, b;
+    i = 0; a = 0; b = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i;
+        loop assigns b;
+        loop assigns a;
+    */
+    while( i < n ) {
+        if(unknown1()) {
+            a = a + 1;
+            b = b + 2;
+        } else {
+            a = a + 2;
+            b = b + 1;
+        }
+        i = i + 1;
+    }
+    //@ assert a_1: a + b == 3*n ;
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i <= n;
+loop invariant a + b == 3 * i;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= n
+i_1: a + b == 3 * i
+------------------------------------
+---------- Code with Invariants ----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * From "Path Invariants" PLDI 07 by Beyer et al.
+ */
+/*@
+    requires n > 0;
+*/
+void oopsla_07(int n) {
+    int i, a, b;
+    i = 0; a = 0; b = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= n;
+
+        loop invariant i_1: a + b == 3 * i;
+
+
+        loop assigns i;
+        loop assigns b;
+        loop assigns a;
+    */
+    while( i < n ) {
+        if(unknown1()) {
+            a = a + 1;
+            b = b + 2;
+        } else {
+            a = a + 2;
+            b = b + 1;
+        }
+        i = i + 1;
+    }
+    //@ assert a_1: a + b == 3*n ;
+}
+
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 3.352478504180908
+Proposal number: 1
+Verified code:
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * From "Path Invariants" PLDI 07 by Beyer et al.
+ */
+/*@
+    requires n > 0;
+*/
+void oopsla_07(int n) {
+    int i, a, b;
+    i = 0; a = 0; b = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= n;
+
+        loop invariant i_1: a + b == 3 * i;
+
+
+        loop assigns i;
+        loop assigns b;
+        loop assigns a;
+    */
+    while( i < n ) {
+        if(unknown1()) {
+            a = a + 1;
+            b = b + 2;
+        } else {
+            a = a + 2;
+            b = b + 1;
+        }
+        i = i + 1;
+    }
+    //@ assert a_1: a + b == 3*n ;
+}
+
+------------------------

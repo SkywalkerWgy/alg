@@ -1,0 +1,181 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_11.c
+----------Code----------
+// hhk2008_true-unreach-call.c
+
+/*@
+    requires a < 1000000;
+    requires 0 <= b && b <= 1000000;
+*/
+int svcomp_11(int a, int b) {
+
+    int res, cnt;
+
+    res = a;
+    cnt = b;
+
+    /*@
+        loop assigns cnt, res;
+    */
+    while (cnt > 0) {
+    	cnt = cnt - 1;
+        res = res + 1;
+    }
+
+    //@ assert res == a + b;
+    
+    return 0;
+}
+
+------------------------
+----------Prompt----------
+
+// hhk2008_true-unreach-call.c
+
+/*@
+    requires a < 1000000;
+    requires 0 <= b && b <= 1000000;
+*/
+int svcomp_11(int a, int b) {
+
+    int res, cnt;
+
+    res = a;
+    cnt = b;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cnt, res;
+    */
+    while (cnt > 0) {
+    	cnt = cnt - 1;
+        res = res + 1;
+    }
+
+    //@ assert res == a + b;
+    
+    return 0;
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant a < 1000000;
+loop invariant 0 <= b && b <= 1000000;
+loop invariant 0 <= cnt && cnt <= b;
+loop invariant res + cnt == a + b;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: a < 1000000
+i_1: 0 <= b && b <= 1000000
+i_2: 0 <= cnt && cnt <= b
+i_3: res + cnt == a + b
+------------------------------------
+----------Code with Invariants----------
+// hhk2008_true-unreach-call.c
+
+/*@
+    requires a < 1000000;
+    requires 0 <= b && b <= 1000000;
+*/
+int svcomp_11(int a, int b) {
+
+    int res, cnt;
+
+    res = a;
+    cnt = b;
+
+    // Loop A
+    /*@
+        loop invariant i_0: a < 1000000;
+
+        loop invariant i_1: 0 <= b && b <= 1000000;
+
+        loop invariant i_2: 0 <= cnt && cnt <= b;
+
+        loop invariant i_3: res + cnt == a + b;
+
+
+        loop assigns cnt, res;
+    */
+    while (cnt > 0) {
+    	cnt = cnt - 1;
+        res = res + 1;
+    }
+
+    //@ assert res == a + b;
+    
+    return 0;
+}
+
+----------------------------------------
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 11.076425790786743
+Proposal number: 1
+Verified code:
+// hhk2008_true-unreach-call.c
+
+/*@
+    requires a < 1000000;
+    requires 0 <= b && b <= 1000000;
+*/
+int svcomp_11(int a, int b) {
+
+    int res, cnt;
+
+    res = a;
+    cnt = b;
+
+    // Loop A
+    /*@
+        loop invariant i_0: a < 1000000;
+
+        loop invariant i_1: 0 <= b && b <= 1000000;
+
+        loop invariant i_2: 0 <= cnt && cnt <= b;
+
+        loop invariant i_3: res + cnt == a + b;
+
+
+        loop assigns cnt, res;
+    */
+    while (cnt > 0) {
+    	cnt = cnt - 1;
+        res = res + 1;
+    }
+
+    //@ assert res == a + b;
+    
+    return 0;
+}
+
+------------------------

@@ -1,0 +1,41 @@
+//terminator_03_true-unreach-call_true-termination.c
+
+/*@
+    requires y <= 1000000;
+*/
+int svcomp_20(int x, int y) {
+
+	if (y > 0) {
+        // Loop A
+		/*@
+            loop invariant i_0: y <= 1000000;
+
+            loop invariant i_1: y >= 0;
+
+            loop invariant i_2: x < 100 && y > 0;
+
+            loop invariant i_3: x == y - 100 * x;
+
+            loop invariant i_4: y <= 0 || x >= 100;
+
+            loop invariant i_5: x < 100;
+
+            loop invariant i_6: y > 0 || x >= 100;
+
+            loop invariant i_7: x + y == y - 100 * x;
+
+            loop invariant i_8: x < 100 || y == 0;
+
+
+            loop assigns y;
+            loop assigns x;
+		*/
+		while (x < 100) {
+			x = x + y;
+		}
+	}
+	
+	//@ assert y <= 0 || (y > 0 && x >= 100);
+
+	return 0;
+}

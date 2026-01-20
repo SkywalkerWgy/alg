@@ -1,0 +1,179 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c (with preprocessing)
+[kernel:CERT:MSC:37] /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c:36: Warning: 
+  Body of function _linear_probing_insert falls-through. Adding a return statement
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 9 goals scheduled
+[wp] [Timeout] typed_linear_probing_insert_assigns_part3 (Qed 11ms) (Alt-Ergo)
+[wp] [Timeout] typed_linear_probing_insert_assert_missing_return (Qed 13ms) (Alt-Ergo)
+[wp] [Timeout] typed_linear_probing_insert_ensures_e_2 (Qed 33ms) (Alt-Ergo)
+[wp] Proved goals:    7 / 10
+  Unreachable:     1
+  Qed:             5 (11ms-10ms-33ms)
+  Z3 4.15.4:       1 (20ms)
+  Timeout:         3
+------------------------------------------------------------
+  Function _linear_probing_insert
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_linear_probing_insert':
+Let x = Mint_1[shift_sint32(table_0, index_0)].
+Let x_1 = Mint_0[shift_sint32(table_0, _linear_probing_insert_0)].
+Assume {
+  Type: is_sint32(_linear_probing_insert_0) /\ is_sint32(data_0) /\
+      is_sint32(index_0) /\ is_sint32(size_0) /\ is_sint32(x_1) /\
+      is_sint32(x).
+  (* Heap *)
+  Type: (region(table_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(table_0, 0), size_0).
+  (* Pre-condition *)
+  Have: 0 < size_0.
+  (* Pre-condition *)
+  Have: 0 < data_0.
+  If x != (-1)
+  Then { (* Else *) Have: size_0 <= index_0. }
+  If size_0 = index_0
+  Then { Have: Mint_1 = Mint_0. Have: _linear_probing_insert_0 = (-1). }
+  Else {
+    Let a = shift_sint32(table_0, _linear_probing_insert_0).
+    Have: Mint_1 = Mint_2.
+    Have: Mint_2[a] = (-1).
+    Have: Mint_2[a <- data_0] = Mint_0.
+    Have: index_0 = _linear_probing_insert_0.
+  }
+}
+Prove: (_linear_probing_insert_0 = (-1)) \/ (x_1 = data_0).
+Prover Z3 4.15.4 returns Valid (Qed:32ms) (20ms) (38600)
+
+------------------------------------------------------------
+
+Goal Post-condition 'e_2' in '_linear_probing_insert':
+Let x = Mint_1[shift_sint32(table_0, index_0)].
+Let x_1 = data_0 % size_0.
+Assume {
+  Type: is_sint32(_linear_probing_insert_0) /\ is_sint32(data_0) /\
+      is_sint32(index_0) /\ is_sint32(size_0) /\
+      is_sint32(Mint_0[shift_sint32(table_0, _linear_probing_insert_0)]) /\
+      is_sint32(x).
+  (* Heap *)
+  Type: (region(table_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (Mint_0[shift_sint32(table_0, i)] = (-1)) /\
+      (i <= _linear_probing_insert_0) /\ (x_1 <= i).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(table_0, 0), size_0).
+  (* Pre-condition *)
+  Have: 0 < size_0.
+  (* Pre-condition *)
+  Have: 0 < data_0.
+  If x != (-1)
+  Then { (* Else *) Have: size_0 <= index_0. }
+  If size_0 = index_0
+  Then { Have: Mint_1 = Mint_0. Have: _linear_probing_insert_0 = (-1). }
+  Else {
+    Let a = shift_sint32(table_0, _linear_probing_insert_0).
+    Have: Mint_1 = Mint_2.
+    Have: Mint_2[a] = (-1).
+    Have: Mint_2[a <- data_0] = Mint_0.
+    Have: index_0 = _linear_probing_insert_0.
+  }
+}
+Prove: (_linear_probing_insert_0 = (-1)) /\
+    (forall i_1 : Z. ((i_1 < size_0) -> ((x_1 <= i_1) ->
+     (Mint_0[shift_sint32(table_0, i_1)] != (-1))))).
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:33ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:33ms) (10s)
+
+------------------------------------------------------------
+
+Goal Assertion 'missing_return' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 36):
+Let x = Mint_0[shift_sint32(table_0, index_0)].
+Assume {
+  Type: is_sint32(data_0) /\ is_sint32(index_0) /\ is_sint32(size_0) /\
+      is_sint32(x).
+  (* Heap *)
+  Type: (region(table_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(table_0, 0), size_0).
+  (* Pre-condition *)
+  Have: 0 < size_0.
+  (* Pre-condition *)
+  Have: 0 < data_0.
+  (* Else *)
+  Have: size_0 <= index_0.
+  (* Else *)
+  Have: size_0 != index_0.
+  (* Else *)
+  Have: x != (-1).
+}
+Prove: false.
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:13ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:13ms) (10s)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 24):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 15) in '_linear_probing_insert' (1/5):
+Effect at line 26
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 15) in '_linear_probing_insert' (2/5):
+Effect at line 30
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 15) in '_linear_probing_insert' (3/5):
+Effect at line 33
+Let a = shift_sint32(table_0, index_0).
+Let a_1 = shift_sint32(table_0, 0).
+Assume {
+  Type: is_sint32(data_0) /\ is_sint32(index_0) /\ is_sint32(size_0).
+  (* Heap *)
+  Type: (region(table_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, size_0).
+  (* Pre-condition *)
+  Have: 0 < size_0.
+  (* Pre-condition *)
+  Have: 0 < data_0.
+  (* Else *)
+  Have: size_0 != index_0.
+  (* Then *)
+  Have: Mint_0[a] = (-1).
+}
+Prove: included(a, 1, a_1, size_0).
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:11ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:11ms) (10s)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 15) in '_linear_probing_insert' (4/5):
+Effect at line 34
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_linear_probing_insert.c/_linear_probing_insert_verified_final_attempt_15.c, line 15) in '_linear_probing_insert' (5/5):
+Effect at line 36
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

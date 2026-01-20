@@ -1,0 +1,116 @@
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot;
+    int i = lo;
+    int j = hi;
+
+    pivot = a[lo];
+    
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= hi;
+
+        loop invariant i_1: \valid(a + (lo .. hi));
+
+        loop invariant i_2: lo <= i <= j <= hi;
+
+        loop invariant i_3: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_4: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+        loop invariant i_18: pivot >= a[i];
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_10: lo <= hi;
+
+            loop invariant i_11: \valid(a + (lo .. hi));
+
+            loop invariant i_12: lo <= i <= j <= hi;
+
+            loop invariant i_13: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_14: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_15: a[i] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_5: lo <= hi;
+
+            loop invariant i_6: \valid(a + (lo .. hi));
+
+            loop invariant i_8: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_9: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_16: lo <= i;
+
+            loop invariant i_17: j <= hi;
+
+            loop invariant i_19: lo <= j <= hi;
+
+            loop invariant i_20: hi >= lo;
+
+            loop invariant i_21: lo <= i && i <= hi;
+
+            loop invariant i_22: lo <= j && j <= hi;
+
+            loop invariant i_23: \forall integer k; lo <= k && k < i ==> a[k] <= pivot;
+
+            loop invariant i_24: \forall integer k; j < k && k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_25: (lo <= i) && (i <= hi);
+
+            loop invariant i_26: (lo <= j) && (hi >= j);
+
+            loop invariant i_27: lo <= i <= hi;
+
+            loop invariant i_28: i - lo >= 0;
+
+            loop invariant i_29: \forall integer k; k < i && lo <= k ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}

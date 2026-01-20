@@ -1,0 +1,198 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_22.c
+----------Code----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+void oopsla_22(){
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int k = 0;
+
+    /*@
+        loop assigns z;
+        loop assigns y;
+        loop assigns x;
+        loop assigns k;
+    */
+    while(unknown1())
+    {
+        if(k%3 == 0){
+            x++;
+        }
+        y++;
+        z++;
+        k = x+y+z;
+    }
+
+    //@ assert a_1: x==y;
+    //@ assert a_2: y==z;
+ 
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+void oopsla_22(){
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns z;
+        loop assigns y;
+        loop assigns x;
+        loop assigns k;
+    */
+    while(unknown1())
+    {
+        if(k%3 == 0){
+            x++;
+        }
+        y++;
+        z++;
+        k = x+y+z;
+    }
+
+    //@ assert a_1: x==y;
+    //@ assert a_2: y==z;
+ 
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x == y && y == z;
+loop invariant k == x + y + z;
+loop invariant k % 3 == 0;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: x == y && y == z
+i_1: k == x + y + z
+i_2: k % 3 == 0
+------------------------------------
+---------- Code with Invariants ----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+void oopsla_22(){
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: x == y && y == z;
+
+        loop invariant i_1: k == x + y + z;
+
+        loop invariant i_2: k % 3 == 0;
+
+
+        loop assigns z;
+        loop assigns y;
+        loop assigns x;
+        loop assigns k;
+    */
+    while(unknown1())
+    {
+        if(k%3 == 0){
+            x++;
+        }
+        y++;
+        z++;
+        k = x+y+z;
+    }
+
+    //@ assert a_1: x==y;
+    //@ assert a_2: y==z;
+ 
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 4.020036458969116
+Proposal number: 1
+Verified code:
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+void oopsla_22(){
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: x == y && y == z;
+
+        loop invariant i_1: k == x + y + z;
+
+        loop invariant i_2: k % 3 == 0;
+
+
+        loop assigns z;
+        loop assigns y;
+        loop assigns x;
+        loop assigns k;
+    */
+    while(unknown1())
+    {
+        if(k%3 == 0){
+            x++;
+        }
+        y++;
+        z++;
+        k = x+y+z;
+    }
+
+    //@ assert a_1: x==y;
+    //@ assert a_2: y==z;
+ 
+}
+------------------------

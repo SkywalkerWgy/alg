@@ -1,0 +1,3138 @@
+File Path: ../Benchmark/acsl-algorithms/_matrix_chain.c
+----------Code----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    /*@
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Here are the loop invariants for the specified loop A:
+
+```
+loop invariant 2 <= l <= n + 1;
+loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i >= l - 1 ==> m[i][j] == 2147483647 || 
+               (\exists integer k; i <= k < j && m[i][j] == m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]);
+loop invariant \forall integer j; 2 <= j < l ==> 
+               (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                   (\forall integer h; g <= h < g + j - 1 ==> 
+                       m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: s for the specified loop A: ``` loop invariant 2 <= l <= n + 1;
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_3: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i >= l - 1 ==> m[i][j] == 2147483647 || (\exists integer k; i <= k < j && m[i][j] == m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+        loop invariant i_4: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the context and the requirements, here are the loop invariants for Loop B:
+
+```
+loop invariant 1 <= i <= n - l + 2;
+loop invariant \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]);
+loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+loop invariant \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: s for the specified loop A: ``` loop invariant 2 <= l <= n + 1;
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_3: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i >= l - 1 ==> m[i][j] == 2147483647 || (\exists integer k; i <= k < j && m[i][j] == m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+        loop invariant i_4: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i <= k <= end;
+loop invariant m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]);
+loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+```
+----------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: s for the specified loop A: ``` loop invariant 2 <= l <= n + 1;
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_3: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i >= l - 1 ==> m[i][j] == 2147483647 || (\exists integer k; i <= k < j && m[i][j] == m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+        loop invariant i_4: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_3: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i >= l - 1 ==> m[i][j] == 2147483647 || (\exists integer k; i <= k < j && m[i][j] == m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j]); loop invariant \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+        loop invariant i_4: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_4: \forall integer j; 2 <= j < l ==> (\forall integer g; 1 <= g <= n - j + 1 ==> (\forall integer h; g <= h < g + j - 1 ==> m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1])); ```;
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant 1 <= i <= n - l + 2;
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_7: \forall integer j; 1 <= j < i ==> m[j][j + l - 1] == \min(\forall integer k; j <= k < j + l - 1; m[j][k] + m[k + 1][j + l - 1] + p[j - 1] * p[k] * p[j + l - 1]); loop invariant \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_11: m[i][end] == \min(\forall integer r; i <= r < k; m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end]); loop invariant \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_8: \forall integer j; i <= j <= n - l + 1 ==> m[j][j + l - 1] == \at(m[j][j + l - 1], Pre);
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_10: i <= k <= end;
+loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+loop invariant \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopA);
+
+[Loop A]
+loop invariant i_1: 2 <= l <= n + 1;
+loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_13: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopA);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+
+[Loop A]
+loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+
+[Loop A]
+loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+
+[Loop A]
+loop invariant i_2: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_10: i <= k <= end;
+loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+[Loop A]
+loop invariant i_1: 2 <= l <= n + 1;
+loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_2: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+[Loop A]
+loop invariant i_2: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_2: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Pre);
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_16: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+[Loop A]
+loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_16: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+
+[Loop A]
+loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+```
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_16: preservation---------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+[Loop C]
+loop invariant \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+loop invariant \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+[Loop A]
+loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+loop invariant \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 && (j != i + l - 1) ==> m[i][j] == \at(m[i][j], LoopEntry);
+----------------------------
+--------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_16: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], LoopEntry);
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+        loop invariant i_25: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 && (j != i + l - 1) ==> m[i][j] == \at(m[i][j], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_24: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_18: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], LoopEntry);
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+        loop invariant i_25: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 && (j != i + l - 1) ==> m[i][j] == \at(m[i][j], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_24: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+        loop invariant i_25: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 && (j != i + l - 1) ==> m[i][j] == \at(m[i][j], LoopEntry);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_24: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+----------Code with Invariants----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_24: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+----------------------------------------
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 239.257750749588
+Proposal number: 14
+Verified code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_1: 2 <= l <= n + 1;
+        loop invariant i_22: \forall integer i, j; 1 <= i <= n && 1 <= j <= n && j - i < l - 1 ==> m[i][j] == \at(m[i][j], Here);
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= i <= n - l + 2;
+            loop invariant i_9: \forall integer j; 1 <= j <= n - l + 1 ==> m[j][j + l - 1] <= 2147483647;
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_10: i <= k <= end;
+                loop invariant i_12: \forall integer r; i <= r < k ==> m[i][end] <= m[i][r] + m[r + 1][end] + p[i - 1] * p[r] * p[end];
+                loop invariant i_14: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && b - a < l - 1 ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_15: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_17: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 || (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_19: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a != end - i || a != i) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_20: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_21: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a >= l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+                loop invariant i_23: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1) ==> m[a][b] == \at(m[a][b], Pre);
+                loop invariant i_24: \forall integer a, b; 1 <= a <= n && 1 <= b <= n && (b - a < l - 1 && (a != i || b != end)) ==> m[a][b] == \at(m[a][b], LoopEntry);
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------

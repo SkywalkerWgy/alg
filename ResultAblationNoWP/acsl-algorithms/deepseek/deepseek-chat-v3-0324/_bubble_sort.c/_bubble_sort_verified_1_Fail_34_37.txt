@@ -1,0 +1,978 @@
+[kernel] Parsing /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 36 goals scheduled
+[wp] [Timeout] typed_bubble_sort_loop_invariant_i_1_preserved (Qed 49ms) (Alt-Ergo)
+[wp] [Timeout] typed_bubble_sort_loop_invariant_i_2_preserved (Qed 56ms) (Alt-Ergo)
+[wp] [Timeout] typed_bubble_sort_loop_invariant_i_8_established (Qed 13ms) (Alt-Ergo)
+[wp] Proved goals:   34 / 37
+  Unreachable:       1
+  Qed:              21 (2ms-11ms-56ms)
+  Alt-Ergo 2.6.1:   12 (19ms-291ms-3.1s)
+  Timeout:           3
+------------------------------------------------------------
+  Function _bubble_sort
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_bubble_sort':
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Assume {
+  Type: is_sint32(length_0) /\ is_sint32(up_0).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < up_0) ->
+      P_sorted(a_2, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_3 = shift_sint32(a, i) in let a_4 = a_2[a_3] in
+      ((i < length_0) -> ((up_0 <= i) ->
+      ((a_4 = Mint_0[a_3]) \/
+       (exists i_1 : Z. (a_4 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+        (up_0 <= i_1))))).
+  (* Else *)
+  Have: length_0 <= up_0.
+}
+Prove: P_sorted(a_2, a, 0, length_0).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:10ms) (3.1s) (20551)
+Prover CVC4 1.6 returns Unknown (Qed:10ms)
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated) in '_bubble_sort':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_0' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 39):
+Prove: true.
+Prover Qed returns Valid (11ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_0' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 39):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_1' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 41):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = memcpy(a_2, a_1, Mint_undef_1, a_1, length_0).
+Let a_4 = a_3[shift_sint32(a, down_0 - 1)].
+Let a_5 = a_3[shift_sint32(a, down_0)].
+Let a_6 = a_2[shift_sint32(a, down_1 - 1)].
+Let a_7 = a_2[shift_sint32(a, down_1)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(down_1) /\ is_sint32(length_0) /\
+      is_sint32(1 + down_1) /\ is_sint32(a_7) /\ is_sint32(a_6) /\
+      is_sint32(a_5) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i <= down_1) /\ (0 <= i).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < down_1) /\ (down_1 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_1) ->
+      P_sorted(a_2, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_8 = shift_sint32(a, i_1) in
+      let a_9 = a_2[a_8] in ((down_1 <= i_1) -> ((i_1 < length_0) ->
+      ((a_9 = Mint_0[a_8]) \/
+       (exists i_2 : Z. (a_9 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_1 <= i_2) /\ (i_2 < i_1))))).
+  (* Then *)
+  Have: down_1 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_6 <= a_7.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= down_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_3, a, 0, 1 + i_1))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. let a_8 = shift_sint32(a, i_1) in
+      let a_9 = a_3[a_8] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_9 = Mint_0[a_8]) \/
+       (exists i_2 : Z. (a_9 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Invariant 'i_8' *)
+  Have: ((down_0 < length_0) -> (a_4 <= a_5)).
+  If 0 < down_0
+  Then {
+    Have: a_3 = Mint_1.
+    (* Else *)
+    Have: Mint_1[shift_sint32(a, down_0 - 1)]
+            <= Mint_1[shift_sint32(a, down_0)].
+  }
+}
+Prove: P_sorted(a_3, a, 0, 1 + i).
+Prover Alt-Ergo 2.6.1 returns Timeout (Qed:49ms) (10s)
+Prover CVC4 1.6 returns Unknown (Qed:49ms)
+Prover Z3 4.8.6 returns Timeout (Qed:49ms) (10s)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_1' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 41):
+Assume {
+  Type: is_sint32(length_0).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i <= 0) /\ (0 <= i).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+}
+Prove: P_sorted(Mint_0, a, 0, 1).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:2ms) (26ms) (43)
+Prover CVC4 1.6 returns Valid (Qed:2ms) (37ms) (11701)
+Prover Z3 4.8.6 returns Valid (Qed:2ms) (10ms) (51825)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 43):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = memcpy(a_2, a_1, Mint_undef_1, a_1, length_0).
+Let a_4 = a_3[shift_sint32(a, down_0 - 1)].
+Let a_5 = a_3[shift_sint32(a, down_0)].
+Let a_6 = a_2[shift_sint32(a, up_0 - 1)].
+Let a_7 = a_2[shift_sint32(a, up_0)].
+Let a_8 = shift_sint32(a, i).
+Let a_9 = a_3[a_8].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(1 + up_0) /\ is_sint32(a_7) /\ is_sint32(a_6) /\
+      is_sint32(a_5) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i < length_0) /\ (up_0 < i).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < up_0) ->
+      P_sorted(a_2, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_10 = shift_sint32(a, i_1) in
+      let a_11 = a_2[a_10] in ((i_1 < length_0) -> ((up_0 <= i_1) ->
+      ((a_11 = Mint_0[a_10]) \/
+       (exists i_2 : Z. (a_11 = Mint_0[shift_sint32(a, i_2)]) /\
+        (i_2 < i_1) /\ (up_0 <= i_2))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_6 <= a_7.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_3, a, 0, 1 + i_1))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. let a_10 = shift_sint32(a, i_1) in
+      let a_11 = a_3[a_10] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_11 = Mint_0[a_10]) \/
+       (exists i_2 : Z. (a_11 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Invariant 'i_8' *)
+  Have: ((down_0 < length_0) -> (a_4 <= a_5)).
+  If 0 < down_0
+  Then {
+    Have: a_3 = Mint_1.
+    (* Else *)
+    Have: Mint_1[shift_sint32(a, down_0 - 1)]
+            <= Mint_1[shift_sint32(a, down_0)].
+  }
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= up_0) ->
+      P_sorted(a_3, a, 0, 1 + i_1))).
+}
+Prove: (a_9 = Mint_0[a_8]) \/
+    (exists i_1 : Z. (a_9 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+     (up_0 < i_1)).
+Prover Alt-Ergo 2.6.1 returns Timeout (Qed:56ms) (10s)
+Prover CVC4 1.6 returns Unknown (Qed:56ms)
+Prover Z3 4.8.6 returns Timeout (Qed:56ms) (10s)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 43):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_3' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 45):
+Prove: true.
+Prover Qed returns Valid (14ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_3' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 45):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 54):
+Let a_1 = shift_sint32(a, down_0).
+Let x = down_0 - 1.
+Let a_2 = shift_sint32(a, x).
+Let a_3 = shift_sint32(a, 0).
+Let a_4 = memcpy(Mint_0, a_3, Mint_undef_0, a_3, length_0).
+Let a_5 = memcpy(a_4, a_3, Mint_undef_1, a_3, length_0).
+Let a_6 = a_5[a_2 <- v][a_1 <- v_1].
+Let a_7 = a_5[a_1].
+Let a_8 = a_5[a_2].
+Let a_9 = a_4[shift_sint32(a, up_0 - 1)].
+Let a_10 = a_4[shift_sint32(a, up_0)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(v) /\ is_sint32(x) /\ is_sint32(a_10) /\ is_sint32(a_9) /\
+      is_sint32(a_7) /\ is_sint32(a_5[shift_sint32(a, down_0 - 2)]) /\
+      is_sint32(a_8).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_3, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < up_0) ->
+      P_sorted(a_4, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_11 = shift_sint32(a, i) in
+      let a_12 = a_4[a_11] in ((i < length_0) -> ((up_0 <= i) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+        (up_0 <= i_1))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_9 <= a_10.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_0) ->
+      P_sorted(a_5, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_11 = shift_sint32(a, i) in
+      let a_12 = a_5[a_11] in ((down_0 <= i) -> ((i < length_0) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 <= i_1) /\ (i_1 < i))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= down_0.
+  (* Then *)
+  Have: 0 < down_0.
+  (* Then *)
+  Have: a_7 < a_8.
+  (* Call 'sort_swap3' *)
+  Have: valid_rw(Malloc_0, a_1, 1) /\ valid_rw(Malloc_0, a_2, 1) /\
+      P_swapped(a_6, a_5, a, down_0, x) /\
+      (forall i : Z. let a_11 = shift_sint32(a, i) in ((i != down_0) ->
+       (((1 + i) != down_0) -> ((0 <= i) -> ((i < length_0) ->
+       (a_6[a_11] = a_5[a_11])))))).
+}
+Prove: down_0 <= (1 + up_0).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:36ms) (31ms) (31)
+Prover CVC4 1.6 returns Valid (Qed:36ms) (37ms) (13939)
+Prover Z3 4.8.6 returns Valid (Qed:36ms) (30ms) (108259)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 54):
+Prove: true.
+Prover Qed returns Valid (6ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_5' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 56):
+Let a_1 = shift_sint32(a, down_0).
+Let x = down_0 - 1.
+Let a_2 = shift_sint32(a, x).
+Let a_3 = shift_sint32(a, 0).
+Let a_4 = memcpy(Mint_0, a_3, Mint_undef_0, a_3, length_0).
+Let a_5 = memcpy(a_4, a_3, Mint_undef_1, a_3, length_0).
+Let a_6 = a_5[a_2 <- v][a_1 <- v_1].
+Let a_7 = a_5[a_1].
+Let a_8 = a_5[a_2].
+Let a_9 = a_4[shift_sint32(a, up_0 - 1)].
+Let a_10 = a_4[shift_sint32(a, up_0)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(v) /\ is_sint32(x) /\ is_sint32(a_10) /\ is_sint32(a_9) /\
+      is_sint32(a_7) /\ is_sint32(a_5[shift_sint32(a, down_0 - 2)]) /\
+      is_sint32(a_8).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ ((2 + i) <= down_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_3, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < up_0) ->
+      P_sorted(a_4, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_11 = shift_sint32(a, i_1) in
+      let a_12 = a_4[a_11] in ((i_1 < length_0) -> ((up_0 <= i_1) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_2 : Z. (a_12 = Mint_0[shift_sint32(a, i_2)]) /\
+        (i_2 < i_1) /\ (up_0 <= i_2))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_9 <= a_10.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_5, a, 0, 1 + i_1))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. let a_11 = shift_sint32(a, i_1) in
+      let a_12 = a_5[a_11] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_2 : Z. (a_12 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= down_0.
+  (* Then *)
+  Have: 0 < down_0.
+  (* Then *)
+  Have: a_7 < a_8.
+  (* Call 'sort_swap3' *)
+  Have: valid_rw(Malloc_0, a_1, 1) /\ valid_rw(Malloc_0, a_2, 1) /\
+      P_swapped(a_6, a_5, a, down_0, x) /\
+      (forall i_1 : Z. let a_11 = shift_sint32(a, i_1) in ((i_1 != down_0) ->
+       (((1 + i_1) != down_0) -> ((0 <= i_1) -> ((i_1 < length_0) ->
+       (a_6[a_11] = a_5[a_11])))))).
+  (* Invariant 'i_4' *)
+  Have: down_0 <= (1 + up_0).
+}
+Prove: P_sorted(a_6, a, 0, 1 + i).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:31ms) (21ms) (40)
+Prover Z3 4.8.6 returns Valid (Qed:31ms) (29ms) (110058)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_5' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 56):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\
+      is_sint32(a_2[shift_sint32(a, down_0)]) /\
+      is_sint32(a_2[shift_sint32(a, down_0 - 1)]).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < down_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < down_0) /\ (down_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_2, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_3 = shift_sint32(a, i_1) in
+      let a_4 = a_2[a_3] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_4 = Mint_0[a_3]) \/
+       (exists i_2 : Z. (a_4 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Then *)
+  Have: down_0 < length_0.
+}
+Prove: P_sorted(a_2, a, 0, 1 + i).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:13ms) (34ms) (55)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 58):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = memcpy(a_2, a_1, Mint_undef_1, a_1, length_0).
+Let x = down_0 - 1.
+Let a_4 = shift_sint32(a, x).
+Let a_5 = shift_sint32(a, down_0).
+Let a_6 = a_3[a_4 <- v][a_5 <- v_1].
+Let a_7 = a_3[a_5].
+Let a_8 = a_3[a_4].
+Let a_9 = a_2[shift_sint32(a, up_0 - 1)].
+Let a_10 = a_2[shift_sint32(a, up_0)].
+Let a_11 = shift_sint32(a, i).
+Let a_12 = a_6[a_11].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(v) /\ is_sint32(x) /\ is_sint32(a_10) /\ is_sint32(a_9) /\
+      is_sint32(a_7) /\ is_sint32(a_3[shift_sint32(a, down_0 - 2)]) /\
+      is_sint32(a_8).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i < length_0) /\ (down_0 <= (1 + i)).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < up_0) ->
+      P_sorted(a_2, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_13 = shift_sint32(a, i_1) in
+      let a_14 = a_2[a_13] in ((i_1 < length_0) -> ((up_0 <= i_1) ->
+      ((a_14 = Mint_0[a_13]) \/
+       (exists i_2 : Z. (a_14 = Mint_0[shift_sint32(a, i_2)]) /\
+        (i_2 < i_1) /\ (up_0 <= i_2))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_9 <= a_10.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_3, a, 0, 1 + i_1))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. let a_13 = shift_sint32(a, i_1) in
+      let a_14 = a_3[a_13] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_14 = Mint_0[a_13]) \/
+       (exists i_2 : Z. (a_14 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= down_0.
+  (* Then *)
+  Have: 0 < down_0.
+  (* Then *)
+  Have: a_7 < a_8.
+  (* Call 'sort_swap3' *)
+  Have: valid_rw(Malloc_0, a_5, 1) /\ valid_rw(Malloc_0, a_4, 1) /\
+      P_swapped(a_6, a_3, a, down_0, x) /\
+      (forall i_1 : Z. let a_13 = shift_sint32(a, i_1) in ((i_1 != down_0) ->
+       (((1 + i_1) != down_0) -> ((0 <= i_1) -> ((i_1 < length_0) ->
+       (a_6[a_13] = a_3[a_13])))))).
+  (* Invariant 'i_4' *)
+  Have: down_0 <= (1 + up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((2 + i_1) <= down_0) ->
+      P_sorted(a_6, a, 0, 1 + i_1))).
+}
+Prove: (a_12 = Mint_0[a_11]) \/
+    (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+     (down_0 <= (1 + i_1))).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:47ms) (35ms) (42)
+Prover Z3 4.8.6 returns Valid (Qed:47ms) (29ms) (114297)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 58):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = a_2[a_3].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\
+      is_sint32(a_2[shift_sint32(a, down_0)]) /\
+      is_sint32(a_2[shift_sint32(a, down_0 - 1)]).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (down_0 <= i) /\ (i < length_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < down_0) /\ (down_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < down_0) ->
+      P_sorted(a_2, a, 0, 1 + i_1))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. let a_5 = shift_sint32(a, i_1) in
+      let a_6 = a_2[a_5] in ((down_0 <= i_1) -> ((i_1 < length_0) ->
+      ((a_6 = Mint_0[a_5]) \/
+       (exists i_2 : Z. (a_6 = Mint_0[shift_sint32(a, i_2)]) /\
+        (down_0 <= i_2) /\ (i_2 < i_1))))).
+  (* Then *)
+  Have: down_0 < length_0.
+}
+Prove: (a_4 = Mint_0[a_3]) \/
+    (exists i_1 : Z. (a_4 = Mint_0[shift_sint32(a, i_1)]) /\
+     (down_0 <= i_1) /\ (i_1 < i)).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:18ms) (99ms) (599)
+Prover CVC4 1.6 returns Valid (Qed:18ms) (36ms) (15777)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 60):
+Prove: true.
+Prover Qed returns Valid (11ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 60):
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_8' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 62):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(memcpy(Mint_0, a_1, Mint_undef_0, a_1, down_0), a_1,
+            Mint_undef_1, a_1, down_0).
+Let x = down_0 - 1.
+Let a_3 = shift_sint32(a, x).
+Let a_4 = shift_sint32(a, down_0).
+Let a_5 = a_2[a_3 <- v][a_4 <- v_1].
+Let a_6 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_7 = memcpy(a_6, a_1, Mint_undef_1, a_1, length_0).
+Let a_8 = a_6[shift_sint32(a, up_0 - 1)].
+Let a_9 = a_6[shift_sint32(a, up_0)].
+Let a_10 = shift_sint32(a, down_0 - 2).
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(v) /\ is_sint32(x) /\ is_sint32(a_9) /\ is_sint32(a_8) /\
+      is_sint32(a_7[a_4]) /\ is_sint32(a_7[a_10]) /\ is_sint32(a_7[a_3]).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: down_0 <= length_0.
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < up_0) ->
+      P_sorted(a_6, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_11 = shift_sint32(a, i) in
+      let a_12 = a_6[a_11] in ((i < length_0) -> ((up_0 <= i) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+        (up_0 <= i_1))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_8 <= a_9.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_0) ->
+      P_sorted(a_7, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_11 = shift_sint32(a, i) in
+      let a_12 = a_7[a_11] in ((down_0 <= i) -> ((i < length_0) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 <= i_1) /\ (i_1 < i))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= down_0.
+  (* Then *)
+  Have: 0 < down_0.
+  (* Then *)
+  Have: a_2[a_4] < a_2[a_3].
+  (* Call 'sort_swap3' *)
+  Have: valid_rw(Malloc_0, a_4, 1) /\ valid_rw(Malloc_0, a_3, 1) /\
+      P_swapped(a_5, a_2, a, down_0, x) /\
+      (forall i : Z. let a_11 = shift_sint32(a, i) in ((i != down_0) ->
+       (((1 + i) != down_0) -> ((0 <= i) -> ((i < down_0) ->
+       (a_5[a_11] = a_2[a_11])))))).
+  (* Invariant 'i_4' *)
+  Have: down_0 <= (1 + up_0).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((0 <= i) -> (((2 + i) <= down_0) ->
+      P_sorted(a_5, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_11 = shift_sint32(a, i) in
+      let a_12 = a_5[a_11] in ((i < down_0) -> ((down_0 <= (1 + i)) ->
+      ((a_12 = Mint_0[a_11]) \/
+       (exists i_1 : Z. (a_12 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+        (down_0 <= (1 + i_1)))))).
+}
+Prove: a_2[a_10] <= v.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:42ms) (32ms) (42)
+Prover CVC4 1.6 returns Valid (Qed:42ms) (45ms) (14747)
+Prover Z3 4.8.6 returns Valid (Qed:42ms) (29ms) (115353)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_8' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 62):
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = a_2[shift_sint32(a, down_0)].
+Let a_4 = a_2[shift_sint32(a, down_0 - 1)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(a_3) /\
+      is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: down_0 < length_0.
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: 0 < down_0.
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_0) ->
+      P_sorted(a_2, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_5 = shift_sint32(a, i) in let a_6 = a_2[a_5] in
+      ((down_0 <= i) -> ((i < length_0) ->
+      ((a_6 = Mint_0[a_5]) \/
+       (exists i_1 : Z. (a_6 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 <= i_1) /\ (i_1 < i))))).
+}
+Prove: a_4 <= a_3.
+Prover Alt-Ergo 2.6.1 returns Timeout (Qed:13ms) (10s)
+Prover CVC4 1.6 returns Unknown (Qed:13ms)
+Prover Z3 4.8.6 returns Timeout (Qed:13ms) (10s)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 48) (1/3):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 48) (2/3):
+Effect at line 50
+Prove: true.
+Prover Qed returns Valid (16ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 48) (3/3):
+Effect at line 67
+Prove: true.
+Prover Qed returns Valid (19ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 65) (1/3):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 65) (2/3):
+Effect at line 67
+Prove: true.
+Prover Qed returns Valid (9ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 65) (3/3):
+Call Effect at line 68
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = memcpy(a_2, a_1, Mint_undef_1, a_1, length_0).
+Let a_4 = a_3[shift_sint32(a, down_0 - 1)].
+Let a_5 = shift_sint32(a, down_0).
+Let x = 1 + down_0.
+Let a_6 = shift_sint32(a, x).
+Let a_7 = a_3[a_5 <- v][a_6 <- v_1].
+Let a_8 = a_3[a_6].
+Let a_9 = a_3[a_5].
+Let a_10 = a_2[shift_sint32(a, up_0 - 1)].
+Let a_11 = a_2[shift_sint32(a, up_0)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(length_0) /\ is_sint32(up_0) /\
+      is_sint32(v) /\ is_sint32(x) /\ is_sint32(a_11) /\ is_sint32(a_10) /\
+      is_sint32(a_9) /\ is_sint32(a_4) /\ is_sint32(a_8).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < up_0) /\ (up_0 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < up_0) ->
+      P_sorted(a_2, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_12 = shift_sint32(a, i) in
+      let a_13 = a_2[a_12] in ((i < length_0) -> ((up_0 <= i) ->
+      ((a_13 = Mint_0[a_12]) \/
+       (exists i_1 : Z. (a_13 = Mint_0[shift_sint32(a, i_1)]) /\ (i_1 < i) /\
+        (up_0 <= i_1))))).
+  (* Then *)
+  Have: up_0 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_10 <= a_11.
+  (* Invariant 'i_4' *)
+  Have: (down_0 < up_0) /\ ((-1) <= down_0).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((i <= down_0) -> ((0 <= i) ->
+      P_sorted(a_3, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_12 = shift_sint32(a, i) in
+      let a_13 = a_3[a_12] in ((down_0 < i) -> ((i < length_0) ->
+      ((a_13 = Mint_0[a_12]) \/
+       (exists i_1 : Z. (a_13 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 < i_1) /\ (i_1 < i))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= x.
+  (* Then *)
+  Have: 0 <= down_0.
+  (* Then *)
+  Have: a_8 < a_9.
+  (* Call 'sort_swap3' *)
+  Have: valid_rw(Malloc_0, a_5, 1) /\ valid_rw(Malloc_0, a_6, 1) /\
+      P_swapped(a_7, a_3, a, x, down_0) /\
+      (forall i : Z. let a_12 = shift_sint32(a, i) in ((i != down_0) ->
+       ((x != i) -> ((0 <= i) -> ((i < length_0) ->
+       (a_7[a_12] = a_3[a_12])))))).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_0) ->
+      P_sorted(a_7, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_12 = shift_sint32(a, i) in
+      let a_13 = a_7[a_12] in ((down_0 <= i) -> ((i < length_0) ->
+      ((a_13 = Mint_0[a_12]) \/
+       (exists i_1 : Z. (a_13 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 <= i_1) /\ (i_1 < i))))).
+  (* Invariant 'i_8' *)
+  Have: ((down_0 < length_0) -> (a_4 <= v)).
+}
+Prove: (((!invalid(Malloc_0, a_5, 1)) -> included(a_5, 1, a_1, length_0))) /\
+    (((!invalid(Malloc_0, a_6, 1)) -> included(a_6, 1, a_1, length_0))).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:42ms) (34ms) (42)
+Prover CVC4 1.6 returns Valid (Qed:42ms) (51ms) (14804)
+Prover Z3 4.8.6 returns Valid (Qed:42ms) (42ms) (117005)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 30) in '_bubble_sort' (1/4):
+Effect at line 50
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 30) in '_bubble_sort' (2/4):
+Effect at line 51
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 30) in '_bubble_sort' (3/4):
+Effect at line 67
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 30) in '_bubble_sort' (4/4):
+Call Effect at line 68
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 30) in '_bubble_sort':
+Effect at line 50
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 16) in 'sort_swap3'' in '_bubble_sort' at call 'sort_swap3' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 68)
+:
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, length_0).
+Let a_3 = memcpy(a_2, a_1, Mint_undef_1, a_1, length_0).
+Let a_4 = shift_sint32(a, down_0).
+Let a_5 = a_3[a_4].
+Let a_6 = shift_sint32(a, down_0 - 1).
+Let a_7 = a_3[a_6].
+Let a_8 = a_2[shift_sint32(a, down_1 - 1)].
+Let a_9 = a_2[shift_sint32(a, down_1)].
+Assume {
+  Type: is_sint32(down_0) /\ is_sint32(down_1) /\ is_sint32(length_0) /\
+      is_sint32(a_9) /\ is_sint32(a_8) /\ is_sint32(a_5) /\ is_sint32(a_7).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 2 <= length_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, length_0).
+  (* Invariant 'i_0' *)
+  Have: 0 < length_0.
+  (* Invariant 'i_1' *)
+  Have: P_sorted(Mint_0, a, 0, 1).
+  (* Invariant 'i_0' *)
+  Have: (0 < down_1) /\ (down_1 <= length_0).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_1) ->
+      P_sorted(a_2, a, 0, 1 + i))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. let a_10 = shift_sint32(a, i) in
+      let a_11 = a_2[a_10] in ((down_1 <= i) -> ((i < length_0) ->
+      ((a_11 = Mint_0[a_10]) \/
+       (exists i_1 : Z. (a_11 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_1 <= i_1) /\ (i_1 < i))))).
+  (* Then *)
+  Have: down_1 < length_0.
+  (* Invariant 'i_8' *)
+  Have: a_8 <= a_9.
+  (* Invariant 'i_4' *)
+  Have: (0 <= down_0) /\ (down_0 <= down_1).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < down_0) ->
+      P_sorted(a_3, a, 0, 1 + i))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. let a_10 = shift_sint32(a, i) in
+      let a_11 = a_3[a_10] in ((down_0 <= i) -> ((i < length_0) ->
+      ((a_11 = Mint_0[a_10]) \/
+       (exists i_1 : Z. (a_11 = Mint_0[shift_sint32(a, i_1)]) /\
+        (down_0 <= i_1) /\ (i_1 < i))))).
+  (* Invariant 'i_8' *)
+  Have: length_0 <= down_0.
+  (* Then *)
+  Have: 0 < down_0.
+  (* Then *)
+  Have: a_5 < a_7.
+}
+Prove: valid_rw(Malloc_0, a_4, 1) /\ valid_rw(Malloc_0, a_6, 1).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:23ms) (30ms) (31)
+Prover CVC4 1.6 returns Valid (Qed:23ms) (38ms) (13149)
+Prover Z3 4.8.6 returns Valid (Qed:23ms) (36ms) (102718)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function sort_swap3
+------------------------------------------------------------
+
+Goal Post-condition (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 18) in 'sort_swap3':
+Let a = shift_sint32(t, i).
+Let a_1 = shift_sint32(t, j).
+Let x = Mint_0[a].
+Let a_2 = shift_sint32(t, i_1).
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(t.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i_1 != i) /\ (j != i_1) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, 1) /\ valid_rw(Malloc_0, a_1, 1).
+}
+Prove: Mint_0[a <- Mint_0[a_1]][a_1 <- x][a_2] = Mint_0[a_2].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:3ms) (23ms) (77)
+Prover CVC4 1.6 returns Valid (Qed:3ms) (17ms) (10975)
+Prover Z3 4.8.6 returns Valid (Qed:3ms) (25ms) (49725)
+
+------------------------------------------------------------
+
+Goal Post-condition (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 19) in 'sort_swap3':
+Let a = shift_sint32(t, i).
+Let a_1 = shift_sint32(t, j).
+Let x = Mint_0[a].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(t.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, 1) /\ valid_rw(Malloc_0, a_1, 1).
+}
+Prove: P_swapped(Mint_0[a <- Mint_0[a_1]][a_1 <- x], Mint_0, t, i, j).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:2ms) (19ms) (126)
+Prover CVC4 1.6 returns Valid (Qed:2ms) (18ms) (11211)
+Prover Z3 4.8.6 returns Valid (Qed:2ms) (9ms) (53585)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 17) in 'sort_swap3' (1/2):
+Effect at line 23
+Prove: true.
+Prover Qed returns Valid (0.62ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_bubble_sort.c/_bubble_sort_verified_1.c, line 17) in 'sort_swap3' (2/2):
+Effect at line 24
+Prove: true.
+Prover Qed returns Valid (0.67ms)
+
+------------------------------------------------------------

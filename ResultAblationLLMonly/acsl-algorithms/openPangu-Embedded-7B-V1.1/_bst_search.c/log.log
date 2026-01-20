@@ -1,0 +1,696 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_bst_search.c
+----------Code----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    /*@
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant cur == \null || \exists integer i;   cur == root->left^i;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: cur == \null || \exists integer i; cur == root->left^i
+------------------------------------
+---------- Code with Invariants ----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        loop invariant i_0: cur == \null || \exists integer i; cur == root->left^i;
+
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Hint] Please infer the loop invariant for the following loop.
+
+loop invariant && cur != null && (cur->key != key) && BST(cur);
+loop invariant cur->key >= key;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: for the following loop. loop invariant && cur != null && (cur->key != key) && BST(cur)
+i_2: && cur != null && (cur->key != key) && BST(cur)
+i_3: cur->key >= key
+------------------------------------
+---------- Code with Invariants ----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        loop invariant i_1: for the following loop. loop invariant && cur != null && (cur->key != key) && BST(cur);
+
+        loop invariant i_2: && cur != null && (cur->key != key) && BST(cur);
+
+        loop invariant i_3: cur->key >= key;
+
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant cur == \null || \valid(cur) && (cur->left == \null || cur->left->key <= key) && (cur->right == \null || cur->right->key >= key) && BST(cur->left) && BST(cur->right);
+loop invariant cur == \null || \valid(cur) && (cur->key == key);
+;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: cur == \null || \valid(cur) && (cur->left == \null || cur->left->key <= key) && (cur->right == \null || cur->right->key >= key) && BST(cur->left) && BST(cur->right)
+i_5: cur == \null || \valid(cur) && (cur->key == key)
+------------------------------------
+---------- Code with Invariants ----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        loop invariant i_4: cur == \null || \valid(cur) && (cur->left == \null || cur->left->key <= key) && (cur->right == \null || cur->right->key >= key) && BST(cur->left) && BST(cur->right);
+
+        loop invariant i_5: cur == \null || \valid(cur) && (cur->key == key);
+
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------------------------
+Verification failed (Fail_6_8), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Hint] Please infer the loop invariant for the following loop.
+
+loop invariant \exists Node *v; v == cur || v == NULL || v == root;
+
+loop invariant && (v == cur || v == NULL || v == root) && (cur == root || cur == NULL || cur->key == key);
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_6: for the following loop. loop invariant \exists Node *v; v == cur || v == NULL || v == root
+i_7: \exists Node *v; v == cur || v == NULL || v == root
+i_8: && (v == cur || v == NULL || v == root) && (cur == root || cur == NULL || cur->key == key)
+------------------------------------
+---------- Code with Invariants ----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        loop invariant i_6: for the following loop. loop invariant \exists Node *v; v == cur || v == NULL || v == root;
+
+        loop invariant i_7: \exists Node *v; v == cur || v == NULL || v == root;
+
+        loop invariant i_8: && (v == cur || v == NULL || v == root) && (cur == root || cur == NULL || cur->key == key);
+
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) &&
+                     cur->right == \null || cur->right->key >= key) &&
+                     BST(cur->left) && BST(cur->right));
+loop invariant cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) &&
+                                   cur->right == \null || cur->right->key >= key) &&
+                                   cur->left == \null || cur->left->key <= key && cur->left != \null &&
+                                   cur->right == \null || cur->right->key >= key && cur->right != \null &&
+                                   BST(cur->left) && BST(cur->right));
+loop invariant cur == cur->left;
+loop invariant cur == cur->right;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_9: cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) && cur->right == \null || cur->right->key >= key) && BST(cur->left) && BST(cur->right))
+i_10: cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) && cur->right == \null || cur->right->key >= key) && cur->left == \null || cur->left->key <= key && cur->left != \null && cur->right == \null || cur->right->key >= key && cur->right != \null && BST(cur->left) && BST(cur->right))
+i_11: cur == cur->left
+i_12: cur == cur->right
+------------------------------------
+---------- Code with Invariants ----------
+#include <stddef.h>
+#include <stdio.h>
+
+struct Node {
+    int key;
+    struct Node *left;
+    struct Node *right;
+};
+
+/*@
+    predicate BST{L}(struct Node* t) =
+        t == \null || (\valid(t) &&
+        (t->left == \null || t->left->key <= t->key) &&
+        (t->right == \null || t->right->key >= t->key) &&
+        BST(t->left) && BST(t->right));
+
+    logic integer height(struct Node* t) =
+        t == \null ? 0 : 1 + \max(height(t->left), height(t->right));
+*/
+
+/*@
+    requires BST(root);
+    assigns \nothing;
+    ensures e_1: \result == \null || \result->key == key;
+*/
+struct Node *_bst_search(struct Node *root, int key) {
+    struct Node *cur = root;
+    // Loop A
+    /*@
+        loop invariant i_9: cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) && cur->right == \null || cur->right->key >= key) && BST(cur->left) && BST(cur->right));
+
+        loop invariant i_10: cur == \null || (\valid(cur) && (cur->left == \null || cur->left->key <= key) && cur->right == \null || cur->right->key >= key) && cur->left == \null || cur->left->key <= key && cur->left != \null && cur->right == \null || cur->right->key >= key && cur->right != \null && BST(cur->left) && BST(cur->right));
+
+        loop invariant i_11: cur == cur->left;
+
+        loop invariant i_12: cur == cur->right;
+
+
+        loop assigns cur;
+    */
+    while (cur != NULL && cur->key != key) {
+        if (key < cur->key)
+            cur = cur->left;
+        else
+            cur = cur->right;
+    }
+    return cur;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 70.34254264831543
+Proposal number: 5
+Verified code:
+
+------------------------

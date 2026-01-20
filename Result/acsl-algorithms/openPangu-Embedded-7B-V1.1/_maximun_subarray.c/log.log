@@ -1,0 +1,3665 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_maximun_subarray.c
+----------Code----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+    /*@
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+------------------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Please infer the loop invariant for the following loop.
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result; e_2:\exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant 1 < i < n;
+loop invariant \exists integer i; 1 <= i < n;
+loop invariant current_sum == a[0] + \sum_{k=2}^i [a[k] < current_sum];
+loop invariant max_sum == a[0];
+loop invariant \forall integer j; current_sum > max_sum ==> j >= 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_2: current_sum == a[0] + \sum_{k=2}^i [a[k] < current_sum]
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_2: current_sum == a[0] + \sum_{k=2}^i [a[k] < current_sum];
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: i >= 1;
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_2: max_sum >= a[0];
+
+loop invariant i_3: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_4: \exists integer j; current_sum > max_sum ==> j >= 1;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 1 <= i < n;
+loop invariant i_1: \exists integer i; 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_6: i >= 1;
+loop invariant i_7: max_sum >= a[0];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 < i < n;
+loop invariant i_1: 1 <= i < n;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i < n;
+loop invariant i_1: 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: current_sum > max_sum implies j >= 1;
+loop invariant i_5: i >= 1;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_10: current_sum > max_sum implies j >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_10: current_sum > max_sum implies j >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 1 <= i < n;
+
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_2: max_sum == a[0];
+
+loop invariant i_3: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+loop invariant i_4: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_6: max_sum >= a[0];
+
+loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_8: 1 <= i < n;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant 1 < i < n too strong initially. Relax it.
+
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 1 < i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: 1 < i < n;
+loop invariant i_1: 1 <= i < n;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i < n
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_0: 1 < i < n;
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_7: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_5: i >= 1;
+loop invariant i_6: max_sum >= a[0];
+loop invariant i_7: \forall integer j; current_sum <= max_sum + a[j];
+```
+----------------------------
+-------------Establishment_requires: i_11: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \forall integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_5: i >= 1;
+loop invariant i_6: max_sum >= a[0];
+loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+loop invariant i_8: i >= 1;
+loop invariant i_9: 1 <= i < n;
+loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+```
+----------------------------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer i; 1 <= i < n too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer i; 1 <= i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+```
+----------------------------
+-------------Preservation_self: i_9: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant 1 <= i < n not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 1 <= i < n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant \exists integer i; 1 <= i < n;
+loop invariant max_sum == a[0];
+loop invariant \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i >= 1;
+loop invariant \exists integer j; current_sum <= max_sum + a[j];
+loop invariant \exists integer j; current_sum > max_sum ==> j >= 1;
+loop invariant 1 <= i < n;
+loop invariant \forall integer j; current_sum <= max_sum + a[j];
+----------------------------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant max_sum == a[0] not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] max_sum == a[0]
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+loop invariant i_2: max_sum >= a[0];
+loop invariant i_3: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_4: \forall integer j; current_sum <= max_sum + a[j];
+loop invariant i_5: \exists integer j; current_sum == max_sum + a[j];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+i_12: \exists integer j; current_sum == max_sum + a[j]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_7: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_3: max_sum == a[0];
+
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_7: max_sum >= a[0];
+
+loop invariant i_8: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_9: 1 <= i < n;
+
+loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+```
+----------------------------
+-------------Establishment_requires: i_12: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer j; current_sum == max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer j; current_sum == max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_5: i >= 1;
+loop invariant i_7: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_8: \exists integer j; current_sum <= max_sum + a[j];
+loop invariant i_9: 1 <= i < n;
+```
+----------------------------
+-------------Establishment_requires: i_11: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \forall integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_3: max_sum == a[0];
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_7: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_11: 1 <= i < n;
+
+loop invariant i_12: \exists integer j; current_sum <= max_sum + a[j];
+```
+----------------------------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer i; 1 <= i < n too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer i; 1 <= i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i < n;
+loop invariant max_sum == a[0];
+loop invariant current_sum <= max_sum + a[j];
+loop invariant i >= 1;
+```
+----------------------------
+-------------Preservation_self: i_9: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant 1 <= i < n not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_13: current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 1 <= i < n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant \exists integer i; 1 <= i < n;
+loop invariant max_sum == a[0];
+loop invariant \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant \forall integer j; current_sum <= max_sum + a[j];
+loop invariant 1 <= i < n;
+```
+----------------------------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant max_sum == a[0] not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_13: current_sum <= max_sum + a[j];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] max_sum == a[0]
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_3: max_sum == a[0];
+
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_6: max_sum >= a[0];
+
+loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_8: i < n;
+
+loop invariant i_9: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_10: current_sum <= max_sum + a[i];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+i_12: \exists integer j; current_sum == max_sum + a[j]
+i_13: current_sum <= max_sum + a[j]
+i_14: i < n
+i_15: current_sum <= max_sum + a[i]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_13: current_sum <= max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+i_12: \exists integer j; current_sum == max_sum + a[j]
+i_14: i < n
+i_15: current_sum <= max_sum + a[i]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_7: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_3: max_sum == a[0];
+
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_7: max_sum >= a[0];
+
+loop invariant i_8: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_9: 1 <= i < n;
+
+loop invariant i_10: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_11: current_sum <= max_sum + a[i];
+
+loop invariant i_12: i < n;
+
+loop invariant i_13: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_14: i >= 1;
+
+loop invariant i_15: current_sum <= max_sum + a[i];
+```
+----------------------------
+-------------Establishment_requires: i_12: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer j; current_sum == max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer j; current_sum == max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant \exists integer j; current_sum == max_sum + a[j];
+```
+----------------------------
+-------------Establishment_requires: i_11: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \forall integer j; current_sum <= max_sum + a[j] too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer j; current_sum <= max_sum + a[j]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+
+loop invariant i_3: max_sum == a[0];
+
+loop invariant i_5: i >= 1;
+
+loop invariant i_7: \forall integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_8: i < n;
+
+loop invariant i_11: \exists integer j; current_sum <= max_sum + a[j];
+
+loop invariant i_12: \forall integer j; current_sum > max_sum ==> j >= 1;
+```
+----------------------------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Loop invariant \exists integer i; 1 <= i < n too strong initially. Relax it.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \exists integer i; 1 <= i < n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_2: i >= 1;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_5: i < n;
+loop invariant i_6: max_sum >= a[0];
+loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+```
+----------------------------
+-------------Preservation_self: i_9: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant 1 <= i < n not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 1 <= i < n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: current_sum > max_sum ==> i >= 1;
+loop invariant i_5: i >= 1;
+loop invariant i_6: max_sum >= a[0];
+loop invariant i_7: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_8: \exists integer j; current_sum <= max_sum + a[j];
+loop invariant i_9: 1 <= i < n;
+loop invariant i_10: current_sum <= max_sum + a[i];
+loop invariant i_11: max_sum >= a[0];
+loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+loop invariant i_13: i < n;
+loop invariant i_14: current_sum <= max_sum + a[i];
+```
+----------------------------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      [Hint] Invariant max_sum == a[0] not preserved in this loop. Fix or supplement invariants.
+
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+      loop invariant i_16: current_sum > max_sum ==> i >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] max_sum == a[0]
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+if (a[i] < current_sum + a[i]) { current_sum = current_sum + a[i]; else { current_sum = a[i]; //@ ghost curr_p = i; if (current_sum > max_sum) { max_sum = current_sum; //@ ghost max_p = curr_p; //@ ghost max_q = i+1; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_1: \exists integer i; 1 <= i < n;
+loop invariant i_3: max_sum == a[0];
+loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+loop invariant i_5: i >= 1;
+loop invariant i_6: max_sum >= a[0];
+loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+loop invariant i_8: 1 <= i < n;
+loop invariant i_9: \forall integer j; current_sum <= max_sum + a[j];
+loop invariant i_10: current_sum == max_sum + a[i];
+loop invariant i_11: current_sum > max_sum ==> i >= 1;
+loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+loop invariant i_13: i < n;
+loop invariant i_14: current_sum <= max_sum + a[i];
+loop invariant i_15: current_sum > max_sum ==> i >= 1;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: \exists integer i; 1 <= i < n
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_7: \exists integer j; current_sum <= max_sum + a[j]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_9: 1 <= i < n
+i_11: \forall integer j; current_sum <= max_sum + a[j]
+i_12: \exists integer j; current_sum == max_sum + a[j]
+i_14: i < n
+i_15: current_sum <= max_sum + a[i]
+i_16: current_sum > max_sum ==> i >= 1
+i_17: current_sum == max_sum + a[i]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_1: \exists integer i; 1 <= i < n;
+
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_7: \exists integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_9: 1 <= i < n;
+
+      loop invariant i_11: \forall integer j; current_sum <= max_sum + a[j];
+
+      loop invariant i_12: \exists integer j; current_sum == max_sum + a[j];
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+      loop invariant i_16: current_sum > max_sum ==> i >= 1;
+
+      loop invariant i_17: current_sum == max_sum + a[i];
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: max_sum == a[0]
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_14: i < n
+i_15: current_sum <= max_sum + a[i]
+i_16: current_sum > max_sum ==> i >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_3: max_sum == a[0];
+
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_14: i < n;
+
+      loop invariant i_15: current_sum <= max_sum + a[i];
+
+      loop invariant i_16: current_sum > max_sum ==> i >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: \forall integer j; current_sum > max_sum ==> j >= 1
+i_5: i >= 1
+i_6: max_sum >= a[0]
+i_8: \exists integer j; current_sum > max_sum ==> j >= 1
+i_16: current_sum > max_sum ==> i >= 1
+------------------------------------
+----------Code with Invariants----------
+/*@
+  logic integer subarray_sum(int* a, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? subarray_sum(a, i, j - 1, n) + a[j - 1] : 0;
+*/
+
+/*@
+  requires \valid_read(a+(0..n-1));
+  requires n > 0;
+  assigns \nothing;
+  ensures e_1: \forall integer i, j; 0 <= i < j <= n ==> subarray_sum(a, i, j, n) <= \result;
+  ensures e_2: \exists integer i, j; 0 <= i < j <= n && \result == subarray_sum(a, i, j, n);
+*/
+int _maximun_subarray(int a[], int n) {
+    int current_sum = a[0];
+    int max_sum = a[0];
+    int i;
+    //@ ghost int curr_p = 0;
+    //@ ghost int max_p = 0, max_q = 1;
+  // Loop A
+    /*@
+      loop invariant i_4: \forall integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_5: i >= 1;
+
+      loop invariant i_6: max_sum >= a[0];
+
+      loop invariant i_8: \exists integer j; current_sum > max_sum ==> j >= 1;
+
+      loop invariant i_16: current_sum > max_sum ==> i >= 1;
+
+
+      loop assigns current_sum, max_sum, i, curr_p, max_p, max_q;
+    */
+    for (i = 1; i < n; i++) {
+        if (a[i] < current_sum + a[i]) {
+            current_sum = current_sum + a[i];
+        }
+        else {
+            current_sum = a[i];
+            //@ ghost curr_p = i;
+        }
+
+        if (current_sum > max_sum) {
+            max_sum = current_sum;
+            //@ ghost max_p = curr_p;
+            //@ ghost max_q = i+1;
+        }
+    }
+    return max_sum;
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 492.23699617385864
+Proposal number: 16
+Verified code:
+
+------------------------

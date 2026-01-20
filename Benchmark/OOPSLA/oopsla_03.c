@@ -1,0 +1,33 @@
+/*
+ * "nested4.c" from InvGen benchmark suite
+ */
+
+/*@
+    requires l > 0;
+    requires n > l;
+*/
+void oopsla_03(int n, int l) {
+    int i,k;
+
+    /*@
+        loop assigns k;
+        loop assigns i;
+    */
+    for (k=1; k<n; k++){
+        
+        /*@
+            loop assigns i;
+        */
+        for (i=l; i<n; i++) {
+        }
+        
+        /*@
+            loop assigns k;
+            loop assigns i;
+        */
+        for (i=l; i<n; i++) {
+            //@ assert a_1: 1<=i;
+        }
+    }
+
+}

@@ -1,0 +1,211 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 10 goals scheduled
+[wp] [Timeout] typed_binary_search_ensures_e_1 (Qed 48ms) (Alt-Ergo)
+[wp] Proved goals:   10 / 11
+  Unreachable:       1
+  Qed:               6 (38ms-21ms-70ms)
+  Alt-Ergo 2.6.2:    3 (54ms-98ms)
+  Timeout:           1
+------------------------------------------------------------
+  Function _binary_search
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_binary_search':
+Assume {
+  Type: is_sint32(h) /\ is_sint32(key_0) /\ is_sint32(l) /\ is_sint32(n) /\
+      is_sint32(n - 1).
+  (* Heap *)
+  Type: (region(base_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < n).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(base_0, 0), n).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i_1) -> ((i_1 < n) ->
+      (Mint_0[shift_sint32(base_0, i_2)] < Mint_0[shift_sint32(base_0, i_1)])))).
+  (* Invariant 'i_3' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < l) ->
+      (Mint_0[shift_sint32(base_0, i_1)] < key_0))).
+  (* Invariant 'i_13' *)
+  Have: (h < n) /\ (0 <= l).
+  If l <= h
+  Then {
+    Let a = shift_sint32(base_0, l + ((h - l) / 2)).
+    Let x = Mint_0[a].
+    (* Else *)
+    Have: key_0 <= x.
+    (* Else *)
+    Have: x <= key_0.
+    Have: a = null.
+  }
+}
+Prove: Mint_0[shift_sint32(base_0, i)] != key_0.
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:48ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:48ms) (10s)
+
+------------------------------------------------------------
+
+Goal Post-condition 'e_2' in '_binary_search':
+Let x = l + ((h - l) / 2).
+Let a = shift_sint32(base_0, x).
+Let x_1 = Mint_0[a].
+Assume {
+  Type: is_sint32(h) /\ is_sint32(key_0) /\ is_sint32(l) /\ is_sint32(n) /\
+      is_sint32(n - 1) /\ is_sint32(x) /\ is_sint32(x_1).
+  (* Heap *)
+  Type: (region(base_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: a != null.
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(base_0, 0), n).
+  (* Pre-condition *)
+  Have: forall i_1,i : Z. ((0 <= i_1) -> ((i_1 < i) -> ((i < n) ->
+      (Mint_0[shift_sint32(base_0, i_1)] < Mint_0[shift_sint32(base_0, i)])))).
+  (* Invariant 'i_3' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < l) ->
+      (Mint_0[shift_sint32(base_0, i)] < key_0))).
+  (* Invariant 'i_13' *)
+  Have: (h < n) /\ (0 <= l).
+  Have: l <= h.
+  (* Else *)
+  Have: key_0 <= x_1.
+  (* Else *)
+  Have: x_1 <= key_0.
+}
+Prove: (0 <= x) /\ (x < n).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:38ms) (54ms) (76)
+Prover Z3 4.15.4 returns Valid (Qed:38ms) (24ms) (40171)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_13' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c, line 24):
+Let x = l_1 + ((h_2 - l_1) / 2).
+Let x_1 = Mint_0[shift_sint32(base_0, x)].
+Let x_2 = 1 + h_1.
+Assume {
+  Type: is_sint32(h) /\ is_sint32(h_2) /\ is_sint32(h_1) /\
+      is_sint32(key_0) /\ is_sint32(l) /\ is_sint32(l_1) /\ is_sint32(x_2) /\
+      is_sint32(x) /\ is_sint32(x_1).
+  (* Heap *)
+  Type: (region(base_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: (-1) <= h_1.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(base_0, 0), x_2).
+  (* Pre-condition *)
+  Have: forall i_1,i : Z. ((i <= h_1) -> ((0 <= i_1) -> ((i_1 < i) ->
+      (Mint_0[shift_sint32(base_0, i_1)] < Mint_0[shift_sint32(base_0, i)])))).
+  (* Invariant 'i_3' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < l_1) ->
+      (Mint_0[shift_sint32(base_0, i)] < key_0))).
+  (* Invariant 'i_13' *)
+  Have: (h_2 <= h_1) /\ (0 <= l_1).
+  (* Then *)
+  Have: l_1 <= h_2.
+  If x_1 < key_0
+  Then { Have: h_2 = h. Have: (1 + l_1 + ((h - l_1) / 2)) = l. }
+  Else {
+    Let x_3 = l + ((h_2 - l) / 2).
+    Have: l_1 = l.
+    (* Then *)
+    Have: key_0 < Mint_0[shift_sint32(base_0, x_3)].
+    Have: x_3 = (1 + h).
+  }
+  (* Invariant 'i_3' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < l) ->
+      (Mint_0[shift_sint32(base_0, i)] < key_0))).
+}
+Prove: (h <= h_1) /\ (0 <= l).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:70ms) (73ms) (170)
+Prover Z3 4.15.4 returns Valid (Qed:70ms) (23ms) (45878)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_13' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c, line 24):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_3' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c, line 22):
+Let x = l_1 + ((h - l_1) / 2).
+Let x_1 = Mint_0[shift_sint32(base_0, x)].
+Assume {
+  Type: is_sint32(h) /\ is_sint32(key_0) /\ is_sint32(l) /\ is_sint32(l_1) /\
+      is_sint32(n) /\ is_sint32(n - 1) /\ is_sint32(x) /\ is_sint32(x_1).
+  (* Heap *)
+  Type: (region(base_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < l).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(base_0, 0), n).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i_1) -> ((i_1 < n) ->
+      (Mint_0[shift_sint32(base_0, i_2)] < Mint_0[shift_sint32(base_0, i_1)])))).
+  (* Invariant 'i_3' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < l_1) ->
+      (Mint_0[shift_sint32(base_0, i_1)] < key_0))).
+  (* Invariant 'i_13' *)
+  Have: (h < n) /\ (0 <= l_1).
+  (* Then *)
+  Have: l_1 <= h.
+  If x_1 < key_0
+  Then { Have: (1 + l_1 + ((h - l_1) / 2)) = l. }
+  Else {
+    Have: l_1 = l.
+    (* Then *)
+    Have: key_0 < Mint_0[shift_sint32(base_0, l + ((h - l) / 2))].
+  }
+}
+Prove: Mint_0[shift_sint32(base_0, i)] < key_0.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:57ms) (98ms) (183)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_3' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c, line 22):
+Prove: true.
+Prover Qed returns Valid (0.64ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c, line 27):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_binary_search' (1/3):
+Effect at line 29
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_binary_search' (2/3):
+Effect at line 38
+Prove: true.
+Prover Qed returns Valid (5ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_binary_search' (3/3):
+Effect at line 42
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+[wp:pedantic-assigns] /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_binary_search.c/_binary_search_verified_final_attempt_14.c:16: Warning: 
+  No 'assigns \result \from ...' specification for function '_binary_search'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

@@ -1,0 +1,31 @@
+#include <assert.h>
+
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * ex49 from NECLA Static Analysis Benchmarks
+ */
+
+/*@
+    requires n >= 0;
+*/
+void oopsla_23(int n) {
+    int i, sum = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_10: i >= 0 && i < n;
+
+
+        loop assigns sum;
+        loop assigns i;
+    */
+    for (i = 0; i < n; ++i){
+        sum = sum + i;
+    }
+
+    //@ assert a_1: sum >= 0;
+}

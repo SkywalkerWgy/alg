@@ -1,0 +1,451 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_18.c
+----------Code----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    /*@
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    /*@
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    /*@
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    // Loop B
+    /*@
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    // Loop C
+    /*@
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant k == i0;
+loop invariant n0 < 0 ==> i0 == 0;
+loop invariant n0 >= 0 ==> 0 <= i0 <= n0;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: k == i0;
+
+        loop invariant i_1: n0 < 0 ==> i0 == 0;
+
+        loop invariant i_2: n0 >= 0 ==> 0 <= i0 <= n0;
+
+
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    // Loop C
+    /*@
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant n1 < 0 ==> i1 == 0;
+loop invariant n1 >= 0 ==> 0 <= i1 <= n1;
+loop invariant n0 < 0 ==> k - i1 == 0;
+loop invariant n0 >= 0 ==> k - i1 == n0;
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: k == i0;
+
+        loop invariant i_1: n0 < 0 ==> i0 == 0;
+
+        loop invariant i_2: n0 >= 0 ==> 0 <= i0 <= n0;
+
+
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    // Loop B
+    /*@
+        loop invariant i_3: n1 < 0 ==> i1 == 0;
+
+        loop invariant i_4: n1 >= 0 ==> 0 <= i1 <= n1;
+
+        loop invariant i_5: n0 < 0 ==> k - i1 == 0;
+
+        loop invariant i_6: n0 >= 0 ==> k - i1 == n0;
+
+
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= j1;
+loop invariant n0 < 0 && n1 < 0 ==> k + j1 == 0;
+loop invariant n0 < 0 && n1 >= 0 ==> k + j1 == n1;
+loop invariant n0 >= 0 && n1 < 0 ==> k + j1 == n0;
+loop invariant n0 >= 0 && n1 >= 0 ==> k + j1 == n0 + n1;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: k == i0
+i_1: n0 < 0 ==> i0 == 0
+i_2: n0 >= 0 ==> 0 <= i0 <= n0
+LOOP B:
+i_3: n1 < 0 ==> i1 == 0
+i_4: n1 >= 0 ==> 0 <= i1 <= n1
+i_5: n0 < 0 ==> k - i1 == 0
+i_6: n0 >= 0 ==> k - i1 == n0
+LOOP C:
+i_7: 0 <= j1
+i_8: n0 < 0 && n1 < 0 ==> k + j1 == 0
+i_9: n0 < 0 && n1 >= 0 ==> k + j1 == n1
+i_10: n0 >= 0 && n1 < 0 ==> k + j1 == n0
+i_11: n0 >= 0 && n1 >= 0 ==> k + j1 == n0 + n1
+------------------------------------
+---------- Code with Invariants ----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: k == i0;
+
+        loop invariant i_1: n0 < 0 ==> i0 == 0;
+
+        loop invariant i_2: n0 >= 0 ==> 0 <= i0 <= n0;
+
+
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    // Loop B
+    /*@
+        loop invariant i_3: n1 < 0 ==> i1 == 0;
+
+        loop invariant i_4: n1 >= 0 ==> 0 <= i1 <= n1;
+
+        loop invariant i_5: n0 < 0 ==> k - i1 == 0;
+
+        loop invariant i_6: n0 >= 0 ==> k - i1 == n0;
+
+
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_7: 0 <= j1;
+
+        loop invariant i_8: n0 < 0 && n1 < 0 ==> k + j1 == 0;
+
+        loop invariant i_9: n0 < 0 && n1 >= 0 ==> k + j1 == n1;
+
+        loop invariant i_10: n0 >= 0 && n1 < 0 ==> k + j1 == n0;
+
+        loop invariant i_11: n0 >= 0 && n1 >= 0 ==> k + j1 == n0 + n1;
+
+
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 137.29109644889832
+Proposal number: 1
+Verified code:
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+
+/*@
+    requires INT_MIN < n0 && n0 < INT_MAX;
+    requires INT_MIN < n1 && n1 < INT_MAX;
+*/
+void svcomp_18(int n0, int n1) {
+    int i0 = 0;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: k == i0;
+
+        loop invariant i_1: n0 < 0 ==> i0 == 0;
+
+        loop invariant i_2: n0 >= 0 ==> 0 <= i0 <= n0;
+
+
+        loop assigns i0, k;
+    */
+    while( i0 < n0 ) {
+        i0++;
+        k++;
+    }
+
+    int i1 = 0;
+
+    // Loop B
+    /*@
+        loop invariant i_3: n1 < 0 ==> i1 == 0;
+
+        loop invariant i_4: n1 >= 0 ==> 0 <= i1 <= n1;
+
+        loop invariant i_5: n0 < 0 ==> k - i1 == 0;
+
+        loop invariant i_6: n0 >= 0 ==> k - i1 == n0;
+
+
+        loop assigns i1, k;
+    */
+    while( i1 < n1 ) {
+        i1++;
+        k++;
+    }
+
+    int j1 = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_7: 0 <= j1;
+
+        loop invariant i_8: n0 < 0 && n1 < 0 ==> k + j1 == 0;
+
+        loop invariant i_9: n0 < 0 && n1 >= 0 ==> k + j1 == n1;
+
+        loop invariant i_10: n0 >= 0 && n1 < 0 ==> k + j1 == n0;
+
+        loop invariant i_11: n0 >= 0 && n1 >= 0 ==> k + j1 == n0 + n1;
+
+
+        loop assigns j1, k;
+    */
+    while( j1 < n0 + n1 ) {
+        //@ assert(k > 0);
+        j1++;
+        k--;
+    }
+}
+------------------------

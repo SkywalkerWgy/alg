@@ -1,0 +1,206 @@
+[kernel] Parsing /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 13 goals scheduled
+[wp] [Timeout] typed_max_seq_loop_invariant_i_6_preserved (Qed 9ms) (Alt-Ergo)
+[wp] Proved goals:   13 / 14
+  Unreachable:       1
+  Qed:               8 (0.85ms-2ms-13ms)
+  Alt-Ergo 2.6.1:    4 (19ms-26ms)
+  Timeout:           1
+------------------------------------------------------------
+  Function _max_seq
+------------------------------------------------------------
+
+Goal Complete behaviors 'empty', 'not_empty':
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+}
+Prove: (n = 0) \/ (0 < n).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:0.85ms) (19ms) (13)
+Prover CVC4 1.6 returns Valid (Qed:0.85ms) (26ms) (10169)
+Prover Z3 4.8.6 returns Valid (Qed:0.85ms) (23ms) (46428)
+
+------------------------------------------------------------
+
+Goal Disjoint behaviors 'empty', 'not_empty':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c, line 24):
+Let x = Mint_0[shift_sint32(a, max_1)].
+Let x_1 = Mint_0[shift_sint32(a, max_0)].
+Assume {
+  Type: is_sint32(max_0) /\ is_sint32(max_1) /\ is_sint32(n) /\
+      is_sint32(x_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Residual *)
+  When: x < x_1.
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_6' *)
+  Have: 0 < n.
+  (* Invariant 'i_6' *)
+  Have: (0 <= max_1) /\ (max_1 < n).
+  (* Invariant 'i_7' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < max_0) ->
+      (Mint_0[shift_sint32(a, i)] <= x))).
+  (* Then *)
+  Have: max_0 < n.
+}
+Prove: 0 <= max_0.
+Prover Alt-Ergo 2.6.1 returns Timeout (Qed:9ms) (10s)
+Prover CVC4 1.6 returns Unknown (Qed:9ms)
+Prover Z3 4.8.6 returns Timeout (Qed:9ms) (10s)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c, line 24):
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+}
+Prove: 0 < n.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:1ms) (22ms) (13)
+Prover CVC4 1.6 returns Valid (Qed:1ms) (28ms) (10173)
+Prover Z3 4.8.6 returns Valid (Qed:1ms) (18ms) (46432)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c, line 26):
+Let x = Mint_0[shift_sint32(a, max_1)].
+Let x_1 = Mint_0[shift_sint32(a, i_1)].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(max_0) /\ is_sint32(max_1) /\
+      is_sint32(n) /\ is_sint32(x_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= i_1).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_6' *)
+  Have: 0 < n.
+  (* Invariant 'i_6' *)
+  Have: (0 <= max_1) /\ (max_1 < n).
+  (* Invariant 'i_7' *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i_1) ->
+      (Mint_0[shift_sint32(a, i_2)] <= x))).
+  (* Then *)
+  Have: i_1 < n.
+  If x < x_1
+  Then { Have: max_0 = i_1. }
+  Else { Have: max_1 = max_0. }
+  (* Invariant 'i_6' *)
+  Have: (0 <= max_0) /\ (max_0 < n).
+}
+Prove: Mint_0[shift_sint32(a, i)] <= Mint_0[shift_sint32(a, max_0)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:13ms) (26ms) (119)
+Prover CVC4 1.6 returns Unknown (Qed:13ms)
+Prover Z3 4.8.6 returns Valid (Qed:13ms) (16ms) (72856)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c, line 26):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblationclear/acsl-algorithms/deepseek/deepseek-chat-v3-0324/_max_seq.c/_max_seq_verified_4.c, line 29):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (1/3):
+Effect at line 18
+Prove: true.
+Prover Qed returns Valid (0.72ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (2/3):
+Effect at line 31
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (3/3):
+Effect at line 36
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior empty
+------------------------------------------------------------
+
+Goal Post-condition for 'empty' 'e_1' in '_max_seq':
+Prove: true.
+Prover Qed returns Valid (0.84ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior not_empty
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_2' in '_max_seq':
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_3' in '_max_seq':
+Let x = Mint_0[shift_sint32(a, _max_seq_0)].
+Assume {
+  Type: is_sint32(_max_seq_0) /\ is_sint32(i_1) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < n).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Pre-condition for 'not_empty' *)
+  Have: 0 < n.
+  (* Invariant 'i_6' *)
+  Have: (0 <= _max_seq_0) /\ (_max_seq_0 < n).
+  (* Invariant 'i_7' *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i_1) ->
+      (Mint_0[shift_sint32(a, i_2)] <= x))).
+  (* Else *)
+  Have: n <= i_1.
+}
+Prove: Mint_0[shift_sint32(a, i)] <= x.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:8ms) (26ms) (45)
+Prover CVC4 1.6 returns Unknown (Qed:8ms)
+Prover Z3 4.8.6 returns Valid (Qed:8ms) (10ms) (50396)
+
+------------------------------------------------------------

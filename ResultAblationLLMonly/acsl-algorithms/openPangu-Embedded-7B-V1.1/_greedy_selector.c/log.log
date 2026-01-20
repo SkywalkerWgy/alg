@@ -1,0 +1,625 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_greedy_selector.c
+----------Code----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    /*@
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 < i <= n;
+loop invariant 0 <= j < i;
+loop invariant j == 0 || \forall integer k in [0, i-1]; selected[k] == 0;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 < i <= n
+i_1: 0 <= j < i
+i_2: j == 0 || \forall integer k in [0, i-1]; selected[k] == 0
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 1 < i <= n;
+
+        loop invariant i_1: 0 <= j < i;
+
+        loop invariant i_2: j == 0 || \forall integer k in [0, i-1]; selected[k] == 0;
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant j >= 0;
+loop invariant 0 <= j < n;
+loop invariant selected[0] == 1;
+loop invariant \forall integer k; 0 <= k < j && selected[k] == 0 ==> selected[k] == 0;
+loop invariant \exists integer j; \forall integer i, j; 0 <= i < j < n && selected[i] == 1 ==> s[j] >= f[i];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: j >= 0
+i_4: 0 <= j < n
+i_5: selected[0] == 1
+i_6: \forall integer k; 0 <= k < j && selected[k] == 0 ==> selected[k] == 0
+i_7: \exists integer j; \forall integer i, j; 0 <= i < j < n && selected[i] == 1 ==> s[j] >= f[i]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_3: j >= 0;
+
+        loop invariant i_4: 0 <= j < n;
+
+        loop invariant i_5: selected[0] == 1;
+
+        loop invariant i_6: \forall integer k; 0 <= k < j && selected[k] == 0 ==> selected[k] == 0;
+
+        loop invariant i_7: \exists integer j; \forall integer i, j; 0 <= i < j < n && selected[i] == 1 ==> s[j] >= f[i];
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification failed (Fail_13_16), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 0 <= j < n;
+loop invariant \forall integer i, selected[k] == 1 for all k < i; selected[j] == 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_8: 0 <= j < n
+i_9: \forall integer i, selected[k] == 1 for all k < i; selected[j] == 1
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_8: 0 <= j < n;
+
+        loop invariant i_9: \forall integer i, selected[k] == 1 for all k < i; selected[j] == 1;
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant selected[0] == 1;
+loop invariant j >= 0;
+loop invariant 0 <= j < n;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_10: selected[0] == 1
+i_11: j >= 0
+i_12: 0 <= j < n
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_10: selected[0] == 1;
+
+        loop invariant i_11: j >= 0;
+
+        loop invariant i_12: 0 <= j < n;
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification failed (Fail_10_12), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant 1 <= j < n;
+loop invariant j >= 0;
+loop invariant selected[0..(j-1)] == 0;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_13: 1 <= j < n
+i_14: j >= 0
+i_15: selected[0..(j-1)] == 0
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_13: 1 <= j < n;
+
+        loop invariant i_14: j >= 0;
+
+        loop invariant i_15: selected[0..(j-1)] == 0;
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification failed (Fail_11_12), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 69.18500018119812
+Proposal number: 5
+Verified code:
+
+------------------------

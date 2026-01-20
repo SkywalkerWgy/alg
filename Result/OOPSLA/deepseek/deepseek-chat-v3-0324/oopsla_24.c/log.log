@@ -1,0 +1,2586 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_24.c
+----------Code----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    /*@
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        /*@
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            /*@
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the nested loop structure and the assertion `k >= i`, here are the loop invariants for Loop A:
+
+```
+loop invariant 0 <= i <= n;
+loop invariant \forall integer x; i <= x < n ==> x >= i;
+loop invariant \forall integer y; i <= y < n ==> y >= i;
+loop invariant \forall integer z; i <= z < n ==> z >= i;
+```
+----------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: s for Loop A: ``` loop invariant 0 <= i <= n;
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the code structure and the assertions provided, here are the loop invariants for Loop B:
+
+```
+loop invariant i <= j <= n;
+loop invariant \forall integer k; j <= k < n ==> k >= i;
+loop invariant \forall integer x; i <= x < j ==> x >= i;
+```
+----------------------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: s for Loop A: ``` loop invariant 0 <= i <= n;
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant i <= j <= n;
+
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j <= k <= n;
+loop invariant \forall integer x; k <= x < n ==> x >= i;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: s for Loop A: ``` loop invariant 0 <= i <= n
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+LOOP B:
+i_5: s for Loop B: ``` loop invariant i <= j <= n
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: s for Loop A: ``` loop invariant 0 <= i <= n;
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant i <= j <= n;
+
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+LOOP B:
+i_5: s for Loop B: ``` loop invariant i <= j <= n
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_5: s for Loop B: ``` loop invariant i <= j <= n;
+
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: i == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: n >= 0 ==> 0 <= i <= n;
+```
+----------------------------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_9: j <= k <= n;
+loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+loop invariant i_13: k >= i;
+
+[Loop A]
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_11: i == 0;
+loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+```
+----------------------------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_9: j <= k <= n;
+loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+loop invariant i_13: k >= i;
+loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+[Loop A]
+loop invariant i_1: 0 <= i <= n;
+loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: i == 0;
+loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+```
+----------------------------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_15: k >= i;
+
+[Loop A]
+loop invariant i_11: i >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+i_15: i >= 0
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: i >= 0;
+loop invariant i_11: i == 0;
+loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+```
+----------------------------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_16: k >= 0;
+
+[Loop A]
+loop invariant i_11: i >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+i_15: i >= 0
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+i_16: k >= 0
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_1: establishment---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= n too strong initially. Relax it.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: i >= 0;
+loop invariant i_11: i == 0;
+```
+----------------------------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop C]
+loop invariant i_17: k >= j;
+
+[Loop A]
+loop invariant i_11: i >= 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 0 <= i <= n
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+i_15: i >= 0
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+i_16: k >= 0
+i_17: k >= j
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_1: 0 <= i <= n;
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+                loop invariant i_17: k >= j;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_11: preservation---------------
+----------Prompt----------
+
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+                loop invariant i_17: k >= j;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop C" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "C" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "C", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop C]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+[Loop C]
+loop invariant i_18: k >= 0;
+loop invariant i_19: i <= k;
+
+[Loop A]
+loop invariant i_20: i >= 0 && (i == 0 || i > 0);
+loop invariant i_21: n >= 0 ==> i <= n;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_11: i == 0
+i_12: n >= 0 ==> 0 <= i <= n
+i_15: i >= 0
+i_19: i >= 0 && (i == 0 || i > 0)
+i_20: n >= 0 ==> i <= n
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+i_16: k >= 0
+i_17: k >= j
+i_18: i <= k
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_11: i == 0;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_19: i >= 0 && (i == 0 || i > 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+                loop invariant i_17: k >= j;
+
+                loop invariant i_18: i <= k;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_2: \forall integer x; i <= x < n ==> x >= i
+i_3: \forall integer y; i <= y < n ==> y >= i
+i_4: \forall integer z; i <= z < n ==> z >= i
+i_12: n >= 0 ==> 0 <= i <= n
+i_15: i >= 0
+i_19: i >= 0 && (i == 0 || i > 0)
+i_20: n >= 0 ==> i <= n
+LOOP B:
+i_6: i <= j <= n
+i_7: \forall integer k; j <= k < n ==> k >= i
+i_8: \forall integer x; i <= x < j ==> x >= i
+LOOP C:
+i_9: j <= k <= n
+i_10: \forall integer x; k <= x < n ==> x >= i
+i_13: k >= i
+i_14: \forall integer y; j <= y < k ==> y >= i
+i_16: k >= 0
+i_17: k >= j
+i_18: i <= k
+------------------------------------
+----------Code with Invariants----------
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_19: i >= 0 && (i == 0 || i > 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+                loop invariant i_17: k >= j;
+
+                loop invariant i_18: i <= k;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+----------------------------------------
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 144.26456928253174
+Proposal number: 11
+Verified code:
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * "nested5.c" from InvGen test suite
+ */
+
+void oopsla_24() {
+    int i,j,k,n;
+    
+    // Loop A
+    /*@
+        loop invariant i_2: \forall integer x; i <= x < n ==> x >= i;
+
+        loop invariant i_3: \forall integer y; i <= y < n ==> y >= i;
+
+        loop invariant i_4: \forall integer z; i <= z < n ==> z >= i;
+
+        loop invariant i_12: n >= 0 ==> 0 <= i <= n;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_19: i >= 0 && (i == 0 || i > 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n;
+
+
+        loop assigns i,j,k;
+    */
+    for (i=0;i<n;i++){
+
+        // Loop B
+        /*@
+            loop invariant i_6: i <= j <= n;
+
+            loop invariant i_7: \forall integer k; j <= k < n ==> k >= i;
+
+            loop invariant i_8: \forall integer x; i <= x < j ==> x >= i;
+
+
+            loop assigns j,k;
+        */
+        for (j=i;j<n;j++){
+
+            // Loop C
+            /*@
+                loop invariant i_9: j <= k <= n;
+
+                loop invariant i_10: \forall integer x; k <= x < n ==> x >= i;
+
+                loop invariant i_13: k >= i;
+
+                loop invariant i_14: \forall integer y; j <= y < k ==> y >= i;
+
+                loop invariant i_16: k >= 0;
+
+                loop invariant i_17: k >= j;
+
+                loop invariant i_18: i <= k;
+
+
+                loop assigns k;
+            */
+            for (k=j;k<n;k++){
+                //@ assert  a_1: k>=i;
+            }
+        }
+    }
+}
+
+------------------------

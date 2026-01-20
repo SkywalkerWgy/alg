@@ -1,0 +1,1854 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 28 goals scheduled
+[wp] Proved goals:   29 / 29
+  Unreachable:       1
+  Qed:              13 (35ms-105ms-574ms)
+  Alt-Ergo 2.6.2:   12 (76ms-130ms)
+  Z3 4.15.4:         3 (43ms-174ms-262ms)
+------------------------------------------------------------
+  Function _dfs
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_dfs':
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let a_5 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_6 = shift_sint32(dist_0, node_0).
+Let a_7 = shift_sint32(visited_0, node_0).
+Let x_1 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(top_0 - 1) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: (a_4[shift_sint32(visited_0, i)] = 1) /\ (0 <= i) /\ (i < n).
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_PTR(graph_0, i_3) in
+      let a_9 = shift_PTR(graph_0, i_2) in ((i_3 != i_2) -> ((0 <= i_3) ->
+      ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      (separated(a_8, x, a_9, x) /\ separated(a_8, x, a_1, x) /\
+       separated(a_8, x, a_2, x) /\ separated(a_8, x, a, x) /\
+       separated(a_9, x, a_1, x) /\ separated(a_9, x, a_2, x) /\
+       separated(a_9, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((x_1 != i_2) -> ((0 <= i_2) -> ((i_2 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_2)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_3)]))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((x_1 != i_2) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_7] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_3[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_3[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_2)] = (1 + a_3[a_6])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_7] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_4[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_4[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_2)] = (1 + a_4[a_6])))))).
+  (* Else *)
+  Have: n <= i_1.
+  (* Else *)
+  Have: top_0 <= 0.
+}
+Prove: P_connect(Mptr_0, a_4, graph_0, i, x_1, n).
+Prover Z3 4.15.4 returns Valid (Qed:101ms) (43ms) (132477)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_0' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 29):
+Prove: true.
+Prover Qed returns Valid (38ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_0' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 29):
+Prove: true.
+Prover Qed returns Valid (24ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_11' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 35):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = top_0 - 1.
+Let a_5 = a_4[shift_sint32(stack_0, x_1)].
+Let a_6 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_7 = shift_sint32(dist_0, node_0).
+Let a_8 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_5).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. let a_9 = shift_PTR(graph_0, i_3) in
+      let a_10 = shift_PTR(graph_0, i_2) in ((i_3 != i_2) -> ((0 <= i_3) ->
+      ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      (separated(a_9, x, a_10, x) /\ separated(a_9, x, a_1, x) /\
+       separated(a_9, x, a_2, x) /\ separated(a_9, x, a, x) /\
+       separated(a_10, x, a_1, x) /\ separated(a_10, x, a_2, x) /\
+       separated(a_10, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((x_2 != i_2) -> ((0 <= i_2) -> ((i_2 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_2)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_3)]))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((x_2 != i_2) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_8] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_3[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_3[shift_sint32(a_6, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_2)] = (1 + a_3[a_7])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_8] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_4[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_4[shift_sint32(a_6, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_2)] = (1 + a_4[a_7])))))).
+  (* Else *)
+  Have: n <= i_1.
+  (* Then *)
+  Have: 0 < top_0.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((a_5 != i_2) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_4[shift_sint32(visited_0, a_5)] = 1.
+}
+Prove: (a_4[shift_sint32(dist_0, i)] = (-1)) /\
+    (a_4[shift_sint32(visited_0, i)] = 0) /\ (0 <= i) /\ (i < n).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:98ms) (102ms) (177)
+Prover Z3 4.15.4 returns Valid (Qed:98ms) (47ms) (144036)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_11' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 35):
+Let a = shift_sint32(stack_0, 0).
+Let x = Mint_0[a].
+Let a_1 = shift_sint32(dist_0, 0).
+Let x_1 = 1 + n.
+Let a_2 = shift_sint32(visited_0, 0).
+Assume {
+  Type: is_sint32(n) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x_1).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x_1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x_1).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_3 = shift_PTR(graph_0, i_2) in
+      let a_4 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_3, x_1, a_4, x_1) /\ separated(a_3, x_1, a_1, x_1) /\
+       separated(a_3, x_1, a, x_1) /\ separated(a_3, x_1, a_2, x_1) /\
+       separated(a_4, x_1, a_1, x_1) /\ separated(a_4, x_1, a, x_1) /\
+       separated(a_4, x_1, a_2, x_1))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a, x_1) /\ separated(a_1, x_1, a_2, x_1) /\
+      separated(a_2, x_1, a, x_1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+}
+Prove: (Mint_0[shift_sint32(dist_0, i)] = (-1)) /\
+    (Mint_0[shift_sint32(visited_0, i)] = 0) /\ (0 <= i) /\ (i < n).
+Prover Z3 4.15.4 returns Valid (Qed:36ms) (262ms) (702534)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 31):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let a_5 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_6 = shift_sint32(dist_0, node_0).
+Let a_7 = shift_sint32(visited_0, node_0).
+Let x_1 = Mint_0[a_2].
+Let x_2 = top_0 - 1.
+Let a_8 = a_4[shift_sint32(stack_0, x_2)].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_2) /\
+      is_sint32(x_1) /\ is_sint32(a_8) /\
+      is_sint32(a_4[shift_sint32(visited_0, a_8)]).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: a_8 != i.
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. let a_9 = shift_PTR(graph_0, i_3) in
+      let a_10 = shift_PTR(graph_0, i_2) in ((i_3 != i_2) -> ((0 <= i_3) ->
+      ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      (separated(a_9, x, a_10, x) /\ separated(a_9, x, a_1, x) /\
+       separated(a_9, x, a_2, x) /\ separated(a_9, x, a, x) /\
+       separated(a_10, x, a_1, x) /\ separated(a_10, x, a_2, x) /\
+       separated(a_10, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((x_1 != i_2) -> ((0 <= i_2) -> ((i_2 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_2)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_3)]))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((x_1 != i_2) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_7] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_3[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_3[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_2)] = (1 + a_3[a_6])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_7] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_4[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_4[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_2)] = (1 + a_4[a_6])))))).
+  (* Else *)
+  Have: n <= i_1.
+  (* Then *)
+  Have: 0 < top_0.
+}
+Prove: (a_4[shift_sint32(dist_0, i)] = (-1)) /\
+    (a_4[shift_sint32(visited_0, i)] = 0).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:92ms) (97ms) (181)
+Prover Z3 4.15.4 returns Valid (Qed:92ms) (57ms) (142755)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 31):
+Let a = shift_sint32(stack_0, 0).
+Let x = Mint_0[a].
+Let a_1 = shift_sint32(dist_0, 0).
+Let x_1 = 1 + n.
+Let a_2 = shift_sint32(visited_0, 0).
+Assume {
+  Type: is_sint32(n) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: x != i.
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x_1).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x_1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x_1).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_3 = shift_PTR(graph_0, i_2) in
+      let a_4 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_3, x_1, a_4, x_1) /\ separated(a_3, x_1, a_1, x_1) /\
+       separated(a_3, x_1, a, x_1) /\ separated(a_3, x_1, a_2, x_1) /\
+       separated(a_4, x_1, a_1, x_1) /\ separated(a_4, x_1, a, x_1) /\
+       separated(a_4, x_1, a_2, x_1))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a, x_1) /\ separated(a_1, x_1, a_2, x_1) /\
+      separated(a_2, x_1, a, x_1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+}
+Prove: (Mint_0[shift_sint32(dist_0, i)] = (-1)) /\
+    (Mint_0[shift_sint32(visited_0, i)] = 0).
+Prover Z3 4.15.4 returns Valid (Qed:35ms) (215ms) (534246)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_3' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 33):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = top_0 - 1.
+Let a_5 = a_4[shift_sint32(stack_0, x_1)].
+Let a_6 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_7 = shift_sint32(dist_0, node_0).
+Let a_8 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Let a_9 = a_4[shift_sint32(visited_0, a_5)].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_5) /\ is_sint32(a_9).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_10 = shift_PTR(graph_0, i_2) in
+      let a_11 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_10, x, a_11, x) /\ separated(a_10, x, a_1, x) /\
+       separated(a_10, x, a_2, x) /\ separated(a_10, x, a, x) /\
+       separated(a_11, x, a_1, x) /\ separated(a_11, x, a_2, x) /\
+       separated(a_11, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_2 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_2 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_8] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_6, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_7])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_8] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_6, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_7])))))).
+  (* Else *)
+  Have: n <= i.
+  (* Then *)
+  Have: 0 < top_0.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((a_5 != i_1) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+}
+Prove: a_9 = 1.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:92ms) (96ms) (174)
+Prover Z3 4.15.4 returns Valid (Qed:92ms) (53ms) (143643)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_3' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 33):
+Prove: true.
+Prover Qed returns Valid (9ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 47):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let a_5 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_6 = shift_sint32(dist_0, node_0).
+Let a_7 = shift_sint32(visited_0, node_0).
+Let x_1 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(1 + top_0) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Residual *)
+  When: a_4[shift_sint32(a_5, i)] = 1.
+  (* Residual *)
+  When: a_4[shift_sint32(visited_0, i)] = 0.
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_PTR(graph_0, i_2) in
+      let a_9 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_8, x, a_9, x) /\ separated(a_8, x, a_1, x) /\
+       separated(a_8, x, a_2, x) /\ separated(a_8, x, a, x) /\
+       separated(a_9, x, a_1, x) /\ separated(a_9, x, a_2, x) /\
+       separated(a_9, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_1 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_1 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_7] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_5, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_6])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_7] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_5, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_6])))))).
+  (* Then *)
+  Have: i < n.
+}
+Prove: ((-1) <= top_0) /\ ((2 + top_0) <= n).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:416ms) (91ms) (179)
+Prover Z3 4.15.4 returns Valid (Qed:416ms) (53ms) (162259)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 47):
+Prove: true.
+Prover Qed returns Valid (14ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 49):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_2, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let a_5 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_6 = a_4[shift_sint32(a_5, i_1)].
+Let a_7 = shift_sint32(dist_0, node_0).
+Let a_8 = shift_sint32(visited_0, node_0).
+Let x_1 = Mint_2[a_2].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(top_2) /\
+      is_sint32(top_3) /\ is_sint32(top_4) /\ is_sint32(Mint_0[a_8]) /\
+      is_sint32(Mint_1[shift_sint32(visited_0, i_1)]) /\ is_sint32(x_1) /\
+      is_sint32(a_6).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: node_0 != i.
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. let a_9 = shift_PTR(graph_0, i_3) in
+      let a_10 = shift_PTR(graph_0, i_2) in ((i_3 != i_2) -> ((0 <= i_3) ->
+      ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      (separated(a_9, x, a_10, x) /\ separated(a_9, x, a_1, x) /\
+       separated(a_9, x, a_2, x) /\ separated(a_9, x, a, x) /\
+       separated(a_10, x, a_1, x) /\ separated(a_10, x, a_2, x) /\
+       separated(a_10, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((x_1 != i_2) -> ((0 <= i_2) -> ((i_2 <= n) ->
+      ((Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_2[shift_sint32(visited_0, i_2)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_2[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_2[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= n) ->
+      (Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_2)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      (Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)]
+         = Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_3)]))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z.
+      let x_2 = Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((x_1 != i_2) ->
+      ((Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_2[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (Mint_2[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_4) /\ (top_4 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_8] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (a_3[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_3[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_3[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_4) ->
+      (a_3[shift_sint32(dist_0, i_2)] = (1 + a_3[a_7])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_3) /\ (top_3 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_8] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_4[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_4[shift_sint32(a_5, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_3) ->
+      (a_4[shift_sint32(dist_0, i_2)] = (1 + a_4[a_7])))))).
+  (* Then *)
+  Have: i_1 < n.
+  If a_6 = 1
+  Then {
+    Have: (top_3 = top_5) /\ (a_4 = Mint_1).
+    If Mint_1[shift_sint32(visited_0, i_1)] = 0
+    Then {
+      Have: top_5 = top_2.
+      If top_2 < n
+      Then {
+        Let x_2 = 1 + top_1.
+        Let m = Mint_1[shift_sint32(stack_0, x_2) <- i_1]
+                  [shift_sint32(visited_0, i_1) <- 1].
+        Have: top_2 = top_1.
+        Have: x_2 = top_0.
+        Have: m[shift_sint32(dist_0, i_1) <- 1 + m[a_7]] = Mint_0.
+      }
+      Else { Have: (Mint_1 = Mint_0) /\ (top_2 = top_0). }
+    }
+    Else { Have: (Mint_1 = Mint_0) /\ (top_5 = top_0). }
+  }
+  Else { Have: (top_3 = top_0) /\ (a_4 = Mint_0). }
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+}
+Prove: (Mint_0[shift_sint32(dist_0, i)] = (-1)) /\
+    (Mint_0[shift_sint32(visited_0, i)] = 0).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:561ms) (114ms) (326)
+Prover Z3 4.15.4 returns Valid (Qed:561ms) (75ms) (203368)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 49):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let x_1 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(n) /\ is_sint32(node_0) /\ is_sint32(top_0) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: node_0 != i.
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_PTR(graph_0, i_2) in
+      let a_5 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_4, x, a_5, x) /\ separated(a_4, x, a_1, x) /\
+       separated(a_4, x, a_2, x) /\ separated(a_4, x, a, x) /\
+       separated(a_5, x, a_1, x) /\ separated(a_5, x, a_2, x) /\
+       separated(a_5, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_1 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_1 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[shift_sint32(visited_0, node_0)] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+}
+Prove: (a_3[shift_sint32(dist_0, i)] = (-1)) /\
+    (a_3[shift_sint32(visited_0, i)] = 0).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:63ms) (76ms) (110)
+Prover Z3 4.15.4 returns Valid (Qed:63ms) (43ms) (114930)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_7' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 51):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = 1 + top_0.
+Let a_5 = shift_sint32(visited_0, i).
+Let a_6 = a_4[shift_sint32(stack_0, x_1) <- i][a_5 <- 1].
+Let a_7 = shift_sint32(dist_0, node_0).
+Let a_8 = a_6[a_7].
+Let a_9 = a_6[shift_sint32(dist_0, i) <- 1 + a_8].
+Let a_10 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_11 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Let a_12 = a_9[a_11].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_8) /\ is_sint32(a_12).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Residual *)
+  When: a_4[shift_sint32(a_10, i)] = 1.
+  (* Residual *)
+  When: a_4[a_5] = 0.
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_13 = shift_PTR(graph_0, i_2) in
+      let a_14 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_13, x, a_14, x) /\ separated(a_13, x, a_1, x) /\
+       separated(a_13, x, a_2, x) /\ separated(a_13, x, a, x) /\
+       separated(a_14, x, a_1, x) /\ separated(a_14, x, a_2, x) /\
+       separated(a_14, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_2 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_2 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_11] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_10, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_7])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_11] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_10, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_7])))))).
+  (* Then *)
+  Have: i < n.
+  (* Invariant 'i_4' *)
+  Have: ((-1) <= top_0) /\ ((2 + top_0) <= n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_9[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_9[shift_sint32(visited_0, i_1)] = 0))).
+}
+Prove: a_12 = 1.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:437ms) (107ms) (286)
+Prover Z3 4.15.4 returns Valid (Qed:437ms) (68ms) (203088)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_7' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 51):
+Prove: true.
+Prover Qed returns Valid (15ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_8' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 53):
+Let a = shift_sint32(visited_0, node_0).
+Let a_1 = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_2 = shift_sint32(dist_0, 0).
+Let a_3 = shift_sint32(stack_0, 0).
+Let a_4 = memcpy(memcpy(memcpy(Mint_2, a_1, Mint_undef_0, a_1, x), a_2,
+                   Mint_undef_1, a_2, x), a_3, Mint_undef_2, a_3, x).
+Let a_5 = memcpy(memcpy(memcpy(a_4, a_1, Mint_undef_3, a_1, x), a_2,
+                   Mint_undef_4, a_2, x), a_3, Mint_undef_5, a_3, x).
+Let a_6 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_7 = a_5[shift_sint32(a_6, i_1)].
+Let a_8 = shift_sint32(dist_0, node_0).
+Let x_1 = Mint_2[a_3].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(top_2) /\
+      is_sint32(top_3) /\ is_sint32(top_4) /\
+      is_sint32(Mint_1[shift_sint32(visited_0, i_1)]) /\ is_sint32(x_1) /\
+      is_sint32(a_7).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: (Mint_0[shift_sint32(visited_0, i)] = 0) /\
+      (Mint_0[shift_sint32(a_6, i)] = 1) /\ (0 <= i) /\ (i <= top_0).
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_3, x).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. let a_9 = shift_PTR(graph_0, i_3) in
+      let a_10 = shift_PTR(graph_0, i_2) in ((i_3 != i_2) -> ((0 <= i_3) ->
+      ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      (separated(a_9, x, a_10, x) /\ separated(a_9, x, a_2, x) /\
+       separated(a_9, x, a_3, x) /\ separated(a_9, x, a_1, x) /\
+       separated(a_10, x, a_2, x) /\ separated(a_10, x, a_3, x) /\
+       separated(a_10, x, a_1, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_2, x, a_3, x) /\ separated(a_2, x, a_1, x) /\
+      separated(a_1, x, a_3, x).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((x_1 != i_2) -> ((0 <= i_2) -> ((i_2 <= n) ->
+      ((Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_2[shift_sint32(visited_0, i_2)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_2[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_2[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= n) ->
+      (Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_2)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) ->
+      ((i_2 <= n) ->
+      (Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)]
+         = Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_3)]))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z.
+      let x_2 = Mint_2[shift_sint32(Mptr_0[shift_PTR(graph_0, i_3)], i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= n) -> ((i_2 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((x_1 != i_2) ->
+      ((Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_2[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (Mint_2[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (Mint_2[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_4) /\ (top_4 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_4[a] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_2 : Z. (a_4[shift_sint32(dist_0, i_2)] = (-1)) /\
+      (a_4[shift_sint32(visited_0, i_2)] = 0) /\ (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_4[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_4[shift_sint32(a_6, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_4) ->
+      (a_4[shift_sint32(dist_0, i_2)] = (1 + a_4[a_8])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_3) /\ (top_3 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((a_5[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (a_5[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_5[a] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_2 : Z. ((a_5[shift_sint32(visited_0, i_2)] = 0) ->
+      ((a_5[shift_sint32(a_6, i_2)] = 1) -> ((0 <= i_2) -> ((i_2 <= top_3) ->
+      (a_5[shift_sint32(dist_0, i_2)] = (1 + a_5[a_8])))))).
+  (* Then *)
+  Have: i_1 < n.
+  If a_7 = 1
+  Then {
+    Have: (top_3 = top_5) /\ (a_5 = Mint_1).
+    If Mint_1[shift_sint32(visited_0, i_1)] = 0
+    Then {
+      Have: top_5 = top_2.
+      If top_2 < n
+      Then {
+        Let x_2 = 1 + top_1.
+        Let m = Mint_1[shift_sint32(stack_0, x_2) <- i_1]
+                  [shift_sint32(visited_0, i_1) <- 1].
+        Have: top_2 = top_1.
+        Have: x_2 = top_0.
+        Have: m[shift_sint32(dist_0, i_1) <- 1 + m[a_8]] = Mint_0.
+      }
+      Else { Have: (Mint_1 = Mint_0) /\ (top_2 = top_0). }
+    }
+    Else { Have: (Mint_1 = Mint_0) /\ (top_5 = top_0). }
+  }
+  Else { Have: (top_3 = top_0) /\ (a_5 = Mint_0). }
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 != node_0) ->
+      ((Mint_0[shift_sint32(dist_0, i_2)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_2)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: Mint_0[a] = 1.
+}
+Prove: Mint_0[shift_sint32(dist_0, i)] = (1 + Mint_0[a_8]).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:574ms) (130ms) (406)
+Prover Z3 4.15.4 returns Valid (Qed:574ms) (82ms) (250490)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_8' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 53):
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let x_1 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(n) /\ is_sint32(node_0) /\ is_sint32(top_0) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: (a_3[shift_sint32(visited_0, i)] = 0) /\
+      (a_3[shift_sint32(Mptr_0[shift_PTR(graph_0, node_0)], i)] = 1) /\
+      (0 <= i) /\ (i <= top_0).
+  (* Pre-condition *)
+  Have: (0 <= x_1) /\ (x_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_PTR(graph_0, i_2) in
+      let a_5 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_4, x, a_5, x) /\ separated(a_4, x, a_1, x) /\
+       separated(a_4, x, a_2, x) /\ separated(a_4, x, a, x) /\
+       separated(a_5, x, a_1, x) /\ separated(a_5, x, a_2, x) /\
+       separated(a_5, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_1 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_1)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_1)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_2 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_2 = 0) \/ (x_2 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_1 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[shift_sint32(visited_0, node_0)] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+}
+Prove: a_3[shift_sint32(dist_0, i)] =
+    (1 + a_3[shift_sint32(dist_0, node_0)]).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:73ms) (89ms) (159)
+Prover Z3 4.15.4 returns Valid (Qed:73ms) (68ms) (181944)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 38) (1/3):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 38) (2/3):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (29ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 38) (3/3):
+Effect at line 62
+Prove: true.
+Prover Qed returns Valid (29ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 56) (1/5):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 56) (2/5):
+Effect at line 62
+Prove: true.
+Prover Qed returns Valid (33ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 56) (3/5):
+Effect at line 65
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = 1 + top_0.
+Let a_5 = shift_sint32(stack_0, x_1).
+Let a_6 = shift_sint32(visited_0, i).
+Let a_7 = a_4[a_5 <- i][a_6 <- 1].
+Let a_8 = shift_sint32(dist_0, node_0).
+Let a_9 = a_7[a_8].
+Let a_10 = a_7[shift_sint32(dist_0, i) <- 1 + a_9].
+Let a_11 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_12 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_9).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_5, 1).
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_13 = shift_PTR(graph_0, i_2) in
+      let a_14 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_13, x, a_14, x) /\ separated(a_13, x, a_1, x) /\
+       separated(a_13, x, a_2, x) /\ separated(a_13, x, a, x) /\
+       separated(a_14, x, a_1, x) /\ separated(a_14, x, a_2, x) /\
+       separated(a_14, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_2 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_2 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_12] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_8])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_12] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_8])))))).
+  (* Then *)
+  Have: i < n.
+  (* Then *)
+  Have: a_4[shift_sint32(a_11, i)] = 1.
+  (* Then *)
+  Have: a_4[a_6] = 0.
+  (* Invariant 'i_4' *)
+  Have: ((-1) <= top_0) /\ ((2 + top_0) <= n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_10[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_10[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_10[a_12] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_10[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_10[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= x_1) ->
+      (a_10[shift_sint32(dist_0, i_1)] = (1 + a_10[a_8])))))).
+}
+Prove: included(a_5, 1, a_1, x) \/ included(a_5, 1, a_2, x) \/
+    included(a_5, 1, a, x).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:124ms) (106ms) (292)
+Prover Z3 4.15.4 returns Valid (Qed:124ms) (77ms) (206475)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 56) (4/5):
+Effect at line 66
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = 1 + top_0.
+Let a_5 = shift_sint32(visited_0, i).
+Let a_6 = a_4[shift_sint32(stack_0, x_1) <- i][a_5 <- 1].
+Let a_7 = shift_sint32(dist_0, node_0).
+Let a_8 = a_6[a_7].
+Let a_9 = a_6[shift_sint32(dist_0, i) <- 1 + a_8].
+Let a_10 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_11 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_8).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_5, 1).
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_12 = shift_PTR(graph_0, i_2) in
+      let a_13 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_12, x, a_13, x) /\ separated(a_12, x, a_1, x) /\
+       separated(a_12, x, a_2, x) /\ separated(a_12, x, a, x) /\
+       separated(a_13, x, a_1, x) /\ separated(a_13, x, a_2, x) /\
+       separated(a_13, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_2 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_2 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_11] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_10, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_7])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_11] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_10, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_7])))))).
+  (* Then *)
+  Have: i < n.
+  (* Then *)
+  Have: a_4[shift_sint32(a_10, i)] = 1.
+  (* Then *)
+  Have: a_4[a_5] = 0.
+  (* Invariant 'i_4' *)
+  Have: ((-1) <= top_0) /\ ((2 + top_0) <= n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_9[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_9[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_9[a_11] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_9[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_9[shift_sint32(a_10, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= x_1) ->
+      (a_9[shift_sint32(dist_0, i_1)] = (1 + a_9[a_7])))))).
+}
+Prove: included(a_5, 1, a_1, x) \/ included(a_5, 1, a_2, x) \/
+    included(a_5, 1, a, x).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:116ms) (99ms) (292)
+Prover Z3 4.15.4 returns Valid (Qed:116ms) (81ms) (206471)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 56) (5/5):
+Effect at line 67
+Let a = shift_sint32(visited_0, 0).
+Let x = 1 + n.
+Let a_1 = shift_sint32(dist_0, 0).
+Let a_2 = shift_sint32(stack_0, 0).
+Let a_3 = memcpy(memcpy(memcpy(Mint_0, a, Mint_undef_0, a, x), a_1,
+                   Mint_undef_1, a_1, x), a_2, Mint_undef_2, a_2, x).
+Let a_4 = memcpy(memcpy(memcpy(a_3, a, Mint_undef_3, a, x), a_1,
+                   Mint_undef_4, a_1, x), a_2, Mint_undef_5, a_2, x).
+Let x_1 = 1 + top_0.
+Let a_5 = shift_sint32(visited_0, i).
+Let a_6 = a_4[shift_sint32(stack_0, x_1) <- i][a_5 <- 1].
+Let a_7 = shift_sint32(dist_0, i).
+Let a_8 = shift_sint32(dist_0, node_0).
+Let a_9 = a_6[a_8].
+Let a_10 = a_6[a_7 <- 1 + a_9].
+Let a_11 = Mptr_0[shift_PTR(graph_0, node_0)].
+Let a_12 = shift_sint32(visited_0, node_0).
+Let x_2 = Mint_0[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n) /\ is_sint32(node_0) /\
+      is_sint32(top_0) /\ is_sint32(top_1) /\ is_sint32(x_1) /\
+      is_sint32(x_2) /\ is_sint32(a_9).
+  (* Heap *)
+  Type: (region(dist_0.base) <= 0) /\ (region(graph_0.base) <= 0) /\
+      (region(stack_0.base) <= 0) /\ (region(visited_0.base) <= 0) /\
+      linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_7, 1).
+  (* Pre-condition *)
+  Have: (0 <= x_2) /\ (x_2 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_PTR(graph_0, 0), x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      valid_rw(Malloc_0, shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1),
+        1))))).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. let a_13 = shift_PTR(graph_0, i_2) in
+      let a_14 = shift_PTR(graph_0, i_1) in ((i_2 != i_1) -> ((0 <= i_2) ->
+      ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      (separated(a_13, x, a_14, x) /\ separated(a_13, x, a_1, x) /\
+       separated(a_13, x, a_2, x) /\ separated(a_13, x, a, x) /\
+       separated(a_14, x, a_1, x) /\ separated(a_14, x, a_2, x) /\
+       separated(a_14, x, a, x))))))).
+  (* Pre-condition *)
+  Have: separated(a_1, x, a_2, x) /\ separated(a_1, x, a, x) /\
+      separated(a, x, a_2, x).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((x_2 != i_1) -> ((0 <= i_1) -> ((i_1 <= n) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))))).
+  (* Pre-condition *)
+  Have: (Mint_0[shift_sint32(dist_0, x_2)] = 0) /\
+      (Mint_0[shift_sint32(visited_0, x_2)] = 1).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_1)] = 1))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) ->
+      ((i_1 <= n) ->
+      (Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)]
+         = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_1)], i_2)]))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z.
+      let x_3 = Mint_0[shift_sint32(Mptr_0[shift_PTR(graph_0, i_2)], i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= n) -> ((i_1 <= n) ->
+      ((x_3 = 0) \/ (x_3 = 1)))))).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((x_2 != i_1) ->
+      ((Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (Mint_0[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (Mint_0[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (Mint_0[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_0' *)
+  Have: (0 <= top_1) /\ (top_1 < n).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_3[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_3' *)
+  Have: a_3[a_12] = 1.
+  (* Invariant 'i_11' *)
+  Have: forall i_1 : Z. (a_3[shift_sint32(dist_0, i_1)] = (-1)) /\
+      (a_3[shift_sint32(visited_0, i_1)] = 0) /\ (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_3[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_3[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_1) ->
+      (a_3[shift_sint32(dist_0, i_1)] = (1 + a_3[a_8])))))).
+  (* Invariant 'i_4' *)
+  Have: (0 <= top_0) /\ (top_0 < n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_4[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_4[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_4[a_12] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_4[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_4[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) ->
+      ((i_1 <= top_0) ->
+      (a_4[shift_sint32(dist_0, i_1)] = (1 + a_4[a_8])))))).
+  (* Then *)
+  Have: i < n.
+  (* Then *)
+  Have: a_4[shift_sint32(a_11, i)] = 1.
+  (* Then *)
+  Have: a_4[a_5] = 0.
+  (* Invariant 'i_4' *)
+  Have: ((-1) <= top_0) /\ ((2 + top_0) <= n).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i_1 != node_0) ->
+      ((a_10[shift_sint32(dist_0, i_1)] = (-1)) /\
+       (a_10[shift_sint32(visited_0, i_1)] = 0))).
+  (* Invariant 'i_7' *)
+  Have: a_10[a_12] = 1.
+  (* Invariant 'i_8' *)
+  Have: forall i_1 : Z. ((a_10[shift_sint32(visited_0, i_1)] = 0) ->
+      ((a_10[shift_sint32(a_11, i_1)] = 1) -> ((0 <= i_1) -> ((i_1 <= x_1) ->
+      (a_10[shift_sint32(dist_0, i_1)] = (1 + a_10[a_8])))))).
+}
+Prove: included(a_7, 1, a_1, x) \/ included(a_7, 1, a_2, x) \/
+    included(a_7, 1, a, x).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:120ms) (100ms) (292)
+Prover Z3 4.15.4 returns Valid (Qed:120ms) (72ms) (206473)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 22) in '_dfs' (1/3):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (13ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 22) in '_dfs' (2/3):
+Effect at line 62
+Prove: true.
+Prover Qed returns Valid (18ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_dfs.c/_dfs_verified_4.c, line 22) in '_dfs' (3/3):
+Effect at line 70
+Prove: true.
+Prover Qed returns Valid (19ms)
+
+------------------------------------------------------------
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

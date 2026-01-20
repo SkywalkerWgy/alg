@@ -1,0 +1,26 @@
+#include <assert.h>
+int unknown1();
+int unknown2();
+int unknown3();
+int unknown4();
+
+/*
+ * Adapted from ex17.c in NECLA test suite
+ */
+
+/*@
+    requires flag > 0;
+    ensures  e_1: flag ==> j == 100;
+*/
+void oopsla_18(int flag, int a, int b, int j) {
+
+    j = 0;
+
+    /*@
+        loop assigns j, flag, b;
+    */
+    for (b = 0; b < 100; ++b) {
+        if (flag)
+            j = j + 1;
+    }
+}

@@ -1,0 +1,309 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 17 goals scheduled
+[wp] [Timeout] typed_max_seq_not_empty_ensures_e_2 (Qed 14ms) (Alt-Ergo)
+[wp] Proved goals:   17 / 18
+  Unreachable:       1
+  Qed:              10 (2ms-9ms-38ms)
+  Alt-Ergo 2.6.2:    3 (56ms-86ms)
+  Z3 4.15.4:         3 (16ms-36ms-46ms)
+  Timeout:           1
+------------------------------------------------------------
+  Function _max_seq
+------------------------------------------------------------
+
+Goal Complete behaviors 'empty', 'not_empty':
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+}
+Prove: (n = 0) \/ (0 < n).
+Prover Z3 4.15.4 returns Valid (Qed:2ms) (16ms) (35085)
+
+------------------------------------------------------------
+
+Goal Disjoint behaviors 'empty', 'not_empty':
+Prove: true.
+Prover Qed returns Valid (0.85ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_1' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 24):
+Let x = Mint_0[shift_sint32(a, max_1)].
+Let x_1 = Mint_0[shift_sint32(a, i_1)].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(max_1) /\ is_sint32(n) /\
+      is_sint32(x_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= i_1).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_5' *)
+  Have: 0 < n.
+  (* Invariant 'i_1' *)
+  Have: forall i_4 : Z. ((0 <= i_4) -> ((i_4 < i_1) ->
+      (Mint_0[shift_sint32(a, i_4)] <= x))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_3) /\ (i_3 < n).
+  (* Invariant 'i_4' *)
+  Have: forall i_4 : Z. ((0 <= i_4) -> ((i_4 < max_1) ->
+      (Mint_0[shift_sint32(a, i_4)] <= x))).
+  (* Then *)
+  Have: i_1 < n.
+  If x < x_1
+  Then { Have: max_0 = i_1. }
+  Else { Have: max_1 = max_0. }
+}
+Prove: Mint_0[shift_sint32(a, i)] <= Mint_0[shift_sint32(a, max_0)].
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:33ms) (86ms) (120)
+Prover Z3 4.15.4 returns Valid (Qed:33ms) (23ms) (43981)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_1' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 24):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 26):
+Let x = Mint_0[shift_sint32(a, max_0)].
+Let x_1 = Mint_0[shift_sint32(a, i)].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(max_0) /\ is_sint32(n) /\ is_sint32(x_1) /\
+      is_sint32(x).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_5' *)
+  Have: 0 < n.
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. ((0 <= i_3) -> ((i_3 < i) ->
+      (Mint_0[shift_sint32(a, i_3)] <= x))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_4' *)
+  Have: forall i_3 : Z. ((0 <= i_3) -> ((i_3 < max_0) ->
+      (Mint_0[shift_sint32(a, i_3)] <= x))).
+  (* Then *)
+  Have: i < n.
+  If x < x_1
+  Then { Have: max_1 = i. }
+  Else { Have: max_0 = max_1. }
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. ((i_3 <= i) -> ((0 <= i_3) ->
+      (Mint_0[shift_sint32(a, i_3)] <= Mint_0[shift_sint32(a, max_1)]))).
+}
+Prove: exists i_3 : Z. (0 <= i_3) /\ (i_3 < n).
+Prover Z3 4.15.4 returns Valid (Qed:38ms) (46ms) (93385)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 26):
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+}
+Prove: exists i : Z. (0 <= i) /\ (i < n).
+Prover Z3 4.15.4 returns Valid (Qed:6ms) (45ms) (84256)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 28):
+Let x = Mint_0[shift_sint32(a, max_0)].
+Let x_1 = Mint_0[shift_sint32(a, max_1)].
+Let x_2 = Mint_0[shift_sint32(a, i_1)].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(max_1) /\ is_sint32(n) /\
+      is_sint32(x_2) /\ is_sint32(x_1).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < max_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_5' *)
+  Have: 0 < n.
+  (* Invariant 'i_1' *)
+  Have: forall i_5 : Z. ((0 <= i_5) -> ((i_5 < i_1) ->
+      (Mint_0[shift_sint32(a, i_5)] <= x_1))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_3) /\ (i_3 < n).
+  (* Invariant 'i_4' *)
+  Have: forall i_5 : Z. ((0 <= i_5) -> ((i_5 < max_1) ->
+      (Mint_0[shift_sint32(a, i_5)] <= x_1))).
+  (* Then *)
+  Have: i_1 < n.
+  If x_1 < x_2
+  Then { Have: max_0 = i_1. }
+  Else { Have: max_1 = max_0. }
+  (* Invariant 'i_1' *)
+  Have: forall i_5 : Z. ((i_5 <= i_1) -> ((0 <= i_5) ->
+      (Mint_0[shift_sint32(a, i_5)] <= x))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_4) /\ (i_4 < n).
+}
+Prove: Mint_0[shift_sint32(a, i)] <= x.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:37ms) (76ms) (132)
+Prover Z3 4.15.4 returns Valid (Qed:37ms) (13ms) (42506)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 28):
+Prove: true.
+Prover Qed returns Valid (0.83ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_5' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 30):
+Prove: true.
+Prover Qed returns Valid (5ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_5' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 30):
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_10.c, line 33):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (1/3):
+Effect at line 18
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (2/3):
+Effect at line 35
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (3/3):
+Effect at line 40
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior empty
+------------------------------------------------------------
+
+Goal Post-condition for 'empty' 'e_1' in '_max_seq':
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior not_empty
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_2' in '_max_seq':
+Let x = Mint_0[shift_sint32(a, _max_seq_0)].
+Assume {
+  Type: is_sint32(_max_seq_0) /\ is_sint32(i) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Pre-condition for 'not_empty' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. ((0 <= i_3) -> ((i_3 < i) ->
+      (Mint_0[shift_sint32(a, i_3)] <= x))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_4' *)
+  Have: forall i_3 : Z. ((0 <= i_3) -> ((i_3 < _max_seq_0) ->
+      (Mint_0[shift_sint32(a, i_3)] <= x))).
+  (* Else *)
+  Have: n <= i.
+}
+Prove: (0 <= _max_seq_0) /\ (_max_seq_0 < n).
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:14ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:14ms) (10s)
+
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_3' in '_max_seq':
+Let x = Mint_0[shift_sint32(a, _max_seq_0)].
+Assume {
+  Type: is_sint32(_max_seq_0) /\ is_sint32(i_1) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < n).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Pre-condition for 'not_empty' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_1' *)
+  Have: forall i_4 : Z. ((0 <= i_4) -> ((i_4 < i_1) ->
+      (Mint_0[shift_sint32(a, i_4)] <= x))).
+  (* Invariant 'i_2' *)
+  Have: (0 <= i_3) /\ (i_3 < n).
+  (* Invariant 'i_4' *)
+  Have: forall i_4 : Z. ((0 <= i_4) -> ((i_4 < _max_seq_0) ->
+      (Mint_0[shift_sint32(a, i_4)] <= x))).
+  (* Else *)
+  Have: n <= i_1.
+}
+Prove: Mint_0[shift_sint32(a, i)] <= x.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:14ms) (56ms) (50)
+Prover Z3 4.15.4 returns Valid (Qed:14ms) (18ms) (38941)
+
+------------------------------------------------------------
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

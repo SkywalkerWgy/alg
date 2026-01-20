@@ -1,0 +1,1895 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_10.c
+----------Code----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    /*@
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    /*@
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= 2*n;
+loop invariant k == n - i/2;
+loop invariant (i % 2) == 0;
+```
+----------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= j <= n/2;
+loop invariant k == n - i/2 - j;
+loop invariant i == 2*(n - k - j);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+loop invariant i_6: 0 <= i;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_0: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant 0 <= i <= 2*n too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] 0 <= i <= 2*n
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i;
+loop invariant i_1: k == n - i/2;
+loop invariant i_2: (i % 2) == 0;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= 2*n
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= 2*n;
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_cross: i_3: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Invariant 0 <= j <= n/2 not initially provable. Fix or supplement invariants in the pre-loop or in this loop.
+
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= j <= n/2
+The above loop invariant required by the loop labeled "B" cannot be derived from the invariants of the preceding loop "A", and the program state before entering the current loop:
+[Pre-statement]
+int j = 0;
+Accordingly, we must fix the situation that prevents proving the current loop invariant. There are two independent possibilities you should consider and address:
+  1) The current loop invariant for "Loop B" is too strong:
+     - It uses facts that are not guaranteed by the preceding loop invariants together with Pre-statement.
+     - Remedy: weaken or simplify the invariant of "B" so it becomes derivable from the available preconditions.
+
+  2) The preceding loop invariants of "Loop A" are too weak:
+     - They do not imply the facts required by the "B" invariant after executing Pre-statement.
+     - Remedy: strengthen the invariant(s) of "Loop A" so that, after running Pre-statement, they imply the needed facts for "Loop B".
+
+Your task is to adjust the invariants so that the establishment of "Loop B" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "B", or  
+   - only the preceding loop "A", or  
+   - both, if needed.
+2. Do NOT output any of the original invariants.  
+   Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop A]
+loop invariant i_7: n - k >= 0;
+loop invariant i_8: i == 2*(n - k);
+
+[Loop B]
+loop invariant i_3: 0 <= j <= n/2;
+loop invariant i_4: k == n - (i/2) - j;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_cross: i_3: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        [Hint] Invariant 0 <= j <= n/2 not initially provable. Fix or supplement invariants in the pre-loop or in this loop.
+
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= j <= n/2
+The above loop invariant required by the loop labeled "B" cannot be derived from the invariants of the preceding loop "A", and the program state before entering the current loop:
+[Pre-statement]
+int j = 0;
+Accordingly, we must fix the situation that prevents proving the current loop invariant. There are two independent possibilities you should consider and address:
+  1) The current loop invariant for "Loop B" is too strong:
+     - It uses facts that are not guaranteed by the preceding loop invariants together with Pre-statement.
+     - Remedy: weaken or simplify the invariant of "B" so it becomes derivable from the available preconditions.
+
+  2) The preceding loop invariants of "Loop A" are too weak:
+     - They do not imply the facts required by the "B" invariant after executing Pre-statement.
+     - Remedy: strengthen the invariant(s) of "Loop A" so that, after running Pre-statement, they imply the needed facts for "Loop B".
+
+Your task is to adjust the invariants so that the establishment of "Loop B" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "B", or  
+   - only the preceding loop "A", or  
+   - both, if needed.
+2. Do NOT output any of the original invariants.  
+   Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop A]
+loop invariant i_10: n >= 0;
+loop invariant i_11: 2*(n - k) == i;
+
+[Loop B]
+loop invariant i_3: 0 <= j <= n/2;
+loop invariant i_4: k == n - (i/2) - j;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+i_10: n >= 0
+i_11: 2*(n - k) == i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_10: n >= 0;
+
+        loop invariant i_11: 2*(n - k) == i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_10: establishment---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        [Hint] Loop invariant n >= 0 too strong initially. Relax it.
+
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_10: n >= 0;
+
+        loop invariant i_11: 2*(n - k) == i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] n >= 0
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_10: n >= 0 || i < n;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+i_10: n >= 0
+i_11: 2*(n - k) == i
+i_12: n >= 0 || i < n
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_10: n >= 0;
+
+        loop invariant i_11: 2*(n - k) == i;
+
+        loop invariant i_12: n >= 0 || i < n;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+i_11: 2*(n - k) == i
+i_12: n >= 0 || i < n
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_11: 2*(n - k) == i;
+
+        loop invariant i_12: n >= 0 || i < n;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+i_11: 2*(n - k) == i
+LOOP B:
+i_3: 0 <= j <= n/2
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_11: 2*(n - k) == i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_3: 0 <= j <= n/2;
+
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: k == n - i/2
+i_2: (i % 2) == 0
+i_6: 0 <= i
+i_7: n - k >= 0
+i_8: i == 2*(n - k)
+i_11: 2*(n - k) == i
+LOOP B:
+i_4: k == n - i/2 - j
+i_5: i == 2*(n - k - j)
+i_9: k == n - (i/2) - j
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+
+/*@
+    requires n <= INT_MAX;
+*/
+int svcomp_10(int n) {
+    int i,k;
+    k = n;
+    i = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_1: k == n - i/2;
+
+        loop invariant i_2: (i % 2) == 0;
+
+        loop invariant i_6: 0 <= i;
+
+        loop invariant i_7: n - k >= 0;
+
+        loop invariant i_8: i == 2*(n - k);
+
+        loop invariant i_11: 2*(n - k) == i;
+
+
+        loop assigns i, k;
+    */
+    while( i < n ) {
+        k--;
+        i = i + 2;
+    }
+
+    int j = 0;
+    
+    // Loop B
+    /*@
+        loop invariant i_4: k == n - i/2 - j;
+
+        loop invariant i_5: i == 2*(n - k - j);
+
+        loop invariant i_9: k == n - (i/2) - j;
+
+
+        loop assigns j, k;
+    */
+    while( j < n / 2 ) {
+        //@ assert k > 0;
+        k--;
+        j++;
+    }
+    return 0;
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 213.20183157920837
+Proposal number: 14
+Verified code:
+
+------------------------

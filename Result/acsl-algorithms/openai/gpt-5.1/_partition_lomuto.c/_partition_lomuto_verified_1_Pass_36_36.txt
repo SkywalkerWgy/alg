@@ -1,0 +1,777 @@
+[kernel] Parsing /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 35 goals scheduled
+[wp] Proved goals:   36 / 36
+  Unreachable:       1
+  Qed:              23 (2ms-6ms-32ms)
+  Alt-Ergo 2.6.1:   10 (15ms-33ms-73ms)
+  CVC4 1.6:          2 (53ms-62ms)
+------------------------------------------------------------
+  Function _partition_lomuto
+------------------------------------------------------------
+
+Goal Post-condition (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 16) in '_partition_lomuto':
+Let a_1 = shift_sint32(a, j_1).
+Let x = 1 + hi_0 - j_1.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, hi_0).
+Let a_4 = shift_sint32(a, _partition_lomuto_0).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5][a_3].
+Let a_7 = a_2[a_4].
+Let x_1 = Mint_0[a_3].
+Assume {
+  Type: is_sint32(_partition_lomuto_0) /\ is_sint32(hi_0) /\ is_sint32(j) /\
+      is_sint32(j_1) /\ is_sint32(_partition_lomuto_0 - 1) /\
+      is_sint32(j_1 - 1) /\ is_sint32(x_1) /\ is_sint32(a_7) /\
+      is_sint32(a_5) /\ is_sint32(a_6).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: j_1 <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_5 = x_1.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (j_1 <= j).
+  (* Invariant 'i_3' *)
+  Have: (j_1 <= _partition_lomuto_0) /\ (_partition_lomuto_0 <= j).
+  (* Invariant 'i_5' *)
+  Have: forall i : Z. ((i < _partition_lomuto_0) -> ((j_1 <= i) ->
+      (a_2[shift_sint32(a, i)] <= a_5))).
+  (* Invariant 'i_6' *)
+  Have: forall i : Z. ((_partition_lomuto_0 <= i) -> ((i < j) ->
+      (a_5 < a_2[shift_sint32(a, i)]))).
+  (* Else *)
+  Have: hi_0 <= j.
+  (* Call 'swap' *)
+  Have: (a_6 = a_7) /\ valid_rw(Malloc_0, a_4, 1) /\
+      valid_rw(Malloc_0, a_3, 1).
+}
+Prove: _partition_lomuto_0 <= hi_0.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:10ms) (17ms) (31)
+Prover CVC4 1.6 returns Valid (Qed:10ms) (18ms) (12244)
+Prover Z3 4.8.6 returns Valid (Qed:10ms) (21ms) (96817)
+
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_partition_lomuto':
+Let a_1 = shift_sint32(a, j).
+Let x = 1 + hi_0 - j.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, hi_0).
+Let a_4 = shift_sint32(a, _partition_lomuto_0).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5].
+Let a_7 = a_6[a_3].
+Let a_8 = a_2[a_4].
+Let x_1 = Mint_0[a_3].
+Assume {
+  Type: is_sint32(_partition_lomuto_0) /\ is_sint32(hi_0) /\
+      is_sint32(j_1) /\ is_sint32(j) /\ is_sint32(_partition_lomuto_0 - 1) /\
+      is_sint32(j - 1) /\ is_sint32(x_1) /\ is_sint32(a_8) /\
+      is_sint32(a_5) /\ is_sint32(a_7).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i <= _partition_lomuto_0) /\ (j <= i).
+  (* Pre-condition *)
+  Have: j <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_5 = x_1.
+  (* Invariant 'i_2' *)
+  Have: (j_1 <= hi_0) /\ (j <= j_1).
+  (* Invariant 'i_3' *)
+  Have: (j <= _partition_lomuto_0) /\ (_partition_lomuto_0 <= j_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 < _partition_lomuto_0) -> ((j <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_5))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((_partition_lomuto_0 <= i_1) -> ((i_1 < j_1) ->
+      (a_5 < a_2[shift_sint32(a, i_1)]))).
+  (* Else *)
+  Have: hi_0 <= j_1.
+  (* Call 'swap' *)
+  Have: (a_7 = a_8) /\ valid_rw(Malloc_0, a_4, 1) /\
+      valid_rw(Malloc_0, a_3, 1).
+}
+Prove: a_6[shift_sint32(a, i)] <= a_5.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:13ms) (40ms) (323)
+Prover CVC4 1.6 returns Valid (Qed:13ms) (45ms) (17853)
+Prover Z3 4.8.6 returns Valid (Qed:13ms) (54ms) (250684)
+
+------------------------------------------------------------
+
+Goal Post-condition 'e_2' in '_partition_lomuto':
+Let a_1 = shift_sint32(a, j).
+Let x = 1 + hi_0 - j.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, hi_0).
+Let a_4 = shift_sint32(a, _partition_lomuto_0).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5].
+Let a_7 = a_6[a_3].
+Let a_8 = a_2[a_4].
+Let x_1 = Mint_0[a_3].
+Assume {
+  Type: is_sint32(_partition_lomuto_0) /\ is_sint32(hi_0) /\
+      is_sint32(j_1) /\ is_sint32(j) /\ is_sint32(_partition_lomuto_0 - 1) /\
+      is_sint32(j - 1) /\ is_sint32(x_1) /\ is_sint32(a_8) /\
+      is_sint32(a_5) /\ is_sint32(a_7).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i <= hi_0) /\ (_partition_lomuto_0 <= i).
+  (* Pre-condition *)
+  Have: j <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_5 = x_1.
+  (* Invariant 'i_2' *)
+  Have: (j_1 <= hi_0) /\ (j <= j_1).
+  (* Invariant 'i_3' *)
+  Have: (j <= _partition_lomuto_0) /\ (_partition_lomuto_0 <= j_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 < _partition_lomuto_0) -> ((j <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_5))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((_partition_lomuto_0 <= i_1) -> ((i_1 < j_1) ->
+      (a_5 < a_2[shift_sint32(a, i_1)]))).
+  (* Else *)
+  Have: hi_0 <= j_1.
+  (* Call 'swap' *)
+  Have: (a_7 = a_8) /\ valid_rw(Malloc_0, a_4, 1) /\
+      valid_rw(Malloc_0, a_3, 1).
+}
+Prove: a_5 <= a_6[shift_sint32(a, i)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:11ms) (41ms) (288)
+Prover CVC4 1.6 returns Valid (Qed:11ms) (34ms) (17557)
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated) in '_partition_lomuto':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_0' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 27):
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_0' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 27):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_1' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 29):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_1' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 29):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 31):
+Prove: true.
+Prover Qed returns Valid (7ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 31):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_3' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 33):
+Let x = 1 + i.
+Let a_1 = shift_sint32(a, x).
+Let x_1 = hi_0 - i.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint32(a, j).
+Let x_2 = 1 + i_1.
+Let a_4 = shift_sint32(a, x_2).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5].
+Let a_7 = a_6[a_3].
+Let a_8 = a_2[a_4].
+Let a_9 = shift_sint32(a, hi_0).
+Let a_10 = a_2[a_9].
+Let x_3 = Mint_0[a_9].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i_1) /\ is_sint32(i) /\ is_sint32(j) /\
+      is_sint32(x_2) /\ is_sint32(x) /\ is_sint32(1 + j) /\ is_sint32(x_3) /\
+      is_sint32(a_10) /\ is_sint32(a_5) /\ is_sint32(a_8) /\
+      is_sint32(a_6[a_9]) /\ is_sint32(a_7).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Residual *)
+  When: a_5 <= a_10.
+  (* Pre-condition *)
+  Have: i < hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Initializer *)
+  Init: a_10 = x_3.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (i < j).
+  (* Invariant 'i_3' *)
+  Have: (i <= i_1) /\ (i_1 < j).
+  (* Invariant 'i_5' *)
+  Have: forall i_2 : Z. ((i_2 <= i_1) -> ((i < i_2) ->
+      (a_2[shift_sint32(a, i_2)] <= a_10))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_1 < i_2) -> ((i_2 < j) ->
+      (a_10 < a_2[shift_sint32(a, i_2)]))).
+  (* Then *)
+  Have: j < hi_0.
+  (* Call 'swap' *)
+  Have: (a_7 = a_8) /\ valid_rw(Malloc_0, a_3, 1) /\
+      valid_rw(Malloc_0, a_4, 1).
+}
+Prove: i <= x_2.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:28ms) (16ms) (32)
+Prover CVC4 1.6 returns Valid (Qed:28ms) (19ms) (12411)
+Prover Z3 4.8.6 returns Valid (Qed:28ms) (22ms) (98076)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_3' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 33):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 35):
+Let x = 1 + j_1.
+Let a_1 = shift_sint32(a, j).
+Let x_1 = 1 + hi_0 - j.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint32(a, j_1).
+Let x_2 = 1 + i.
+Let a_4 = shift_sint32(a, x_2).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5].
+Let a_7 = a_6[a_3].
+Let a_8 = a_2[a_4].
+Let a_9 = shift_sint32(a, hi_0).
+Let a_10 = a_2[a_9].
+Let x_3 = Mint_0[a_9].
+Let a_11 = a_6[a_9].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i) /\ is_sint32(j_1) /\ is_sint32(j) /\
+      is_sint32(j - 1) /\ is_sint32(x_2) /\ is_sint32(x) /\ is_sint32(x_3) /\
+      is_sint32(a_10) /\ is_sint32(a_5) /\ is_sint32(a_8) /\
+      is_sint32(a_11) /\ is_sint32(a_7).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Residual *)
+  When: a_5 <= a_10.
+  (* Pre-condition *)
+  Have: j <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Initializer *)
+  Init: a_10 = x_3.
+  (* Invariant 'i_2' *)
+  Have: (j_1 <= hi_0) /\ (j <= j_1).
+  (* Invariant 'i_3' *)
+  Have: (i < j_1) /\ (j <= x_2).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 <= i) -> ((j <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_10))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i < i_1) -> ((i_1 < j_1) ->
+      (a_10 < a_2[shift_sint32(a, i_1)]))).
+  (* Then *)
+  Have: j_1 < hi_0.
+  (* Call 'swap' *)
+  Have: (a_7 = a_8) /\ valid_rw(Malloc_0, a_3, 1) /\
+      valid_rw(Malloc_0, a_4, 1).
+  (* Invariant 'i_2' *)
+  Have: j <= x.
+  (* Invariant 'i_3' *)
+  Have: j <= (2 + i).
+}
+Prove: a_11 = a_10.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:23ms) (38ms) (243)
+Prover CVC4 1.6 returns Valid (Qed:23ms) (48ms) (18252)
+Prover Z3 4.8.6 returns Valid (Qed:23ms) (38ms) (246545)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 35):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_5' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 37):
+Let x = 1 + j.
+Let a_1 = shift_sint32(a, j_1).
+Let x_1 = 1 + hi_0 - j_1.
+Let a_2 = memcpy(Mint_2, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint32(a, j).
+Let a_4 = a_2[a_3].
+Let a_5 = shift_sint32(a, hi_0).
+Let x_2 = Mint_0[a_5].
+Let a_6 = a_2[a_5].
+Let x_3 = Mint_2[a_5].
+Let a_7 = shift_sint32(a, i_1).
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i_1) /\ is_sint32(i_2) /\
+      is_sint32(i_3) /\ is_sint32(j) /\ is_sint32(j_1) /\
+      is_sint32(j_1 - 1) /\ is_sint32(x) /\ is_sint32(x_2) /\
+      is_sint32(Mint_0[a_7]) /\ is_sint32(Mint_0[a_3]) /\
+      is_sint32(Mint_1[a_7]) /\ is_sint32(Mint_1[a_3]) /\ is_sint32(x_3) /\
+      is_sint32(a_6) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i <= i_1) /\ (j_1 <= i).
+  (* Pre-condition *)
+  Have: j_1 <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Initializer *)
+  Init: x_3 = x_2.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (j_1 <= j).
+  (* Invariant 'i_3' *)
+  Have: (i_3 < j) /\ (j_1 <= (1 + i_3)).
+  (* Invariant 'i_4' *)
+  Have: a_6 = x_2.
+  (* Invariant 'i_5' *)
+  Have: forall i_4 : Z. ((i_4 <= i_3) -> ((j_1 <= i_4) ->
+      (a_2[shift_sint32(a, i_4)] <= x_2))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4 : Z. ((i_3 < i_4) -> ((i_4 < j) ->
+      (x_2 < a_2[shift_sint32(a, i_4)]))).
+  (* Then *)
+  Have: j < hi_0.
+  If a_4 <= x_2
+  Then {
+    Let x_4 = 1 + i_2.
+    Let a_8 = shift_sint32(a, x_4).
+    Let m = Mint_1[a_3 <- v][a_8 <- Mint_1[a_3]].
+    Have: (i_3 = i_2) /\ (a_2 = Mint_1).
+    Have: x_4 = i_1.
+    (* Call 'swap' *)
+    Have: (m[a_3] = Mint_1[a_8]) /\ valid_rw(Malloc_0, a_3, 1) /\
+        valid_rw(Malloc_0, a_8, 1).
+    (* Call Effects *)
+    Have: m = Mint_0.
+  }
+  Else { Have: (i_3 = i_1) /\ (a_2 = Mint_0). }
+  (* Invariant 'i_2' *)
+  Have: j_1 <= x.
+  (* Invariant 'i_3' *)
+  Have: (i_1 <= j) /\ (j_1 <= (1 + i_1)).
+}
+Prove: Mint_0[shift_sint32(a, i)] <= x_2.
+Prover CVC4 1.6 returns Valid (Qed:28ms) (53ms) (20538)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_5' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 37):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 39):
+Let a_1 = shift_sint32(a, hi_0).
+Let x = Mint_0[a_1].
+Let x_1 = 1 + j.
+Let a_2 = shift_sint32(a, j_1).
+Let x_2 = 1 + hi_0 - j_1.
+Let a_3 = memcpy(Mint_2, a_2, Mint_undef_0, a_2, x_2).
+Let a_4 = shift_sint32(a, j).
+Let a_5 = a_3[a_4].
+Let a_6 = a_3[a_1].
+Let x_3 = Mint_2[a_1].
+Let a_7 = shift_sint32(a, i_1).
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i_1) /\ is_sint32(i_2) /\
+      is_sint32(i_3) /\ is_sint32(j) /\ is_sint32(j_1) /\
+      is_sint32(j_1 - 1) /\ is_sint32(x_1) /\ is_sint32(x) /\
+      is_sint32(Mint_0[a_7]) /\ is_sint32(Mint_0[a_4]) /\
+      is_sint32(Mint_1[a_7]) /\ is_sint32(Mint_1[a_4]) /\ is_sint32(x_3) /\
+      is_sint32(a_6) /\ is_sint32(a_5).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i_1 < i) /\ (i <= j).
+  (* Pre-condition *)
+  Have: j_1 <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, x_2).
+  (* Initializer *)
+  Init: x_3 = x.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (j_1 <= j).
+  (* Invariant 'i_3' *)
+  Have: (i_3 < j) /\ (j_1 <= (1 + i_3)).
+  (* Invariant 'i_4' *)
+  Have: a_6 = x.
+  (* Invariant 'i_5' *)
+  Have: forall i_4 : Z. ((i_4 <= i_3) -> ((j_1 <= i_4) ->
+      (a_3[shift_sint32(a, i_4)] <= x))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4 : Z. ((i_3 < i_4) -> ((i_4 < j) ->
+      (x < a_3[shift_sint32(a, i_4)]))).
+  (* Then *)
+  Have: j < hi_0.
+  If a_5 <= x
+  Then {
+    Let x_4 = 1 + i_2.
+    Let a_8 = shift_sint32(a, x_4).
+    Let m = Mint_1[a_4 <- v][a_8 <- Mint_1[a_4]].
+    Have: (i_3 = i_2) /\ (a_3 = Mint_1).
+    Have: x_4 = i_1.
+    (* Call 'swap' *)
+    Have: (m[a_4] = Mint_1[a_8]) /\ valid_rw(Malloc_0, a_4, 1) /\
+        valid_rw(Malloc_0, a_8, 1).
+    (* Call Effects *)
+    Have: m = Mint_0.
+  }
+  Else { Have: (i_3 = i_1) /\ (a_3 = Mint_0). }
+  (* Invariant 'i_2' *)
+  Have: j_1 <= x_1.
+  (* Invariant 'i_3' *)
+  Have: (i_1 <= j) /\ (j_1 <= (1 + i_1)).
+  (* Invariant 'i_5' *)
+  Have: forall i_4 : Z. ((i_4 <= i_1) -> ((j_1 <= i_4) ->
+      (Mint_0[shift_sint32(a, i_4)] <= x))).
+}
+Prove: x < Mint_0[shift_sint32(a, i)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:32ms) (73ms) (738)
+Prover CVC4 1.6 returns Valid (Qed:32ms) (65ms) (19244)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 39):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 42) (1/3):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 42) (2/3):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (8ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 42) (3/3):
+Call Effect at line 47
+Let x = 2 + i_1.
+Let x_1 = 1 + i.
+Let a_1 = shift_sint32(a, x_1).
+Let x_2 = hi_0 - i.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x_2).
+Let x_3 = j - 1.
+Let a_3 = shift_sint32(a, x_3).
+Let x_4 = 1 + i_1.
+Let a_4 = shift_sint32(a, x_4).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5].
+Let a_7 = shift_sint32(a, hi_0).
+Let a_8 = a_6[a_7].
+Let a_9 = a_6[a_3].
+Let a_10 = a_2[a_4].
+Let a_11 = a_2[a_7].
+Let x_5 = Mint_0[a_7].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i_1) /\ is_sint32(i) /\ is_sint32(j) /\
+      is_sint32(x_3) /\ is_sint32(x_4) /\ is_sint32(x_1) /\ is_sint32(x_5) /\
+      is_sint32(a_11) /\ is_sint32(a_5) /\ is_sint32(a_10) /\
+      is_sint32(a_8) /\ is_sint32(a_9).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: i < hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_2).
+  (* Initializer *)
+  Init: a_8 = x_5.
+  (* Invariant 'i_2' *)
+  Have: (j <= (1 + hi_0)) /\ ((2 + i) <= j).
+  (* Invariant 'i_3' *)
+  Have: (i <= i_1) /\ (x <= j).
+  (* Invariant 'i_4' *)
+  Have: a_8 = a_11.
+  (* Invariant 'i_5' *)
+  Have: forall i_2 : Z. ((i_2 <= i_1) -> ((i < i_2) ->
+      (a_2[shift_sint32(a, i_2)] <= a_8))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_1 < i_2) -> (((2 + i_2) <= j) ->
+      (a_8 < a_2[shift_sint32(a, i_2)]))).
+  (* Then *)
+  Have: j <= hi_0.
+  (* Then *)
+  Have: a_5 <= a_8.
+  (* Call 'swap' *)
+  Have: (a_9 = a_10) /\ valid_rw(Malloc_0, a_3, 1) /\
+      valid_rw(Malloc_0, a_4, 1).
+  (* Invariant 'i_2' *)
+  Have: i < j.
+  (* Invariant 'i_3' *)
+  Have: i <= x_4.
+  (* Invariant 'i_5' *)
+  Have: forall i_2 : Z. ((i < i_2) -> ((i_2 <= x_4) ->
+      (a_6[shift_sint32(a, i_2)] <= a_8))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2 : Z. ((i_2 < j) -> ((x <= i_2) ->
+      (a_8 < a_6[shift_sint32(a, i_2)]))).
+}
+Prove: (((!invalid(Malloc_0, a_3, 1)) -> included(a_3, 1, a_1, x_2))) /\
+    (((!invalid(Malloc_0, a_4, 1)) -> included(a_4, 1, a_1, x_2))).
+Prover CVC4 1.6 returns Valid (Qed:24ms) (62ms) (20339)
+Prover Z3 4.8.6 returns Valid (Qed:24ms) (55ms) (261053)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (1/5):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (0.78ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (2/5):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (3/5):
+Effect at line 46
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (4/5):
+Call Effect at line 47
+Prove: true.
+Prover Qed returns Valid (0.56ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (5/5):
+Call Effect at line 50
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (1/4):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (2/4):
+Effect at line 44
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (3/4):
+Call Effect at line 50
+Let a_1 = shift_sint32(a, j).
+Let x = 1 + hi_0 - j.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, hi_0).
+Let x_1 = 1 + i.
+Let a_4 = shift_sint32(a, x_1).
+Let a_5 = a_2[a_3].
+Let a_6 = a_2[a_3 <- v][a_4 <- a_5][a_3].
+Let a_7 = a_2[a_4].
+Let x_2 = Mint_0[a_3].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i) /\ is_sint32(j_1) /\ is_sint32(j) /\
+      is_sint32(j - 1) /\ is_sint32(x_2) /\ is_sint32(a_5) /\
+      is_sint32(a_7) /\ is_sint32(a_6).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: j <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_5 = x_2.
+  (* Invariant 'i_2' *)
+  Have: (j_1 <= hi_0) /\ (j <= j_1).
+  (* Invariant 'i_3' *)
+  Have: (i < j_1) /\ (j <= x_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 <= i) -> ((j <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_5))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i < i_1) -> ((i_1 < j_1) ->
+      (a_5 < a_2[shift_sint32(a, i_1)]))).
+  (* Else *)
+  Have: hi_0 <= j_1.
+  (* Call 'swap' *)
+  Have: (a_6 = a_7) /\ valid_rw(Malloc_0, a_3, 1) /\
+      valid_rw(Malloc_0, a_4, 1).
+}
+Prove: (((!invalid(Malloc_0, a_3, 1)) -> included(a_3, 1, a_1, x))) /\
+    (((!invalid(Malloc_0, a_4, 1)) -> included(a_4, 1, a_1, x))).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:11ms) (39ms) (283)
+Prover CVC4 1.6 returns Valid (Qed:11ms) (52ms) (18012)
+Prover Z3 4.8.6 returns Valid (Qed:11ms) (45ms) (190938)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 15) in '_partition_lomuto' (4/4):
+Effect at line 51
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 2) in 'swap'' in '_partition_lomuto' at call 'swap' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 47)
+:
+Let a_1 = shift_sint32(a, j_1).
+Let x = 1 + hi_0 - j_1.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, j).
+Let a_4 = a_2[a_3].
+Let a_5 = shift_sint32(a, hi_0).
+Let a_6 = a_2[a_5].
+Let x_1 = 1 + i.
+Let x_2 = Mint_0[a_5].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i) /\ is_sint32(j) /\ is_sint32(j_1) /\
+      is_sint32(j_1 - 1) /\ is_sint32(x_1) /\ is_sint32(x_2) /\
+      is_sint32(a_6) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: j_1 <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_6 = x_2.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (j_1 <= j).
+  (* Invariant 'i_3' *)
+  Have: (i < j) /\ (j_1 <= x_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 <= i) -> ((j_1 <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_6))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i < i_1) -> ((i_1 < j) ->
+      (a_6 < a_2[shift_sint32(a, i_1)]))).
+  (* Then *)
+  Have: j < hi_0.
+  (* Then *)
+  Have: a_4 <= a_6.
+}
+Prove: valid_rw(Malloc_0, a_3, 1) /\
+    valid_rw(Malloc_0, shift_sint32(a, x_1), 1).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:10ms) (29ms) (214)
+Prover CVC4 1.6 returns Valid (Qed:10ms) (34ms) (18547)
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 2) in 'swap'' in '_partition_lomuto' at call 'swap' (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 50)
+:
+Let a_1 = shift_sint32(a, j_1).
+Let x = 1 + hi_0 - j_1.
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, x).
+Let a_3 = shift_sint32(a, hi_0).
+Let a_4 = a_2[a_3].
+Let x_1 = 1 + i.
+Let x_2 = Mint_0[a_3].
+Assume {
+  Type: is_sint32(hi_0) /\ is_sint32(i) /\ is_sint32(j) /\ is_sint32(j_1) /\
+      is_sint32(j_1 - 1) /\ is_sint32(x_2) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: j_1 <= hi_0.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x).
+  (* Initializer *)
+  Init: a_4 = x_2.
+  (* Invariant 'i_2' *)
+  Have: (j <= hi_0) /\ (j_1 <= j).
+  (* Invariant 'i_3' *)
+  Have: (i < j) /\ (j_1 <= x_1).
+  (* Invariant 'i_5' *)
+  Have: forall i_1 : Z. ((i_1 <= i) -> ((j_1 <= i_1) ->
+      (a_2[shift_sint32(a, i_1)] <= a_4))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1 : Z. ((i < i_1) -> ((i_1 < j) ->
+      (a_4 < a_2[shift_sint32(a, i_1)]))).
+  (* Else *)
+  Have: hi_0 <= j.
+}
+Prove: valid_rw(Malloc_0, a_3, 1) /\
+    valid_rw(Malloc_0, shift_sint32(a, x_1), 1).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:8ms) (21ms) (177)
+Prover CVC4 1.6 returns Valid (Qed:8ms) (41ms) (15493)
+Prover Z3 4.8.6 returns Valid (Qed:8ms) (42ms) (211086)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function swap
+------------------------------------------------------------
+
+Goal Post-condition (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 4) in 'swap':
+Let x_1 = Mint_0[x].
+Let x_2 = Mint_0[y].
+Let x_3 = Mint_0[x <- x_2][y <- x_1][x].
+Assume {
+  Type: is_sint32(x_1) /\ is_sint32(x_2) /\ is_sint32(x_3).
+  (* Heap *)
+  Type: (region(x.base) <= 0) /\ (region(y.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, x, 1) /\ valid_rw(Malloc_0, y, 1).
+}
+Prove: x_3 = x_2.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:2ms) (15ms) (30)
+Prover CVC4 1.6 returns Valid (Qed:2ms) (11ms) (10590)
+Prover Z3 4.8.6 returns Valid (Qed:2ms) (10ms) (48926)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 3) in 'swap' (1/2):
+Effect at line 8
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithms/Result/acsl-algorithms/openai/gpt-5.1/_partition_lomuto.c/_partition_lomuto_verified_1.c, line 3) in 'swap' (2/2):
+Effect at line 9
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

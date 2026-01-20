@@ -1,0 +1,389 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_12.c
+----------Code----------
+int unknown1();
+int unknown2();
+
+
+void oopsla_12(int flag){
+    int t = 0;
+    int s = 0;
+    int a = 0;
+    int b = 0;
+    /*@
+        loop assigns t;
+        loop assigns s;
+        loop assigns b;
+        loop assigns a;
+    */
+    while(unknown1()) {
+        a++;
+        b++;
+        s += a;
+        t += b;
+        if(flag) {
+            t += a;
+        }
+    } 
+
+    int x = 1;
+    if(flag) {
+        x = t - 2*s + 2;
+    }
+    int y = 0;
+
+    /*@
+        loop assigns y;
+    */
+    while(y <= x){
+        if(unknown2()) {
+            y++;
+        }
+        else{ 
+            y += 2;
+    
+        }
+    }
+
+    //@ assert  a_1: y <= 4;
+}
+
+
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+
+void oopsla_12(int flag){
+    int t = 0;
+    int s = 0;
+    int a = 0;
+    int b = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns t;
+        loop assigns s;
+        loop assigns b;
+        loop assigns a;
+    */
+    while(unknown1()) {
+        a++;
+        b++;
+        s += a;
+        t += b;
+        if(flag) {
+            t += a;
+        }
+    } 
+
+    int x = 1;
+    if(flag) {
+        x = t - 2*s + 2;
+    }
+    int y = 0;
+
+    // Loop B
+    /*@
+        loop assigns y;
+    */
+    while(y <= x){
+        if(unknown2()) {
+            y++;
+        }
+        else{ 
+            y += 2;
+    
+        }
+    }
+
+    //@ assert  a_1: y <= 4;
+}
+
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant s == a*(a+1)/2;
+loop invariant flag ==> t == s + a*(a+1)/2;
+loop invariant !flag ==> t == s;
+loop invariant a == b;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+
+
+void oopsla_12(int flag){
+    int t = 0;
+    int s = 0;
+    int a = 0;
+    int b = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: s == a*(a+1)/2;
+
+        loop invariant i_1: flag ==> t == s + a*(a+1)/2;
+
+        loop invariant i_2: !flag ==> t == s;
+
+        loop invariant i_3: a == b;
+
+
+        loop assigns t;
+        loop assigns s;
+        loop assigns b;
+        loop assigns a;
+    */
+    while(unknown1()) {
+        a++;
+        b++;
+        s += a;
+        t += b;
+        if(flag) {
+            t += a;
+        }
+    } 
+
+    int x = 1;
+    if(flag) {
+        x = t - 2*s + 2;
+    }
+    int y = 0;
+
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns y;
+    */
+    while(y <= x){
+        if(unknown2()) {
+            y++;
+        }
+        else{ 
+            y += 2;
+    
+        }
+    }
+
+    //@ assert  a_1: y <= 4;
+}
+
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:s == a*(a+1)/2; i_1:flag ==> t == s + a*(a+1)/2; i_2:!flag ==> t == s; i_3:a == b; 
+    - Post-condition: a_1:y <= 4; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant y <= x + 2;
+loop invariant y >= 0;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: s == a*(a+1)/2
+i_1: flag ==> t == s + a*(a+1)/2
+i_2: !flag ==> t == s
+i_3: a == b
+LOOP B:
+i_4: y <= x + 2
+i_5: y >= 0
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+
+
+void oopsla_12(int flag){
+    int t = 0;
+    int s = 0;
+    int a = 0;
+    int b = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: s == a*(a+1)/2;
+
+        loop invariant i_1: flag ==> t == s + a*(a+1)/2;
+
+        loop invariant i_2: !flag ==> t == s;
+
+        loop invariant i_3: a == b;
+
+
+        loop assigns t;
+        loop assigns s;
+        loop assigns b;
+        loop assigns a;
+    */
+    while(unknown1()) {
+        a++;
+        b++;
+        s += a;
+        t += b;
+        if(flag) {
+            t += a;
+        }
+    } 
+
+    int x = 1;
+    if(flag) {
+        x = t - 2*s + 2;
+    }
+    int y = 0;
+
+    // Loop B
+    /*@
+        loop invariant i_4: y <= x + 2;
+
+        loop invariant i_5: y >= 0;
+
+
+        loop assigns y;
+    */
+    while(y <= x){
+        if(unknown2()) {
+            y++;
+        }
+        else{ 
+            y += 2;
+    
+        }
+    }
+
+    //@ assert  a_1: y <= 4;
+}
+
+
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 12.292669773101807
+Proposal number: 1
+Verified code:
+int unknown1();
+int unknown2();
+
+
+void oopsla_12(int flag){
+    int t = 0;
+    int s = 0;
+    int a = 0;
+    int b = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: s == a*(a+1)/2;
+
+        loop invariant i_1: flag ==> t == s + a*(a+1)/2;
+
+        loop invariant i_2: !flag ==> t == s;
+
+        loop invariant i_3: a == b;
+
+
+        loop assigns t;
+        loop assigns s;
+        loop assigns b;
+        loop assigns a;
+    */
+    while(unknown1()) {
+        a++;
+        b++;
+        s += a;
+        t += b;
+        if(flag) {
+            t += a;
+        }
+    } 
+
+    int x = 1;
+    if(flag) {
+        x = t - 2*s + 2;
+    }
+    int y = 0;
+
+    // Loop B
+    /*@
+        loop invariant i_4: y <= x + 2;
+
+        loop invariant i_5: y >= 0;
+
+
+        loop assigns y;
+    */
+    while(y <= x){
+        if(unknown2()) {
+            y++;
+        }
+        else{ 
+            y += 2;
+    
+        }
+    }
+
+    //@ assert  a_1: y <= 4;
+}
+
+
+------------------------

@@ -1,0 +1,2049 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 31 goals scheduled
+[wp] Proved goals:   32 / 32
+  Unreachable:       1
+  Qed:              10 (6ms-52ms-164ms)
+  Alt-Ergo 2.6.2:   19 (54ms-72ms-119ms)
+  Z3 4.15.4:         2 (32ms)
+------------------------------------------------------------
+  Function _longest_palindrome_subseq
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_longest_palindrome_subseq':
+Let a = shift_sint8(s, 0).
+Let a_1 = shift_A10_sint32(dp_0, 0).
+Let a_2 = shift_A10_sint32(dp_0, 1 + i).
+Let a_3 = shift_A10_sint32(dp_0, i).
+Let x = i_1 - 1.
+Let x_1 = Mint_0[shift_sint32(a_3, i_1)].
+Assume {
+  Type: is_sint32(i_2) /\ is_sint32(Mint_0[shift_sint32(a_1, 9)]).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, 100).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_4), i_3), 1))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((i_4 != i_3) -> ((0 <= i_4) -> ((0 <= i_3) ->
+      ((i_4 <= 9) -> ((i_3 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_4), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_3), 100, a, 10) /\
+       (((10 + i_3) <= i_4) \/ ((10 + i_4) <= i_3)))))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_4), i_3)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_4 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_1[shift_sint32(a_4, i_3)]
+         = Ig.max(Mint_1[shift_sint32(a_4, i_3 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_4 = shift_A10_sint32(dp_0, i_4) in
+      let x_2 = Mint_1[shift_sint32(a_4, i_3)] in
+      let x_3 = Mint_1[shift_sint32(a_4, i_3 - 1)] in
+      let x_4 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Loop assigns ... *)
+  Have: forall a_4 : addr.
+      ((forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+        ((i_3 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_4), i_3) != a_4)))))) ->
+      (Mint_1[a_4] = Mint_0[a_4])).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_4 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_0[shift_sint32(a_4, i_3)]
+         = Ig.max(Mint_0[shift_sint32(a_4, i_3 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_4 = shift_A10_sint32(dp_0, i_4) in
+      let x_2 = Mint_0[shift_sint32(a_4, i_3)] in
+      let x_3 = Mint_0[shift_sint32(a_4, i_3 - 1)] in
+      let x_4 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Else *)
+  Have: i_2 < 0.
+}
+Prove: P_is_max(Mint_0[shift_sint32(a_2, i_1)], Mint_0[shift_sint32(a_3, x)],
+         x_1) \/
+    ((Mchar_0[shift_sint8(s, i_1)] = Mchar_0[shift_sint8(s, i)]) /\
+     (x_1 = (2 + Mint_0[shift_sint32(a_2, x)]))).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:69ms) (119ms) (347)
+Prover Z3 4.15.4 returns Valid (Qed:69ms) (31ms) (100584)
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated) in '_longest_palindrome_subseq':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_0' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 32):
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_0[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 10 - j).
+Let a_3 = shift_sint8(s, 0).
+Let a_4 = shift_A10_sint32(dp_0, i).
+Assume {
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_3), i_2), 1))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((i_3 != i_2) -> ((0 <= i_3) -> ((0 <= i_2) ->
+      ((i_3 <= 9) -> ((i_2 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_3), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_2), 100, a_3, 10) /\
+       (((10 + i_2) <= i_3) \/ ((10 + i_3) <= i_2)))))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_2)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_1[shift_sint32(a_5, i_2)]
+         = Ig.max(Mint_1[shift_sint32(a_5, i_2 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = Mint_1[shift_sint32(a_5, i_2)] in
+      let x_2 = Mint_1[shift_sint32(a_5, i_2 - 1)] in
+      let x_3 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_5 : addr.
+      ((forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+        ((i_2 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_3), i_2) != a_5)))))) ->
+      (Mint_1[a_5] = Mint_0[a_5])).
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_0[shift_sint32(a_5, i_2)]
+         = Ig.max(Mint_0[shift_sint32(a_5, i_2 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = Mint_0[shift_sint32(a_5, i_2)] in
+      let x_2 = Mint_0[shift_sint32(a_5, i_2 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = m[shift_sint32(a_5, i_2)] in
+      let x_2 = m[shift_sint32(a_5, i_2 - 1)] in
+      let x_3 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_3,i_2 : Z. let a_5 = shift_A10_sint32(dp_0, i_3) in
+      let a_6 = a_2[shift_sint32(a_5, i_2)] in
+      let a_7 = a_2[shift_sint32(a_5, i_2 - 1)] in
+      let a_8 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((a_6 <= (a_7 + a_8)) /\ (Ig.max(a_7, a_8) <= a_6))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+}
+Prove: a_2[shift_sint32(a_4, i_1)] = Ig.max(a_2[shift_sint32(a_4, i_1 - 1)],
+    a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i), i_1)]).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:95ms) (88ms) (128)
+Prover Z3 4.15.4 returns Valid (Qed:95ms) (33ms) (121889)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_0' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 32):
+Let a = shift_sint8(s, 0).
+Let a_1 = shift_A10_sint32(dp_0, i).
+Assume {
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_3), i_2), 1))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((i_3 != i_2) -> ((0 <= i_3) -> ((0 <= i_2) ->
+      ((i_3 <= 9) -> ((i_2 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_3), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_2), 100, a, 10) /\
+       (((10 + i_2) <= i_3) \/ ((10 + i_3) <= i_2)))))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_2)] = 0))))).
+}
+Prove: Mint_0[shift_sint32(a_1, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i), i_1)]).
+Prover Z3 4.15.4 returns Valid (Qed:10ms) (32ms) (74968)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_1' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 34):
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_0[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 10 - j).
+Let a_3 = shift_sint8(s, 0).
+Assume {
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_3, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_4, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_1[shift_sint32(a_4, i_1)] in
+      let x_2 = Mint_1[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_4 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_4)))))) ->
+      (Mint_1[a_4] = Mint_0[a_4])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_4, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_0[shift_sint32(a_4, i_1)] in
+      let x_2 = Mint_0[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = m[shift_sint32(a_4, i_1)] in
+      let x_2 = m[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let a_5 = a_2[shift_sint32(a_4, i_1)] in
+      let a_6 = a_2[shift_sint32(a_4, i_1 - 1)] in
+      let a_7 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_5 <= (a_6 + a_7)) /\ (Ig.max(a_6, a_7) <= a_5))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (a_2[shift_sint32(a_4, i_1)] = Ig.max(a_2[shift_sint32(a_4, i_1 - 1)],
+       a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+}
+Prove: (0 <= i) /\ (i <= 9) /\
+    (forall i_1 : Z. ((0 <= i_1) -> ((i <= i_1) -> ((i_1 <= 9) ->
+     (0 < a_2[shift_sint32(shift_A10_sint32(dp_0, i), i_1)]))))).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:96ms) (72ms) (74)
+Prover Z3 4.15.4 returns Valid (Qed:96ms) (25ms) (80475)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_1' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 34):
+Let a = shift_sint8(s, 0).
+Assume {
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_1, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+}
+Prove: (0 <= i) /\ (i <= 9) /\
+    (forall i_1 : Z. ((0 <= i_1) -> ((i <= i_1) -> ((i_1 <= 9) ->
+     (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i), i_1)]))))).
+Prover Z3 4.15.4 returns Valid (Qed:11ms) (31ms) (76226)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 36):
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_0[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 10 - j).
+Let a_3 = shift_sint8(s, 0).
+Assume {
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_3, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_4, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_1[shift_sint32(a_4, i_1)] in
+      let x_2 = Mint_1[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_4 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_4)))))) ->
+      (Mint_1[a_4] = Mint_0[a_4])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_4, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_0[shift_sint32(a_4, i_1)] in
+      let x_2 = Mint_0[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = m[shift_sint32(a_4, i_1)] in
+      let x_2 = m[shift_sint32(a_4, i_1 - 1)] in
+      let x_3 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let a_5 = a_2[shift_sint32(a_4, i_1)] in
+      let a_6 = a_2[shift_sint32(a_4, i_1 - 1)] in
+      let a_7 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_5 <= (a_6 + a_7)) /\ (Ig.max(a_6, a_7) <= a_5))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (a_2[shift_sint32(a_4, i_1)] = Ig.max(a_2[shift_sint32(a_4, i_1 - 1)],
+       a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < a_2[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+}
+Prove: (0 <= i) /\ (i <= 9) /\
+    (((0 <= i) -> ((i <= 9) ->
+     (a_2[shift_sint32(shift_A10_sint32(dp_0, i), i)] = 1)))).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:99ms) (69ms) (77)
+Prover Z3 4.15.4 returns Valid (Qed:99ms) (30ms) (81605)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 36):
+Let a = shift_sint8(s, 0).
+Assume {
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_1, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+}
+Prove: (0 <= i) /\ (i <= 9) /\
+    (((0 <= i) -> ((i <= 9) ->
+     (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i), i)] = 1)))).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:13ms) (57ms) (80)
+Prover Z3 4.15.4 returns Valid (Qed:13ms) (19ms) (31501)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_5' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 38):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_5' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 38):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 40):
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_0[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 10 - j).
+Let a_3 = shift_sint8(s, 0).
+Let a_4 = shift_A10_sint32(dp_0, i).
+Let a_5 = a_2[shift_sint32(a_4, i_1)].
+Let a_6 = a_2[shift_sint32(a_4, i_1 - 1)].
+Let a_7 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i), i_1)].
+Assume {
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_3), i_2), 1))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((i_3 != i_2) -> ((0 <= i_3) -> ((0 <= i_2) ->
+      ((i_3 <= 9) -> ((i_2 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_3), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_2), 100, a_3, 10) /\
+       (((10 + i_2) <= i_3) \/ ((10 + i_3) <= i_2)))))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_2)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_1[shift_sint32(a_8, i_2)]
+         = Ig.max(Mint_1[shift_sint32(a_8, i_2 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = Mint_1[shift_sint32(a_8, i_2)] in
+      let x_2 = Mint_1[shift_sint32(a_8, i_2 - 1)] in
+      let x_3 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_8 : addr.
+      ((forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+        ((i_2 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_3), i_2) != a_8)))))) ->
+      (Mint_1[a_8] = Mint_0[a_8])).
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_0[shift_sint32(a_8, i_2)]
+         = Ig.max(Mint_0[shift_sint32(a_8, i_2 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = Mint_0[shift_sint32(a_8, i_2)] in
+      let x_2 = Mint_0[shift_sint32(a_8, i_2 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      let x_1 = m[shift_sint32(a_8, i_2)] in
+      let x_2 = m[shift_sint32(a_8, i_2 - 1)] in
+      let x_3 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      let a_9 = a_2[shift_sint32(a_8, i_2)] in
+      let a_10 = a_2[shift_sint32(a_8, i_2 - 1)] in
+      let a_11 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)] in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      ((a_9 <= (a_10 + a_11)) /\ (Ig.max(a_10, a_11) <= a_9))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_8 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (a_2[shift_sint32(a_8, i_2)] = Ig.max(a_2[shift_sint32(a_8, i_2 - 1)],
+       a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < a_2[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (a_2[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+}
+Prove: (a_5 <= (a_6 + a_7)) /\ (Ig.max(a_6, a_7) <= a_5).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:101ms) (78ms) (137)
+Prover Z3 4.15.4 returns Valid (Qed:101ms) (34ms) (83349)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 40):
+Let a = shift_sint8(s, 0).
+Let a_1 = shift_A10_sint32(dp_0, i).
+Let x = Mint_0[shift_sint32(a_1, i_1)].
+Let x_1 = Mint_0[shift_sint32(a_1, i_1 - 1)].
+Let x_2 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i), i_1)].
+Assume {
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_3), i_2), 1))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((i_3 != i_2) -> ((0 <= i_3) -> ((0 <= i_2) ->
+      ((i_3 <= 9) -> ((i_2 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_3), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_2), 100, a, 10) /\
+       (((10 + i_2) <= i_3) \/ ((10 + i_3) <= i_2)))))))).
+  (* Pre-condition *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_2)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_3,i_2 : Z. let a_2 = shift_A10_sint32(dp_0, i_3) in
+      ((0 <= i_3) -> ((0 <= i_2) -> ((i_3 <= i_2) -> ((i_3 <= 9) ->
+      ((i_2 <= 9) ->
+      (Mint_0[shift_sint32(a_2, i_2)]
+         = Ig.max(Mint_0[shift_sint32(a_2, i_2 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_3), i_2)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (forall i_3 : Z. ((0 <= i_3) -> ((i_2 <= i_3) -> ((i_3 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_3)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_2 : Z. (0 <= i_2) /\ (i_2 <= 9) /\
+      (((0 <= i_2) -> ((i_2 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_2)] = 1)))).
+}
+Prove: (x <= (x_1 + x_2)) /\ (Ig.max(x_1, x_2) <= x).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:15ms) (67ms) (180)
+Prover Z3 4.15.4 returns Valid (Qed:15ms) (17ms) (33472)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_7' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 50):
+Let x = Mchar_0[shift_sint8(s, j)].
+Let x_1 = Mchar_0[shift_sint8(s, i_2)].
+Let a = shift_A10_sint32(dp_0, i_2).
+Let m = Mint_4[shift_sint32(a, i_2) <- 1].
+Let x_2 = 1 + i_2.
+Let a_1 = shift_sint32(a, x_2).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 9 - i_2).
+Let a_3 = shift_sint8(s, 0).
+Let x_3 = j - 1.
+Let a_4 = shift_A10_sint32(dp_0, x_2).
+Let a_5 = shift_A10_sint32(dp_0, i).
+Let x_4 = Mint_0[shift_sint32(a_5, i_1)].
+Let x_5 = Mint_0[shift_sint32(a_5, i_1 - 1)].
+Let x_6 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i), i_1)].
+Assume {
+  Type: is_sint32(i_2) /\ is_sint32(j) /\ is_sint32(max_0) /\
+      is_sint8(x_1) /\ is_sint8(x) /\
+      is_sint32(Mint_1[shift_sint32(a, x_3)]) /\
+      is_sint32(Mint_2[shift_sint32(a_4, x_3)]) /\
+      is_sint32(Mint_1[shift_sint32(a_4, j)]).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= i_1) /\ (i <= 9) /\ (i_1 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_4), i_3), 1))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((i_4 != i_3) -> ((0 <= i_4) -> ((0 <= i_3) ->
+      ((i_4 <= 9) -> ((i_3 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_4), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_3), 100, a_3, 10) /\
+       (((10 + i_3) <= i_4) \/ ((10 + i_4) <= i_3)))))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_3[shift_sint32(shift_A10_sint32(dp_0, i_4), i_3)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_3[shift_sint32(a_6, i_3)]
+         = Ig.max(Mint_3[shift_sint32(a_6, i_3 - 1)],
+         Mint_3[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_3[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_3[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      let x_7 = Mint_3[shift_sint32(a_6, i_3)] in
+      let x_8 = Mint_3[shift_sint32(a_6, i_3 - 1)] in
+      let x_9 = Mint_3[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_7 <= (x_8 + x_9)) /\ (Ig.max(x_8, x_9) <= x_7))))))).
+  (* Loop assigns ... *)
+  Have: forall a_6 : addr.
+      ((forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+        ((i_3 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_4), i_3) != a_6)))))) ->
+      (Mint_3[a_6] = Mint_4[a_6])).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_4[shift_sint32(a_6, i_3)]
+         = Ig.max(Mint_4[shift_sint32(a_6, i_3 - 1)],
+         Mint_4[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_4[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_4[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      let x_7 = Mint_4[shift_sint32(a_6, i_3)] in
+      let x_8 = Mint_4[shift_sint32(a_6, i_3 - 1)] in
+      let x_9 = Mint_4[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_7 <= (x_8 + x_9)) /\ (Ig.max(x_8, x_9) <= x_7))))))).
+  (* Then *)
+  Have: 0 <= i_2.
+  (* Invariant 'i_7' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      let x_7 = m[shift_sint32(a_6, i_3)] in
+      let x_8 = m[shift_sint32(a_6, i_3 - 1)] in
+      let x_9 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_7 <= (x_8 + x_9)) /\ (Ig.max(x_8, x_9) <= x_7))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_4,i_3 : Z. let a_6 = shift_A10_sint32(dp_0, i_4) in
+      let a_7 = a_2[shift_sint32(a_6, i_3)] in
+      let a_8 = a_2[shift_sint32(a_6, i_3 - 1)] in
+      let a_9 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((a_7 <= (a_8 + a_9)) /\ (Ig.max(a_8, a_9) <= a_7))))))).
+  (* Then *)
+  Have: j <= 9.
+  If x = x_1
+  Then {
+    Have: a_2 = Mint_2.
+    Have: Mint_2[shift_sint32(a, j) <- 2 + Mint_2[shift_sint32(a_4, x_3)]] =
+        Mint_0.
+  }
+  Else {
+    Have: a_2 = Mint_1.
+    (* Call 'max' *)
+    Have: P_is_max(Mint_1[shift_sint32(a_4, j)],
+            Mint_1[shift_sint32(a, x_3)], max_0).
+    (* Return Effects *)
+    Have: Mint_1[shift_sint32(a, j) <- max_0] = Mint_0.
+  }
+}
+Prove: (x_4 <= (x_5 + x_6)) /\ (Ig.max(x_5, x_6) <= x_4).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:109ms) (95ms) (212)
+Prover Z3 4.15.4 returns Valid (Qed:109ms) (44ms) (132768)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_7' (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 50):
+Let a = shift_sint8(s, 0).
+Let m = Mint_0[shift_sint32(shift_A10_sint32(dp_0, i), i) <- 1].
+Let a_1 = shift_A10_sint32(dp_0, i_1).
+Let x = m[shift_sint32(a_1, i_2)].
+Let x_1 = m[shift_sint32(a_1, i_2 - 1)].
+Let x_2 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i_2)].
+Assume {
+  Type: is_sint32(i).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (0 <= i_2) /\ (i_1 <= i_2) /\ (i_1 <= 9) /\ (i_2 <= 9).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_4), i_3), 1))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((i_4 != i_3) -> ((0 <= i_4) -> ((0 <= i_3) ->
+      ((i_4 <= 9) -> ((i_3 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_4), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_3), 100, a, 10) /\
+       (((10 + i_3) <= i_4) \/ ((10 + i_4) <= i_3)))))))).
+  (* Pre-condition *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_4), i_3)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_2 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_1[shift_sint32(a_2, i_3)]
+         = Ig.max(Mint_1[shift_sint32(a_2, i_3 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_2 = shift_A10_sint32(dp_0, i_4) in
+      let x_3 = Mint_1[shift_sint32(a_2, i_3)] in
+      let x_4 = Mint_1[shift_sint32(a_2, i_3 - 1)] in
+      let x_5 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_3 <= (x_4 + x_5)) /\ (Ig.max(x_4, x_5) <= x_3))))))).
+  (* Loop assigns ... *)
+  Have: forall a_2 : addr.
+      ((forall i_4,i_3 : Z. ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= 9) ->
+        ((i_3 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_4), i_3) != a_2)))))) ->
+      (Mint_1[a_2] = Mint_0[a_2])).
+  (* Invariant 'i_0' *)
+  Have: forall i_4,i_3 : Z. let a_2 = shift_A10_sint32(dp_0, i_4) in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      (Mint_0[shift_sint32(a_2, i_3)]
+         = Ig.max(Mint_0[shift_sint32(a_2, i_3 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (forall i_4 : Z. ((0 <= i_4) -> ((i_3 <= i_4) -> ((i_4 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_4)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_3 : Z. (0 <= i_3) /\ (i_3 <= 9) /\
+      (((0 <= i_3) -> ((i_3 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_3), i_3)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_4,i_3 : Z. let a_2 = shift_A10_sint32(dp_0, i_4) in
+      let x_3 = Mint_0[shift_sint32(a_2, i_3)] in
+      let x_4 = Mint_0[shift_sint32(a_2, i_3 - 1)] in
+      let x_5 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_4), i_3)] in
+      ((0 <= i_4) -> ((0 <= i_3) -> ((i_4 <= i_3) -> ((i_4 <= 9) ->
+      ((i_3 <= 9) ->
+      ((x_3 <= (x_4 + x_5)) /\ (Ig.max(x_4, x_5) <= x_3))))))).
+  (* Then *)
+  Have: 0 <= i.
+}
+Prove: (x <= (x_1 + x_2)) /\ (Ig.max(x_1, x_2) <= x).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:51ms) (66ms) (99)
+Prover Z3 4.15.4 returns Valid (Qed:51ms) (20ms) (53490)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 43) (1/4):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 43) (2/4):
+Effect at line 45
+Let x = j_1 - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_1[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j_1).
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, 10 - j_1).
+Let a_3 = shift_sint8(s, 0).
+Let x_1 = i + (10 * i_1).
+Assume {
+  Type: is_sint32(j) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i_2) /\ (0 <= i_3) /\ (0 <= i_4) /\ (0 <= i_5) /\ (0 <= i_1) /\
+      (0 <= i) /\ (i_2 <= 9) /\ (i_3 <= 9) /\ (i_4 <= 9) /\ (i_5 <= 9) /\
+      (i_1 <= 9) /\ (i <= 9) /\
+      (!invalid(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_3), 1)).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_7,i_6 : Z. ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_7), i_6), 1))))).
+  (* Pre-condition *)
+  Have: forall i_7,i_6 : Z. ((i_7 != i_6) -> ((0 <= i_7) -> ((0 <= i_6) ->
+      ((i_7 <= 9) -> ((i_6 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_7), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_6), 100, a_3, 10) /\
+       (((10 + i_6) <= i_7) \/ ((10 + i_7) <= i_6)))))))).
+  (* Pre-condition *)
+  Have: forall i_7,i_6 : Z. ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_7), i_6)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      (Mint_0[shift_sint32(a_4, i_6)]
+         = Ig.max(Mint_0[shift_sint32(a_4, i_6 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (forall i_7 : Z. ((0 <= i_7) -> ((i_6 <= i_7) -> ((i_7 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_6), i_7)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (((0 <= i_6) -> ((i_6 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_6), i_6)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      let x_2 = Mint_0[shift_sint32(a_4, i_6)] in
+      let x_3 = Mint_0[shift_sint32(a_4, i_6 - 1)] in
+      let x_4 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)] in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Loop assigns ... *)
+  Have: forall a_4 : addr.
+      ((forall i_7,i_6 : Z. ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= 9) ->
+        ((i_6 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_7), i_6) != a_4)))))) ->
+      (Mint_0[a_4] = Mint_1[a_4])).
+  (* Invariant 'i_0' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      (Mint_1[shift_sint32(a_4, i_6)]
+         = Ig.max(Mint_1[shift_sint32(a_4, i_6 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (forall i_7 : Z. ((0 <= i_7) -> ((i_6 <= i_7) -> ((i_7 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_6), i_7)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (((0 <= i_6) -> ((i_6 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_6), i_6)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      let x_2 = Mint_1[shift_sint32(a_4, i_6)] in
+      let x_3 = Mint_1[shift_sint32(a_4, i_6 - 1)] in
+      let x_4 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)] in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Then *)
+  Have: 0 < j_1.
+  (* Invariant 'i_7' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      let x_2 = m[shift_sint32(a_4, i_6)] in
+      let x_3 = m[shift_sint32(a_4, i_6 - 1)] in
+      let x_4 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)] in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      let a_5 = a_2[shift_sint32(a_4, i_6)] in
+      let a_6 = a_2[shift_sint32(a_4, i_6 - 1)] in
+      let a_7 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)] in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      ((a_5 <= (a_6 + a_7)) /\ (Ig.max(a_6, a_7) <= a_5))))))).
+  (* Else *)
+  Have: 10 <= j.
+  (* Invariant 'i_0' *)
+  Have: forall i_7,i_6 : Z. let a_4 = shift_A10_sint32(dp_0, i_7) in
+      ((0 <= i_7) -> ((0 <= i_6) -> ((i_7 <= i_6) -> ((i_7 <= 9) ->
+      ((i_6 <= 9) ->
+      (a_2[shift_sint32(a_4, i_6)] = Ig.max(a_2[shift_sint32(a_4, i_6 - 1)],
+       a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_7), i_6)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (forall i_7 : Z. ((0 <= i_7) -> ((i_6 <= i_7) -> ((i_7 <= 9) ->
+       (0 < a_2[shift_sint32(shift_A10_sint32(dp_0, i_6), i_7)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_6 : Z. (0 <= i_6) /\ (i_6 <= 9) /\
+      (((0 <= i_6) -> ((i_6 <= 9) ->
+       (a_2[shift_sint32(shift_A10_sint32(dp_0, i_6), i_6)] = 1)))).
+}
+Prove: exists i_6 : Z. let x_2 = 10 * i_6 in (0 <= i_6) /\ (x_2 <= x_1) /\
+    (i_6 <= 9) /\ (x_1 <= (9 + x_2)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:134ms) (73ms) (132)
+Prover Z3 4.15.4 returns Valid (Qed:134ms) (43ms) (110593)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 43) (3/4):
+Effect at line 46
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let a_1 = shift_sint32(a, x).
+Let m = Mint_1[a_1 <- 1].
+Let a_2 = shift_sint32(a, j).
+Let a_3 = memcpy(m, a_2, Mint_undef_0, a_2, 10 - j).
+Let a_4 = shift_sint8(s, 0).
+Let x_1 = 11 * j.
+Assume {
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_1, 1).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_1,i : Z. ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= 9) ->
+      ((i <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_1), i), 1))))).
+  (* Pre-condition *)
+  Have: forall i_1,i : Z. ((i_1 != i) -> ((0 <= i_1) -> ((0 <= i) ->
+      ((i_1 <= 9) -> ((i <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_1), 100, a_4, 10) /\
+       separated(shift_A10_sint32(dp_0, i), 100, a_4, 10) /\
+       (((10 + i) <= i_1) \/ ((10 + i_1) <= i)))))))).
+  (* Pre-condition *)
+  Have: forall i_1,i : Z. ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= 9) ->
+      ((i <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      (Mint_0[shift_sint32(a_5, i)]
+         = Ig.max(Mint_0[shift_sint32(a_5, i - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i <= i_1) -> ((i_1 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i), i_1)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (((0 <= i) -> ((i <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i), i)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      let x_2 = Mint_0[shift_sint32(a_5, i)] in
+      let x_3 = Mint_0[shift_sint32(a_5, i - 1)] in
+      let x_4 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)] in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Loop assigns ... *)
+  Have: forall a_5 : addr.
+      ((forall i_1,i : Z. ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= 9) ->
+        ((i <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_1), i) != a_5)))))) ->
+      (Mint_0[a_5] = Mint_1[a_5])).
+  (* Invariant 'i_0' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      (Mint_1[shift_sint32(a_5, i)]
+         = Ig.max(Mint_1[shift_sint32(a_5, i - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i <= i_1) -> ((i_1 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i), i_1)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (((0 <= i) -> ((i <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i), i)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      let x_2 = Mint_1[shift_sint32(a_5, i)] in
+      let x_3 = Mint_1[shift_sint32(a_5, i - 1)] in
+      let x_4 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)] in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      let x_2 = m[shift_sint32(a_5, i)] in
+      let x_3 = m[shift_sint32(a_5, i - 1)] in
+      let x_4 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)] in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      let a_6 = a_3[shift_sint32(a_5, i)] in
+      let a_7 = a_3[shift_sint32(a_5, i - 1)] in
+      let a_8 = a_3[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)] in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      ((a_6 <= (a_7 + a_8)) /\ (Ig.max(a_7, a_8) <= a_6))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+  (* Invariant 'i_0' *)
+  Have: forall i_1,i : Z. let a_5 = shift_A10_sint32(dp_0, i_1) in
+      ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= i) -> ((i_1 <= 9) -> ((i <= 9) ->
+      (a_3[shift_sint32(a_5, i)] = Ig.max(a_3[shift_sint32(a_5, i - 1)],
+       a_3[shift_sint32(shift_A10_sint32(dp_0, 1 + i_1), i)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i <= i_1) -> ((i_1 <= 9) ->
+       (0 < a_3[shift_sint32(shift_A10_sint32(dp_0, i), i_1)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i : Z. (0 <= i) /\ (i <= 9) /\
+      (((0 <= i) -> ((i <= 9) ->
+       (a_3[shift_sint32(shift_A10_sint32(dp_0, i), i)] = 1)))).
+}
+Prove: exists i : Z. let x_2 = 10 * i in (0 <= i) /\ (i <= 9) /\
+    ((11 + x_2) <= x_1) /\ (x_1 <= (20 + x_2)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:129ms) (63ms) (85)
+Prover Z3 4.15.4 returns Valid (Qed:129ms) (34ms) (83292)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 43) (4/4):
+Effect at line 55
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_1[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint32(a, j).
+Let x_1 = 10 - j.
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint8(s, 0).
+Let x_2 = i + (10 * j).
+Assume {
+  Have: !invalid(Malloc_0, a_1, x_1).
+  Have: j <= i.
+  Have: i <= 9.
+  Type: is_sint32(j_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_3, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_3, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_4, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_3 = Mint_0[shift_sint32(a_4, i_1)] in
+      let x_4 = Mint_0[shift_sint32(a_4, i_1 - 1)] in
+      let x_5 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_3 <= (x_4 + x_5)) /\ (Ig.max(x_4, x_5) <= x_3))))))).
+  (* Loop assigns ... *)
+  Have: forall a_4 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_4)))))) ->
+      (Mint_0[a_4] = Mint_1[a_4])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_4, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_4, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_3 = Mint_1[shift_sint32(a_4, i_1)] in
+      let x_4 = Mint_1[shift_sint32(a_4, i_1 - 1)] in
+      let x_5 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_3 <= (x_4 + x_5)) /\ (Ig.max(x_4, x_5) <= x_3))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let x_3 = m[shift_sint32(a_4, i_1)] in
+      let x_4 = m[shift_sint32(a_4, i_1 - 1)] in
+      let x_5 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_3 <= (x_4 + x_5)) /\ (Ig.max(x_4, x_5) <= x_3))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      let a_5 = a_2[shift_sint32(a_4, i_1)] in
+      let a_6 = a_2[shift_sint32(a_4, i_1 - 1)] in
+      let a_7 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_5 <= (a_6 + a_7)) /\ (Ig.max(a_6, a_7) <= a_5))))))).
+  (* Else *)
+  Have: 10 <= j_1.
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_4 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (a_2[shift_sint32(a_4, i_1)] = Ig.max(a_2[shift_sint32(a_4, i_1 - 1)],
+       a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < a_2[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (a_2[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+}
+Prove: exists i_1 : Z. let x_3 = 10 * i_1 in (0 <= i_1) /\ (i_1 <= 9) /\
+    ((10 + x_3) <= x_2) /\ (x_2 <= (19 + x_3)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:164ms) (71ms) (100)
+Prover Z3 4.15.4 returns Valid (Qed:164ms) (43ms) (109111)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 53) (1/4):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 53) (2/4):
+Effect at line 55
+Prove: true.
+Prover Qed returns Valid (24ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 53) (3/4):
+Effect at line 58
+Let a = shift_A10_sint32(dp_0, i).
+Let m = Mint_0[shift_sint32(a, i) <- 1].
+Let x = 1 + i.
+Let a_1 = shift_sint32(a, x).
+Let x_1 = 9 - i.
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint32(a, j).
+Let a_4 = a_2[shift_sint32(shift_A10_sint32(dp_0, x), j - 1)].
+Let a_5 = a_2[a_3 <- 2 + a_4].
+Let a_6 = shift_sint8(s, 0).
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(a_4).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_3, 1).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_6, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_6, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_7, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_7, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = Mint_1[shift_sint32(a_7, i_1)] in
+      let x_3 = Mint_1[shift_sint32(a_7, i_1 - 1)] in
+      let x_4 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Loop assigns ... *)
+  Have: forall a_7 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_7)))))) ->
+      (Mint_1[a_7] = Mint_0[a_7])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_7, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_7, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = Mint_0[shift_sint32(a_7, i_1)] in
+      let x_3 = Mint_0[shift_sint32(a_7, i_1 - 1)] in
+      let x_4 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Then *)
+  Have: 0 <= i.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = m[shift_sint32(a_7, i_1)] in
+      let x_3 = m[shift_sint32(a_7, i_1 - 1)] in
+      let x_4 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      let a_8 = a_2[shift_sint32(a_7, i_1)] in
+      let a_9 = a_2[shift_sint32(a_7, i_1 - 1)] in
+      let a_10 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_8 <= (a_9 + a_10)) /\ (Ig.max(a_9, a_10) <= a_8))))))).
+  (* Then *)
+  Have: j <= 9.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_7 = shift_A10_sint32(dp_0, i_2) in
+      let a_8 = a_5[shift_sint32(a_7, i_1)] in
+      let a_9 = a_5[shift_sint32(a_7, i_1 - 1)] in
+      let a_10 = a_5[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_8 <= (a_9 + a_10)) /\ (Ig.max(a_9, a_10) <= a_8))))))).
+}
+Prove: included(a_3, 1, a_1, x_1).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:114ms) (76ms) (138)
+Prover Z3 4.15.4 returns Valid (Qed:114ms) (34ms) (107114)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 53) (4/4):
+Call Result at line 60
+Let a = shift_A10_sint32(dp_0, i).
+Let m = Mint_0[shift_sint32(a, i) <- 1].
+Let x = 1 + i.
+Let a_1 = shift_sint32(a, x).
+Let x_1 = 9 - i.
+Let a_2 = memcpy(m, a_1, Mint_undef_0, a_1, x_1).
+Let a_3 = shift_sint32(a, j).
+Let a_4 = a_2[a_3 <- v].
+Let a_5 = a_2[shift_sint32(shift_A10_sint32(dp_0, x), j)].
+Let a_6 = a_2[shift_sint32(a, j - 1)].
+Let x_2 = Mchar_0[shift_sint8(s, j)].
+Let x_3 = Mchar_0[shift_sint8(s, i)].
+Let a_7 = shift_sint8(s, 0).
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(v) /\ is_sint8(x_3) /\
+      is_sint8(x_2) /\ is_sint32(a_6) /\ is_sint32(a_5).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, a_3, 1).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_7, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_7, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_8, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_8, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      let x_4 = Mint_1[shift_sint32(a_8, i_1)] in
+      let x_5 = Mint_1[shift_sint32(a_8, i_1 - 1)] in
+      let x_6 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_4 <= (x_5 + x_6)) /\ (Ig.max(x_5, x_6) <= x_4))))))).
+  (* Loop assigns ... *)
+  Have: forall a_8 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_8)))))) ->
+      (Mint_1[a_8] = Mint_0[a_8])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_8, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_8, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      let x_4 = Mint_0[shift_sint32(a_8, i_1)] in
+      let x_5 = Mint_0[shift_sint32(a_8, i_1 - 1)] in
+      let x_6 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_4 <= (x_5 + x_6)) /\ (Ig.max(x_5, x_6) <= x_4))))))).
+  (* Then *)
+  Have: 0 <= i.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      let x_4 = m[shift_sint32(a_8, i_1)] in
+      let x_5 = m[shift_sint32(a_8, i_1 - 1)] in
+      let x_6 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_4 <= (x_5 + x_6)) /\ (Ig.max(x_5, x_6) <= x_4))))))).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      let a_9 = a_2[shift_sint32(a_8, i_1)] in
+      let a_10 = a_2[shift_sint32(a_8, i_1 - 1)] in
+      let a_11 = a_2[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_9 <= (a_10 + a_11)) /\ (Ig.max(a_10, a_11) <= a_9))))))).
+  (* Then *)
+  Have: j <= 9.
+  (* Else *)
+  Have: x_2 != x_3.
+  (* Call 'max' *)
+  Have: P_is_max(a_5, a_6, v).
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_8 = shift_A10_sint32(dp_0, i_2) in
+      let a_9 = a_4[shift_sint32(a_8, i_1)] in
+      let a_10 = a_4[shift_sint32(a_8, i_1 - 1)] in
+      let a_11 = a_4[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((a_9 <= (a_10 + a_11)) /\ (Ig.max(a_10, a_11) <= a_9))))))).
+}
+Prove: included(a_3, 1, a_1, x_1).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:102ms) (69ms) (138)
+Prover Z3 4.15.4 returns Valid (Qed:102ms) (42ms) (134277)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (1/4):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (2/4):
+Effect at line 45
+Let a = shift_sint8(s, 0).
+Let x = i + (10 * i_1).
+Assume {
+  Have: 0 <= i_2.
+  Have: 0 <= i_3.
+  Have: i_2 <= 9.
+  Have: i_3 <= 9.
+  Have: !invalid(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_3), 1).
+  Have: 0 <= i_1.
+  Have: 0 <= i.
+  Have: i_1 <= 9.
+  Have: i <= 9.
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_5), i_4), 1))))).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((i_5 != i_4) -> ((0 <= i_5) -> ((0 <= i_4) ->
+      ((i_5 <= 9) -> ((i_4 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_5), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_4), 100, a, 10) /\
+       (((10 + i_4) <= i_5) \/ ((10 + i_5) <= i_4)))))))).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_5), i_4)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_5,i_4 : Z. let a_1 = shift_A10_sint32(dp_0, i_5) in
+      ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      (Mint_0[shift_sint32(a_1, i_4)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_4 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_5), i_4)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_4 : Z. (0 <= i_4) /\ (i_4 <= 9) /\
+      (forall i_5 : Z. ((0 <= i_5) -> ((i_4 <= i_5) -> ((i_5 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_4), i_5)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_4 : Z. (0 <= i_4) /\ (i_4 <= 9) /\
+      (((0 <= i_4) -> ((i_4 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_4), i_4)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_5,i_4 : Z. let a_1 = shift_A10_sint32(dp_0, i_5) in
+      let x_1 = Mint_0[shift_sint32(a_1, i_4)] in
+      let x_2 = Mint_0[shift_sint32(a_1, i_4 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_5), i_4)] in
+      ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_1 : addr.
+      ((forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+        ((i_4 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_5), i_4) != a_1)))))) ->
+      (Mint_0[a_1] = Mint_1[a_1])).
+}
+Prove: exists i_4 : Z. let x_1 = 10 * i_4 in (0 <= i_4) /\ (x_1 <= x) /\
+    (i_4 <= 9) /\ (x <= (9 + x_1)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:55ms) (68ms) (102)
+Prover Z3 4.15.4 returns Valid (Qed:55ms) (19ms) (36399)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (3/4):
+Effect at line 46
+Let a = shift_sint8(s, 0).
+Let x = 11 * i.
+Assume {
+  Type: is_sint32(i).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: !invalid(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i), i), 1).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_1, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_0[shift_sint32(a_1, i_1)] in
+      let x_2 = Mint_0[shift_sint32(a_1, i_1 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_1 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_1)))))) ->
+      (Mint_0[a_1] = Mint_1[a_1])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_1, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_1, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_1 = shift_A10_sint32(dp_0, i_2) in
+      let x_1 = Mint_1[shift_sint32(a_1, i_1)] in
+      let x_2 = Mint_1[shift_sint32(a_1, i_1 - 1)] in
+      let x_3 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Then *)
+  Have: 0 <= i.
+}
+Prove: exists i_1 : Z. let x_1 = 10 * i_1 in (0 <= i_1) /\ (x_1 <= x) /\
+    (i_1 <= 9) /\ (x <= (9 + x_1)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:60ms) (56ms) (56)
+Prover Z3 4.15.4 returns Valid (Qed:60ms) (23ms) (52286)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (4/4):
+Effect at line 55
+Let x = j - 1.
+Let a = shift_A10_sint32(dp_0, x).
+Let m = Mint_1[shift_sint32(a, x) <- 1].
+Let a_1 = shift_sint8(s, 0).
+Let x_1 = i + (10 * j).
+Assume {
+  Have: !invalid(Malloc_0, shift_sint32(a, j), 10 - j).
+  Have: j <= i.
+  Have: i <= 9.
+  Type: is_sint32(x).
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_1), 1))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((i_2 != i_1) -> ((0 <= i_2) -> ((0 <= i_1) ->
+      ((i_2 <= 9) -> ((i_1 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_2), 100, a_1, 10) /\
+       separated(shift_A10_sint32(dp_0, i_1), 100, a_1, 10) /\
+       (((10 + i_1) <= i_2) \/ ((10 + i_2) <= i_1)))))))).
+  (* Pre-condition *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_2), i_1)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_2 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_0[shift_sint32(a_2, i_1)]
+         = Ig.max(Mint_0[shift_sint32(a_2, i_1 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_2 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = Mint_0[shift_sint32(a_2, i_1)] in
+      let x_3 = Mint_0[shift_sint32(a_2, i_1 - 1)] in
+      let x_4 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Loop assigns ... *)
+  Have: forall a_2 : addr.
+      ((forall i_2,i_1 : Z. ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= 9) ->
+        ((i_1 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_2), i_1) != a_2)))))) ->
+      (Mint_0[a_2] = Mint_1[a_2])).
+  (* Invariant 'i_0' *)
+  Have: forall i_2,i_1 : Z. let a_2 = shift_A10_sint32(dp_0, i_2) in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      (Mint_1[shift_sint32(a_2, i_1)]
+         = Ig.max(Mint_1[shift_sint32(a_2, i_1 - 1)],
+         Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (forall i_2 : Z. ((0 <= i_2) -> ((i_1 <= i_2) -> ((i_2 <= 9) ->
+       (0 < Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_2)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_1 : Z. (0 <= i_1) /\ (i_1 <= 9) /\
+      (((0 <= i_1) -> ((i_1 <= 9) ->
+       (Mint_1[shift_sint32(shift_A10_sint32(dp_0, i_1), i_1)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_2,i_1 : Z. let a_2 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = Mint_1[shift_sint32(a_2, i_1)] in
+      let x_3 = Mint_1[shift_sint32(a_2, i_1 - 1)] in
+      let x_4 = Mint_1[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+  (* Then *)
+  Have: 0 < j.
+  (* Invariant 'i_7' *)
+  Have: forall i_2,i_1 : Z. let a_2 = shift_A10_sint32(dp_0, i_2) in
+      let x_2 = m[shift_sint32(a_2, i_1)] in
+      let x_3 = m[shift_sint32(a_2, i_1 - 1)] in
+      let x_4 = m[shift_sint32(shift_A10_sint32(dp_0, 1 + i_2), i_1)] in
+      ((0 <= i_2) -> ((0 <= i_1) -> ((i_2 <= i_1) -> ((i_2 <= 9) ->
+      ((i_1 <= 9) ->
+      ((x_2 <= (x_3 + x_4)) /\ (Ig.max(x_3, x_4) <= x_2))))))).
+}
+Prove: exists i_1 : Z. let x_2 = 10 * i_1 in (0 <= i_1) /\ (i_1 <= 9) /\
+    ((10 + x_2) <= x_1) /\ (x_1 <= (19 + x_2)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:119ms) (72ms) (85)
+Prover Z3 4.15.4 returns Valid (Qed:119ms) (24ms) (54786)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (1/2):
+Effect at line 45
+Let a = shift_sint8(s, 0).
+Let x = i + (10 * i_1).
+Assume {
+  Have: 0 <= i_2.
+  Have: 0 <= i_3.
+  Have: i_2 <= 9.
+  Have: i_3 <= 9.
+  Have: !invalid(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_2), i_3), 1).
+  Have: 0 <= i_1.
+  Have: 0 <= i.
+  Have: i_1 <= 9.
+  Have: i <= 9.
+  (* Heap *)
+  Type: (region(dp_0.base) <= 0) /\ (region(s.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, s, 1).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_A10_sint32(dp_0, 0), 100).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      valid_rw(Malloc_0, shift_sint32(shift_A10_sint32(dp_0, i_5), i_4), 1))))).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((i_5 != i_4) -> ((0 <= i_5) -> ((0 <= i_4) ->
+      ((i_5 <= 9) -> ((i_4 <= 9) ->
+      (separated(shift_A10_sint32(dp_0, i_5), 100, a, 10) /\
+       separated(shift_A10_sint32(dp_0, i_4), 100, a, 10) /\
+       (((10 + i_4) <= i_5) \/ ((10 + i_5) <= i_4)))))))).
+  (* Pre-condition *)
+  Have: forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_5), i_4)] = 0))))).
+  (* Invariant 'i_0' *)
+  Have: forall i_5,i_4 : Z. let a_1 = shift_A10_sint32(dp_0, i_5) in
+      ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      (Mint_0[shift_sint32(a_1, i_4)]
+         = Ig.max(Mint_0[shift_sint32(a_1, i_4 - 1)],
+         Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_5), i_4)]))))))).
+  (* Invariant 'i_1' *)
+  Have: forall i_4 : Z. (0 <= i_4) /\ (i_4 <= 9) /\
+      (forall i_5 : Z. ((0 <= i_5) -> ((i_4 <= i_5) -> ((i_5 <= 9) ->
+       (0 < Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_4), i_5)]))))).
+  (* Invariant 'i_2' *)
+  Have: forall i_4 : Z. (0 <= i_4) /\ (i_4 <= 9) /\
+      (((0 <= i_4) -> ((i_4 <= 9) ->
+       (Mint_0[shift_sint32(shift_A10_sint32(dp_0, i_4), i_4)] = 1)))).
+  (* Invariant 'i_6' *)
+  Have: forall i_5,i_4 : Z. let a_1 = shift_A10_sint32(dp_0, i_5) in
+      let x_1 = Mint_0[shift_sint32(a_1, i_4)] in
+      let x_2 = Mint_0[shift_sint32(a_1, i_4 - 1)] in
+      let x_3 = Mint_0[shift_sint32(shift_A10_sint32(dp_0, 1 + i_5), i_4)] in
+      ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= i_4) -> ((i_5 <= 9) ->
+      ((i_4 <= 9) ->
+      ((x_1 <= (x_2 + x_3)) /\ (Ig.max(x_2, x_3) <= x_1))))))).
+  (* Loop assigns ... *)
+  Have: forall a_1 : addr.
+      ((forall i_5,i_4 : Z. ((0 <= i_5) -> ((0 <= i_4) -> ((i_5 <= 9) ->
+        ((i_4 <= 9) ->
+        (shift_sint32(shift_A10_sint32(dp_0, i_5), i_4) != a_1)))))) ->
+      (Mint_0[a_1] = Mint_1[a_1])).
+}
+Prove: exists i_4 : Z. let x_1 = 10 * i_4 in (0 <= i_4) /\ (x_1 <= x) /\
+    (i_4 <= 9) /\ (x <= (9 + x_1)).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:51ms) (62ms) (102)
+Prover Z3 4.15.4 returns Valid (Qed:51ms) (17ms) (36399)
+
+------------------------------------------------------------
+
+Goal Assigns (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 27) in '_longest_palindrome_subseq' (2/2):
+Effect at line 64
+Prove: true.
+Prover Qed returns Valid (12ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function max
+------------------------------------------------------------
+
+Goal Post-condition (file /root/data1/wgy/algorithm-new/Result/acsl-algorithms/openPangu-Embedded-7B-V1.1/_longest_palindrome_subseq.c/_longest_palindrome_subseq_verified_1.c, line 12) in 'max':
+Assume {
+  Type: is_sint32(a) /\ is_sint32(b) /\ is_sint32(max_0).
+  If b <= a
+  Then { Have: max_0 = a. }
+  Else { Have: max_0 = b. }
+}
+Prove: P_is_max(a, b, max_0).
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:6ms) (54ms) (38)
+Prover Z3 4.15.4 returns Valid (Qed:6ms) (13ms) (22805)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'max' (1/2):
+Effect at line 15
+Prove: true.
+Prover Qed returns Valid (0.73ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'max' (2/2):
+Effect at line 15
+Prove: true.
+Prover Qed returns Valid (0.97ms)
+
+------------------------------------------------------------
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

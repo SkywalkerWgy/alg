@@ -1,0 +1,140 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_gcd.c
+----------Code----------
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------
+========== Attempt 1 ==========
+------------Invariant Info-----------
+------------------------------------
+---------- Code with Invariants ----------
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openPangu-Embedded-7B-V1.1
+Running time: 1.6797888278961182
+Proposal number: 1
+Verified code:
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------

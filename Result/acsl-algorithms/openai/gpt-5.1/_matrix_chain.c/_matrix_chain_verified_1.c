@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: n == 10;
+
+        loop invariant i_1: \valid(p + (0..n));
+
+        loop invariant i_2: \valid(m + (0..n));
+
+        loop invariant i_3: \valid(m[0..(n)] + (0..(n)));
+
+        loop invariant i_4: \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+
+        loop invariant i_5: \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+
+        loop invariant i_6: \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+
+        loop invariant i_7: \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+
+        loop invariant i_8: 2 <= l <= n + 1;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_10: n == 10;
+
+            loop invariant i_11: \valid(p + (0..n));
+
+            loop invariant i_12: \valid(m + (0..n));
+
+            loop invariant i_13: \valid(m[0..n] + (0..n));
+
+            loop invariant i_14: \forall integer a,b; 0 <= a < n && 0 <= b < n && a != b ==> \separated(&m[a] + (0..n), &m[b] + (0..n), &p[0..n]);
+
+            loop invariant i_15: \separated(&m[0..n] + (0..n), &p[0..n]);
+
+            loop invariant i_16: \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+
+            loop invariant i_17: \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+
+            loop invariant i_18: 2 <= l <= n;
+
+            loop invariant i_19: 1 <= i <= n - l + 2;
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_22: n == 10;
+
+                loop invariant i_23: \valid(p + (0..n));
+
+                loop invariant i_24: \valid(m + (0..n));
+
+                loop invariant i_25: \valid(m[0..n] + (0..n));
+
+                loop invariant i_26: \forall integer a,b; 0 <= a < n && 0 <= b < n && a != b ==> \separated(&m[a] + (0..n), &m[b] + (0..n), &p[0..n]);
+
+                loop invariant i_27: \separated(&m[0..n] + (0..n), &p[0..n]);
+
+                loop invariant i_28: \forall integer kk; 0 <= kk <= n ==> 0 < p[kk] < 5;
+
+                loop invariant i_29: \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+
+                loop invariant i_30: 2 <= l <= n;
+
+                loop invariant i_31: 1 <= i <= n - l + 1;
+
+                loop invariant i_32: end == i + l - 1;
+
+                loop invariant i_33: 2 <= end <= n;
+
+                loop invariant i_34: i < end;
+
+                loop invariant i_35: i <= k <= end;
+
+                loop invariant i_36: \forall integer h; i <= h < k ==> m[i][end] <= m[i][h] + m[h + 1][end] + p[i - 1] * p[h] * p[end];
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 

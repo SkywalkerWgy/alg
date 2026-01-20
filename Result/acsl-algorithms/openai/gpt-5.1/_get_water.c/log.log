@@ -1,0 +1,245 @@
+File Path: ../Benchmark/acsl-algorithms/_get_water.c
+----------Code----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(d + (0..n - 1));
+    requires \valid(f + (0..n - 1));
+    requires \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+    requires \forall integer k; 0 < k < n ==> f[k] == 0;
+    requires d[0] == 0;
+    requires f[0] == 1;
+    requires n > 0;
+    requires m > 0;
+    requires Sorted(d, 0, n);
+    assigns f[0..n - 1];
+    ensures e_1: \exists integer k; 0 <= k < n && f[k] == 1 && \result <= d[k] + m;
+*/
+int _get_water(int d[], int f[], int n, int m) { 
+	int maxDistance = m; 
+    /*@
+        loop assigns i;
+        loop assigns maxDistance;
+        loop assigns f[0..n - 1];
+    */
+	for (int i = 1; i < n; i++) { 
+		if (d[i] > maxDistance) { 
+			f[i - 1] = 1;         
+			maxDistance = m + d[i - 1];
+		}
+	}
+    return maxDistance;
+}
+
+------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(d + (0..n - 1));
+    requires \valid(f + (0..n - 1));
+    requires \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+    requires \forall integer k; 0 < k < n ==> f[k] == 0;
+    requires d[0] == 0;
+    requires f[0] == 1;
+    requires n > 0;
+    requires m > 0;
+    requires Sorted(d, 0, n);
+    assigns f[0..n - 1];
+    ensures e_1: \exists integer k; 0 <= k < n && f[k] == 1 && \result <= d[k] + m;
+*/
+int _get_water(int d[], int f[], int n, int m) { 
+	int maxDistance = m; 
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i;
+        loop assigns maxDistance;
+        loop assigns f[0..n - 1];
+    */
+	for (int i = 1; i < n; i++) { 
+		if (d[i] > maxDistance) { 
+			f[i - 1] = 1;         
+			maxDistance = m + d[i - 1];
+		}
+	}
+    return maxDistance;
+}
+
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 1 <= i <= n;
+loop invariant \valid(d + (0..n - 1));
+loop invariant \valid(f + (0..n - 1));
+loop invariant \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+loop invariant n > 0;
+loop invariant m > 0;
+loop invariant d[0] == 0;
+loop invariant f[0] == 1;
+loop invariant Sorted(d, 0, n);
+loop invariant \exists integer k; 0 <= k < i && f[k] == 1 && maxDistance == m + d[k];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= n
+i_1: \valid(d + (0..n - 1))
+i_2: \valid(f + (0..n - 1))
+i_3: \separated(&d[0..(n - 1)], &f[0..(n - 1)])
+i_4: n > 0
+i_5: m > 0
+i_6: d[0] == 0
+i_7: f[0] == 1
+i_8: Sorted(d, 0, n)
+i_9: \exists integer k; 0 <= k < i && f[k] == 1 && maxDistance == m + d[k]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(d + (0..n - 1));
+    requires \valid(f + (0..n - 1));
+    requires \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+    requires \forall integer k; 0 < k < n ==> f[k] == 0;
+    requires d[0] == 0;
+    requires f[0] == 1;
+    requires n > 0;
+    requires m > 0;
+    requires Sorted(d, 0, n);
+    assigns f[0..n - 1];
+    ensures e_1: \exists integer k; 0 <= k < n && f[k] == 1 && \result <= d[k] + m;
+*/
+int _get_water(int d[], int f[], int n, int m) { 
+	int maxDistance = m; 
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: \valid(d + (0..n - 1));
+
+        loop invariant i_2: \valid(f + (0..n - 1));
+
+        loop invariant i_3: \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+
+        loop invariant i_4: n > 0;
+
+        loop invariant i_5: m > 0;
+
+        loop invariant i_6: d[0] == 0;
+
+        loop invariant i_7: f[0] == 1;
+
+        loop invariant i_8: Sorted(d, 0, n);
+
+        loop invariant i_9: \exists integer k; 0 <= k < i && f[k] == 1 && maxDistance == m + d[k];
+
+
+        loop assigns i;
+        loop assigns maxDistance;
+        loop assigns f[0..n - 1];
+    */
+	for (int i = 1; i < n; i++) { 
+		if (d[i] > maxDistance) { 
+			f[i - 1] = 1;         
+			maxDistance = m + d[i - 1];
+		}
+	}
+    return maxDistance;
+}
+
+----------------------------------------
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 38.65352487564087
+Proposal number: 1
+Verified code:
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(d + (0..n - 1));
+    requires \valid(f + (0..n - 1));
+    requires \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+    requires \forall integer k; 0 < k < n ==> f[k] == 0;
+    requires d[0] == 0;
+    requires f[0] == 1;
+    requires n > 0;
+    requires m > 0;
+    requires Sorted(d, 0, n);
+    assigns f[0..n - 1];
+    ensures e_1: \exists integer k; 0 <= k < n && f[k] == 1 && \result <= d[k] + m;
+*/
+int _get_water(int d[], int f[], int n, int m) { 
+	int maxDistance = m; 
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: \valid(d + (0..n - 1));
+
+        loop invariant i_2: \valid(f + (0..n - 1));
+
+        loop invariant i_3: \separated(&d[0..(n - 1)], &f[0..(n - 1)]);
+
+        loop invariant i_4: n > 0;
+
+        loop invariant i_5: m > 0;
+
+        loop invariant i_6: d[0] == 0;
+
+        loop invariant i_7: f[0] == 1;
+
+        loop invariant i_8: Sorted(d, 0, n);
+
+        loop invariant i_9: \exists integer k; 0 <= k < i && f[k] == 1 && maxDistance == m + d[k];
+
+
+        loop assigns i;
+        loop assigns maxDistance;
+        loop assigns f[0..n - 1];
+    */
+	for (int i = 1; i < n; i++) { 
+		if (d[i] > maxDistance) { 
+			f[i - 1] = 1;         
+			maxDistance = m + d[i - 1];
+		}
+	}
+    return maxDistance;
+}
+
+------------------------

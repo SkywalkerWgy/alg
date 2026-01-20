@@ -1,0 +1,268 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_linear_search.c
+----------Code----------
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    /*@
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result >= 0 ==> 0 <= \result < n && a[\result] == key; e_2:\result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant ret == -1 ==> \forall integer j; 0 <= j < i ==> a[j] != key;
+loop invariant ret >= 0 ==> 0 <= ret < n && a[ret] == key;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i <= n
+i_1: ret == -1 ==> \forall integer j; 0 <= j < i ==> a[j] != key
+i_2: ret >= 0 ==> 0 <= ret < n && a[ret] == key
+------------------------------------
+---------- Code with Invariants ----------
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i <= n;
+
+        loop invariant i_1: ret == -1 ==> \forall integer j; 0 <= j < i ==> a[j] != key;
+
+        loop invariant i_2: ret >= 0 ==> 0 <= ret < n && a[ret] == key;
+
+
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+------------------------------------------
+Verification failed (Fail_9_10), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result >= 0 ==> 0 <= \result < n && a[\result] == key; e_2:\result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant \forall integer j; 0 <= j < i ==> a[j] != key;
+loop invariant ret == -1 || (0 <= ret < n && a[ret] == key);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: 0 <= i <= n
+i_4: \forall integer j; 0 <= j < i ==> a[j] != key
+i_5: ret == -1 || (0 <= ret < n && a[ret] == key)
+------------------------------------
+---------- Code with Invariants ----------
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    // Loop A
+    /*@
+        loop invariant i_3: 0 <= i <= n;
+
+        loop invariant i_4: \forall integer j; 0 <= j < i ==> a[j] != key;
+
+        loop invariant i_5: ret == -1 || (0 <= ret < n && a[ret] == key);
+
+
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 18.194694995880127
+Proposal number: 2
+Verified code:
+/*@ 
+  requires n > 0;
+  requires \valid(a + (0 .. n-1));
+  ensures e_1: \result >= 0 ==> 0 <= \result < n && a[\result] == key;
+  ensures e_2: \result < 0 ==> \forall integer j; 0 <= j < n ==> a[j] != key;
+*/
+int _linear_search(int a[], int n, int key) {
+    int ret = -1;
+    int i = 0;
+    // Loop A
+    /*@
+        loop invariant i_3: 0 <= i <= n;
+
+        loop invariant i_4: \forall integer j; 0 <= j < i ==> a[j] != key;
+
+        loop invariant i_5: ret == -1 || (0 <= ret < n && a[ret] == key);
+
+
+        loop assigns i,ret;
+   */
+    while (ret == -1 && i < n){
+        if (a[i] == key){ 
+            ret = i; 
+        }
+        else { 
+            i = i + 1; 
+        }
+    } 
+  return ret;
+}
+------------------------

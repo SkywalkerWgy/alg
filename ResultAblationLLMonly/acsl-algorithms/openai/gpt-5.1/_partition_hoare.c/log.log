@@ -1,0 +1,2059 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_partition_hoare.c
+----------Code----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    /*@
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        /*@
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        /*@
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```c
+loop invariant lo <= i <= hi;
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: lo <= i <= hi
+i_1: lo <= j <= hi
+i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP B:
+i_4: lo <= j <= hi
+i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP C:
+i_6: lo <= i <= hi
+i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_35_38), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i_0: lo <= i <= hi;
+loop invariant i_1: lo <= j <= hi;
+loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: lo <= i <= hi
+i_1: lo <= j <= hi
+i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP B:
+i_4: lo <= j <= hi
+i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP C:
+i_6: lo <= i <= hi
+i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_35_38), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i_0: lo <= i <= hi;
+loop invariant i_1: lo <= j <= hi;
+loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i_4: lo <= j <= hi;
+loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: lo <= i <= hi
+i_1: lo <= j <= hi
+i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP B:
+i_4: lo <= j <= hi
+i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot
+i_8: lo <= i <= hi
+i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot
+LOOP C:
+i_6: lo <= i <= hi
+i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_10: lo <= j <= hi
+i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_43_46), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i_0: lo <= i <= hi;
+loop invariant i_1: lo <= j <= hi;
+loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: lo <= i <= hi
+i_1: lo <= j <= hi
+i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP B:
+i_4: lo <= j <= hi
+i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot
+i_8: lo <= i <= hi
+i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot
+LOOP C:
+i_6: lo <= i <= hi
+i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_10: lo <= j <= hi
+i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_43_46), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+----------------------------
+----------Prompt----------
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant lo <= i <= hi;
+loop invariant \forall integer k; lo <= k < i ==> a[k] <= pivot;
+loop invariant lo <= j <= hi;
+loop invariant \forall integer k; j < k <= hi ==> a[k] >= pivot;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: lo <= i <= hi
+i_1: lo <= j <= hi
+i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot
+LOOP B:
+i_4: lo <= j <= hi
+i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot
+i_8: lo <= i <= hi
+i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot
+LOOP C:
+i_6: lo <= i <= hi
+i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot
+i_10: lo <= j <= hi
+i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@
+    requires lo <= hi;
+    requires \valid(a + (lo .. hi));
+    ensures lo <= \result && \result <= hi;
+    ensures e_1: \forall integer i; lo <= i <= \result ==> a[i] <= a[\result];
+    ensures e_2: \forall integer i; \result <= i <= hi ==> a[i] >= a[\result];
+    assigns a[lo..hi];
+*/
+int _partition_hoare(int a[], int lo, int hi) {
+    int pivot = a[lo];
+    int i = lo;
+    int j = hi;
+
+    // Loop A
+    /*@
+        loop invariant i_0: lo <= i <= hi;
+
+        loop invariant i_1: lo <= j <= hi;
+
+        loop invariant i_2: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+        loop invariant i_3: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+        loop assigns a[lo..hi], i, j;
+    */
+    while (1) {
+        // Loop B
+        /*@
+            loop invariant i_4: lo <= j <= hi;
+
+            loop invariant i_5: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+            loop invariant i_8: lo <= i <= hi;
+
+            loop invariant i_9: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+
+            loop assigns j;
+        */
+        while (a[j] > pivot){
+            j = j - 1;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_6: lo <= i <= hi;
+
+            loop invariant i_7: \forall integer k; lo <= k < i ==> a[k] <= pivot;
+
+            loop invariant i_10: lo <= j <= hi;
+
+            loop invariant i_11: \forall integer k; j < k <= hi ==> a[k] >= pivot;
+
+
+            loop assigns i;
+        */
+        while (a[i] < pivot){
+            i = i + 1;
+        };
+
+        if (i < j) {
+            swap(&a[i], &a[j]);
+        }
+        else{
+            return j;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_43_46), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openai/gpt-5.1
+Running time: 484.9472780227661
+Proposal number: 5
+Verified code:
+
+------------------------

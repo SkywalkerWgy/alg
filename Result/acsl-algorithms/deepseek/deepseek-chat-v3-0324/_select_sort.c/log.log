@@ -1,0 +1,3667 @@
+File Path: ../Benchmark/acsl-algorithms/_select_sort.c
+----------Code----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    /*@
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i < n;
+loop invariant sorted(arr, 0, i);
+loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i <= j <= n;
+loop invariant min >= i;
+loop invariant \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+loop invariant \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+loop invariant i_2: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+```
+----------------------------
+-------------Preservation_nested: i_1: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant sorted(arr, 0, i) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] sorted(arr, 0, i)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop B]
+loop invariant \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+[Loop A]
+loop invariant i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+```
+----------------------------
+-------------Preservation_nested: i_1: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant sorted(arr, 0, i) not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] sorted(arr, 0, i)
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop B]
+loop invariant \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+[Loop A]
+loop invariant sorted(arr, 0, i);
+loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_8: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_2: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant \forall integer k; i <= k < n ==> arr[k] >= arr[i-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_2: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_8: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+```
+----------------------------
+-------------Preservation_nested: i_14: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop B]
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+[Loop A]
+loop invariant \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1]);
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_15: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1])
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_2: \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_15: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_nested: i_14: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+After analyzing the issue, here are the necessary adjustments to make the invariants provable:
+
+[Loop B]
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+loop invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+[Loop A]
+loop invariant \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+loop invariant \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_8: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_8: \true;
+loop invariant i_14: \true;
+loop invariant i_17: \true;
+```
+----------------------------
+-------------Establishment_cross: i_16: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1] not initially provable. Fix or supplement invariants in the pre-loop or in this loop.
+
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+The above loop invariant required by the loop labeled "B" cannot be derived from the invariants of the preceding loop "A", and the program state before entering the current loop:
+[Pre-statement]
+int j = i;
+Accordingly, we must fix the situation that prevents proving the current loop invariant. There are two independent possibilities you should consider and address:
+  1) The current loop invariant for "Loop B" is too strong:
+     - It uses facts that are not guaranteed by the preceding loop invariants together with Pre-statement.
+     - Remedy: weaken or simplify the invariant of "B" so it becomes derivable from the available preconditions.
+
+  2) The preceding loop invariants of "Loop A" are too weak:
+     - They do not imply the facts required by the "B" invariant after executing Pre-statement.
+     - Remedy: strengthen the invariant(s) of "Loop A" so that, after running Pre-statement, they imply the needed facts for "Loop B".
+
+Your task is to adjust the invariants so that the establishment of "Loop B" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "B", or  
+   - only the preceding loop "A", or  
+   - both, if needed.
+2. Do NOT output any of the original invariants.  
+   Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+[Loop A]
+loop invariant i_20: i == 0 || (\forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]);
+
+[Loop B]
+loop invariant i_21: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+----------------------------
+-------------Preservation_nested: i_14: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_20: i == 0 || (\forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]); [Loop B] loop invariant i_21: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+[Loop B]
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+loop invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+[Loop A]
+loop invariant \forall integer k; 0 <= k < n ==> (i == 0 || arr[k] >= arr[i-1]);
+loop invariant \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? -2147483648 : arr[i-1]);
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_20: i == 0 || (\forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]); [Loop B] loop invariant i_21: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+i_21: \forall integer k; 0 <= k < n ==> (i == 0 || arr[k] >= arr[i-1])
+i_22: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? -2147483648 : arr[i-1])
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_20: i == 0 || (\forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]); [Loop B] loop invariant i_21: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_21: \forall integer k; 0 <= k < n ==> (i == 0 || arr[k] >= arr[i-1]);
+
+        loop invariant i_22: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? -2147483648 : arr[i-1]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_22: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? -2147483648 : arr[i-1])
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_22: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? -2147483648 : arr[i-1]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_8: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+```
+----------------------------
+-------------Preservation_nested: i_14: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+After analyzing the issue, here are the necessary invariant modifications:
+
+[Loop B]
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+loop invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+[Loop A]
+loop invariant \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1]);
+loop invariant \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k])
+i_24: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1])
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_24: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0] : arr[i-1]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_8: establishment---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= i < n;
+loop invariant i_1: sorted(arr, 0, i);
+loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+loop invariant i_8: i == 0 ==> \true;
+loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+loop invariant i_17: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+loop invariant i_19: \true;
+loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+```
+----------------------------
+-------------Preservation_nested: i_14: preservation---------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1] not preserved. Fix or supplement invariants the last inner loop or in this loop.
+
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_25: i == 0 ==> \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+The loop invariant of the loop labeled "A" fails the *preservation* check. After one iteration of the loop body, the invariant cannot be re-established.
+Accordingly, there are two distinct possibilities that may prevent the preservation of the current loop invariant:
+  1) The unprovable invariant of "Loop A" is incorrect:
+     - It cannot be re-established from itself after executing the loop body.
+     - Remedy: modify the unprovable invariant of "A" so that it becomes inductive.
+
+  2) The invariant(s) of the nested inner loop "Loop B" are too weak:
+     - They do not guarantee enough facts after the completion of the inner loop to re-establish "A"'s invariant.
+     - Remedy: strengthen the invariant(s) of "B" so that the preservation of "A" becomes provable.
+
+Your task is to adjust the invariants so that the preservation of "Loop A" succeeds.
+IMPORTANT RULES:
+1. You may modify either:
+   - only the current loop "A", or
+   - only the inner loop "B", or
+   - both, if needed.
+2. Do NOT output any of the original invariants. Only output the new or modified invariants you propose.
+3. Output must contain two blocks, even if one block is empty:
+   ```
+   [Loop B]
+   loop invariant ...;
+   loop invariant ...;
+
+   [Loop A]
+   loop invariant ...;
+   loop invariant ...;
+   ```
+4. Each block may contain zero or more invariants. If a block has no changes, leave it empty but keep the block header.
+5. All invariants must strictly satisfy ACSL rules and must be valid inductive loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the error message and the context, here are the necessary invariant modifications:
+
+[Loop B]
+loop invariant \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+loop invariant i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+[Loop A]
+loop invariant \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0-1] : arr[i-1]);
+loop invariant \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k])
+i_25: i == 0 ==> \true
+i_26: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0-1] : arr[i-1])
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_8: i == 0 ==> \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_14: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_25: i == 0 ==> \true;
+
+        loop invariant i_26: \forall integer k; 0 <= k < n ==> arr[k] >= (i == 0 ? arr[0-1] : arr[i-1]);
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k])
+i_25: i == 0 ==> \true
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_17: \forall integer k; 0 <= k < n ==> arr[k] >= arr[0-1];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_25: i == 0 ==> \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+            loop invariant i_16: i == 0 || \forall integer k; 0 <= k < n ==> arr[k] >= arr[i-1];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k])
+i_25: i == 0 ==> \true
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_25: i == 0 ==> \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_7: \forall integer k; i <= k < j ==> arr[k] >= arr[i-1];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: sorted(arr, 0, i)
+i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q]
+i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1]
+i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q]
+i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q]
+i_19: \true
+i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k])
+i_25: i == 0 ==> \true
+LOOP B:
+i_4: i <= j <= n
+i_5: min >= i
+i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k]
+i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min]
+------------------------------------
+----------Code with Invariants----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: sorted(arr, 0, i);
+
+        loop invariant i_3: \forall integer p, q; 0 <= p < i ==> i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_9: i > 0 ==> \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_10: i == 0 || \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_11: i == 0 || \forall integer k; i <= k < n ==> arr[k] >= arr[i-1];
+
+        loop invariant i_13: \forall integer p, q; 0 <= p < i <= q < n ==> arr[p] <= arr[q];
+
+        loop invariant i_18: \forall integer p, q; 0 <= p < q < i ==> arr[p] <= arr[q];
+
+        loop invariant i_19: \true;
+
+        loop invariant i_23: i == 0 ==> \forall integer k; 0 <= k < n ==> \valid(&arr[k]);
+
+        loop invariant i_25: i == 0 ==> \true;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_4: i <= j <= n;
+
+            loop invariant i_5: min >= i;
+
+            loop invariant i_6: \forall integer k; i <= k < j ==> arr[min] <= arr[k];
+
+            loop invariant i_12: \forall integer k; 0 <= k < i ==> arr[k] <= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 325.2872688770294
+Proposal number: 15
+Verified code:
+
+------------------------

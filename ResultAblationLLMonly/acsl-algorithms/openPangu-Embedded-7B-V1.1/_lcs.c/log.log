@@ -1,0 +1,1378 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_lcs.c
+----------Code----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    /*@
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+loop invariant 1 <= j <= n;
+```
+----------------------------
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= m;
+
+        loop invariant i_1: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= m
+i_1: 1 <= j <= n
+LOOP B:
+i_2: 1 <= i <= m
+------------------------------------
+---------- Code with Invariants ----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= m;
+
+        loop invariant i_1: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop invariant i_2: 1 <= i <= m;
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------------------------
+Verification failed (Fail_25_29), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+loop invariant 1 <= j <= n;
+loop invariant (i == 1 || j == 1 || i == m || j == n);
+```
+----------------------------
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_3: 1 <= i <= m;
+
+        loop invariant i_4: 1 <= j <= n;
+
+        loop invariant i_5: (i == 1 || j == 1 || i == m || j == n);
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop A]
+loop invariant 1 <= i <= m;
+
+[Loop B]
+loop invariant 1 <= j <= n;
+loop invariant (i == 1 || j == 1 || i == m || j == n);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: 1 <= i <= m
+i_4: 1 <= j <= n
+i_5: (i == 1 || j == 1 || i == m || j == n)
+LOOP B:
+i_6: 1 <= j <= n
+i_7: (i == 1 || j == 1 || i == m || j == n)
+------------------------------------
+---------- Code with Invariants ----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_3: 1 <= i <= m;
+
+        loop invariant i_4: 1 <= j <= n;
+
+        loop invariant i_5: (i == 1 || j == 1 || i == m || j == n);
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop invariant i_6: 1 <= j <= n;
+
+            loop invariant i_7: (i == 1 || j == 1 || i == m || j == n);
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------------------------
+Verification failed (Fail_31_33), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+loop invariant 1 <= j <= n;
+```
+----------------------------
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_8: 1 <= i <= m;
+
+        loop invariant i_9: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_8: 1 <= i <= m
+i_9: 1 <= j <= n
+LOOP B:
+i_10: 1 <= i <= m
+------------------------------------
+---------- Code with Invariants ----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_8: 1 <= i <= m;
+
+        loop invariant i_9: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop invariant i_10: 1 <= i <= m;
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------------------------
+Verification failed (Fail_25_29), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+loop invariant 1 <= j <= n;
+```
+----------------------------
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_11: 1 <= i <= m;
+
+        loop invariant i_12: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= m;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_11: 1 <= i <= m
+i_12: 1 <= j <= n
+LOOP B:
+i_13: 1 <= i <= m
+------------------------------------
+---------- Code with Invariants ----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_11: 1 <= i <= m;
+
+        loop invariant i_12: 1 <= j <= n;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop invariant i_13: 1 <= i <= m;
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------------------------
+Verification failed (Fail_25_29), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop A]
+loop invariant 1 <= i <= m && 1 <= j <= n;
+loop invariant dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+loop invariant dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+loop invariant dp[0][j] == 0 for all j from 0 to n;
+loop invariant dp[i][0] == 0 for all i from 1 to m;
+
+[Loop B]
+loop invariant 1 <= j <= n;
+loop invariant dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+loop invariant dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+----------------------------
+----------Prompt----------
+
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_14: 1 <= i <= m && 1 <= j <= n;
+
+        loop invariant i_15: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+
+        loop invariant i_16: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+
+        loop invariant i_17: dp[0][j] == 0 for all j from 0 to n;
+
+        loop invariant i_18: dp[i][0] == 0 for all i from 1 to m;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_19: 1 <= j <= n;
+
+            loop invariant i_20: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+
+            loop invariant i_21: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <CUR_LOOP>]
+loop invariant 1 <= i <= m && 1 <= j <= n;
+
+[Loop <CUR_LOOP>]
+loop invariant dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+loop invariant dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+loop invariant dp[0][j] == 0 for all j from 0 to n;
+loop invariant dp[i][0] == 0 for all i from 1 to m;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_14: 1 <= i <= m && 1 <= j <= n
+i_15: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1]
+i_16: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1]
+i_17: dp[0][j] == 0 for all j from 0 to n
+i_18: dp[i][0] == 0 for all i from 1 to m
+LOOP B:
+i_19: 1 <= j <= n
+i_20: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1]
+i_21: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1]
+i_22: 1 <= i <= m && 1 <= j <= n
+i_23: dp[0][j] == 0 for all j from 0 to n
+i_24: dp[i][0] == 0 for all i from 1 to m
+------------------------------------
+---------- Code with Invariants ----------
+#define m 10
+#define n 10
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(t);
+    requires \valid(s+(0..(m - 1)));
+    requires \valid(t+(0..(n - 1)));
+    requires \valid(dp + (0..(m)));
+    requires \valid(dp[0..(m)] + (0..(n)));
+    requires \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    requires \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_1: \forall integer k; 0 <= k <= n ==> dp[0][k] == 0;
+    ensures e_2: \forall integer k; 0 <= k <= m ==> dp[k][0] == 0;
+    ensures e_3: \forall integer p, q; 1 <= p <= m && 1 <= q <= n ==> s[p - 1] == t[q - 1] && dp[p][q] == dp[p - 1][q - 1] + 1 || is_max(dp[p - 1][q], dp[p][q - 1], dp[p][q]);
+    assigns dp[0..(m)][0..(n)];
+*/
+int _lcs(const char *s, const char *t, int dp[m + 1][n + 1]) {
+    int i = 1, j = 1;
+    // Loop A
+    /*@
+        loop invariant i_14: 1 <= i <= m && 1 <= j <= n;
+
+        loop invariant i_15: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+
+        loop invariant i_16: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+
+        loop invariant i_17: dp[0][j] == 0 for all j from 0 to n;
+
+        loop invariant i_18: dp[i][0] == 0 for all i from 1 to m;
+
+
+        loop assigns dp[1..(m)][1..(n)], i, j;
+    */
+    for (i = 1; i <= m; i++) {
+        // Loop B
+        /*@
+            loop invariant i_19: 1 <= j <= n;
+
+            loop invariant i_20: dp[i][j] >= max(dp[i-1][j], dp[i][j-1]) when s[i-1] != t[j-1];
+
+            loop invariant i_21: dp[i][j] >= dp[i-1][j-1] + 1 when s[i-1] == t[j-1];
+
+            loop invariant i_22: 1 <= i <= m && 1 <= j <= n;
+
+            loop invariant i_23: dp[0][j] == 0 for all j from 0 to n;
+
+            loop invariant i_24: dp[i][0] == 0 for all i from 1 to m;
+
+
+            loop assigns dp[i][1..(n)], j;
+        */
+        for (j = 1; j <= n; j++) {
+            if (s[i - 1] == t[j - 1]){
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else{
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    return dp[m][n];
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 121.43272495269775
+Proposal number: 5
+Verified code:
+
+------------------------

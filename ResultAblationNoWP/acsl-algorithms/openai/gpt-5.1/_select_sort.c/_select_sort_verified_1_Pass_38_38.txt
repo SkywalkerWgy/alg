@@ -1,0 +1,633 @@
+[kernel] Parsing /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 37 goals scheduled
+[wp] Proved goals:   38 / 38
+  Unreachable:       1
+  Qed:              26 (0.94ms-3ms-27ms)
+  Alt-Ergo 2.6.1:   10 (7ms-27ms-82ms)
+  CVC4 1.6:          1 (41ms)
+------------------------------------------------------------
+  Function _select_sort
+------------------------------------------------------------
+
+Goal Post-condition 'e_1' in '_select_sort':
+Let x = 1 + i.
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Assume {
+  Type: is_sint32(i) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i) /\ (i < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i) -> ((i <= i_1) ->
+      ((i_1 < n) ->
+      (a_1[shift_sint32(arr_0, i_2)] <= a_1[shift_sint32(arr_0, i_1)]))))).
+  (* Else *)
+  Have: n <= x.
+}
+Prove: P_sorted(memcpy(Mint_0, a, Mint_undef_0, a, x), arr_0, 0, x).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:5ms) (11ms) (139)
+Prover CVC4 1.6 returns Valid (Qed:5ms) (49ms) (17528)
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated) in '_select_sort':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_0' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 26):
+Prove: true.
+Prover Qed returns Valid (10ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_0' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 26):
+Prove: true.
+Prover Qed returns Valid (0.62ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_1' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 28):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_1' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 28):
+Prove: true.
+Prover Qed returns Valid (0.73ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_2' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 30):
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, j).
+Let a_2 = shift_sint32(arr_0, i).
+Let a_3 = shift_sint32(arr_0, min_0).
+Let a_4 = a_1[a_2 <- v][a_3 <- a_1[a_2]].
+Let a_5 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_6 = a_5[a_3].
+Let x = 1 + i.
+Let a_7 = a_5[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n) /\
+      is_sint32(x) /\ is_sint32(a_7) /\ is_sint32(a_6) /\
+      is_sint32(a_5[a_2 <- v][a_3 <- a_7][a_2]).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i) /\ (i < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_5, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i) -> ((i <= i_1) ->
+      ((i_1 < n) ->
+      (a_5[shift_sint32(arr_0, i_2)] <= a_5[shift_sint32(arr_0, i_1)]))))).
+  (* Then *)
+  Have: (2 + i) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i <= min_0) /\ (min_0 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_1 : Z. ((i <= i_1) -> ((i_1 < j) ->
+      (a_6 <= a_5[shift_sint32(arr_0, i_1)]))).
+  (* Else *)
+  Have: n <= j.
+  (* Call 'swap' *)
+  Have: (a_4[a_2] = a_1[a_3]) /\ valid_rw(Malloc_0, a_2, 1) /\
+      valid_rw(Malloc_0, a_3, 1).
+  (* Invariant 'i_0' *)
+  Have: (-1) <= i.
+}
+Prove: P_sorted(a_4, arr_0, 0, x).
+Prover CVC4 1.6 returns Valid (Qed:11ms) (41ms) (24169)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_2' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 30):
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(arr_0, 0), n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+}
+Prove: P_sorted(Mint_0, arr_0, 0, 0).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:0.94ms) (23ms) (37)
+Prover CVC4 1.6 returns Valid (Qed:0.94ms) (10ms) (10439)
+Prover Z3 4.8.6 returns Valid (Qed:0.94ms) (10ms) (47824)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_3' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 32):
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, j).
+Let a_2 = shift_sint32(arr_0, i).
+Let a_3 = shift_sint32(arr_0, min_0).
+Let a_4 = a_1[a_2 <- v][a_3 <- a_1[a_2]].
+Let x = 1 + i.
+Let a_5 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_6 = a_5[a_3].
+Let a_7 = a_5[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n) /\
+      is_sint32(x) /\ is_sint32(a_7) /\ is_sint32(a_6) /\
+      is_sint32(a_5[a_2 <- v][a_3 <- a_7][a_2]).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_2 < n) /\ (i_1 <= i) /\ (i < i_2).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i) /\ (i < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_5, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((i_4 < i) -> ((i <= i_3) ->
+      ((i_3 < n) ->
+      (a_5[shift_sint32(arr_0, i_4)] <= a_5[shift_sint32(arr_0, i_3)]))))).
+  (* Then *)
+  Have: (2 + i) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i <= min_0) /\ (min_0 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_3 : Z. ((i <= i_3) -> ((i_3 < j) ->
+      (a_6 <= a_5[shift_sint32(arr_0, i_3)]))).
+  (* Else *)
+  Have: n <= j.
+  (* Call 'swap' *)
+  Have: (a_4[a_2] = a_1[a_3]) /\ valid_rw(Malloc_0, a_2, 1) /\
+      valid_rw(Malloc_0, a_3, 1).
+  (* Invariant 'i_0' *)
+  Have: (-1) <= i.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_4, arr_0, 0, x).
+}
+Prove: a_4[shift_sint32(arr_0, i_1)] <= a_4[shift_sint32(arr_0, i_2)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:14ms) (82ms) (693)
+Prover CVC4 1.6 returns Valid (Qed:14ms) (69ms) (22396)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_3' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 32):
+Prove: true.
+Prover Qed returns Valid (0.54ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_10' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 54):
+Let x = 1 + j.
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_2 = a_1[shift_sint32(arr_0, j)].
+Let a_3 = a_1[shift_sint32(arr_0, min_1)].
+Assume {
+  Type: is_sint32(i_1) /\ is_sint32(j) /\ is_sint32(min_0) /\
+      is_sint32(min_1) /\ is_sint32(n) /\ is_sint32(x) /\ is_sint32(a_2) /\
+      is_sint32(a_3).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (i_1 <= i) /\ (i <= j).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i_1) /\ (i_1 < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i_1).
+  (* Invariant 'i_3' *)
+  Have: forall i_3,i_2 : Z. ((0 <= i_3) -> ((i_3 < i_1) -> ((i_1 <= i_2) ->
+      ((i_2 < n) ->
+      (a_1[shift_sint32(arr_0, i_3)] <= a_1[shift_sint32(arr_0, i_2)]))))).
+  (* Then *)
+  Have: (2 + i_1) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i_1 <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i_1 <= min_1) /\ (min_1 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_2 : Z. ((i_1 <= i_2) -> ((i_2 < j) ->
+      (a_3 <= a_1[shift_sint32(arr_0, i_2)]))).
+  (* Then *)
+  Have: j < n.
+  If a_2 < a_3
+  Then { Have: min_0 = j. }
+  Else { Have: min_1 = min_0. }
+  (* Invariant 'i_8' *)
+  Have: i_1 <= x.
+  (* Invariant 'i_9' *)
+  Have: (i_1 <= min_0) /\ (min_0 < n).
+}
+Prove: a_1[shift_sint32(arr_0, min_0)] <= a_1[shift_sint32(arr_0, i)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:27ms) (28ms) (242)
+Prover CVC4 1.6 returns Valid (Qed:27ms) (48ms) (17383)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_10' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 54):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 42):
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 42):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_5' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 44):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_5' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 44):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 46):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_6' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 46):
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 48):
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_2 = a_1[shift_sint32(arr_0, min_0)].
+Assume {
+  Type: is_sint32(i_2) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n) /\
+      is_sint32(a_1[shift_sint32(arr_0, j)]) /\ is_sint32(a_2).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < i_2) /\ (i_2 <= i_1) /\ (i_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i_2).
+  (* Invariant 'i_3' *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((i_4 < i_2) -> ((i_2 <= i_3) ->
+      ((i_3 < n) ->
+      (a_1[shift_sint32(arr_0, i_4)] <= a_1[shift_sint32(arr_0, i_3)]))))).
+  (* Then *)
+  Have: (2 + i_2) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i_2 <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i_2 <= min_0) /\ (min_0 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_3 : Z. ((i_2 <= i_3) -> ((i_3 < j) ->
+      (a_2 <= a_1[shift_sint32(arr_0, i_3)]))).
+  (* Then *)
+  Have: j < n.
+}
+Prove: a_1[shift_sint32(arr_0, i)] <= a_1[shift_sint32(arr_0, i_1)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:9ms) (20ms) (101)
+Prover CVC4 1.6 returns Valid (Qed:9ms) (90ms) (27259)
+Prover Z3 4.8.6 returns Valid (Qed:9ms) (35ms) (107906)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_7' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 48):
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Assume {
+  Type: is_sint32(i_2) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < i_2) /\ (i_2 <= i_1) /\ (i_1 < n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i_2) /\ (i_2 < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i_2).
+  (* Invariant 'i_3' *)
+  Have: forall i_4,i_3 : Z. ((0 <= i_4) -> ((i_4 < i_2) -> ((i_2 <= i_3) ->
+      ((i_3 < n) ->
+      (a_1[shift_sint32(arr_0, i_4)] <= a_1[shift_sint32(arr_0, i_3)]))))).
+  (* Then *)
+  Have: (2 + i_2) <= n.
+}
+Prove: a_1[shift_sint32(arr_0, i)] <= a_1[shift_sint32(arr_0, i_1)].
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:6ms) (27ms) (54)
+Prover CVC4 1.6 returns Valid (Qed:6ms) (18ms) (16578)
+Prover Z3 4.8.6 returns Valid (Qed:6ms) (25ms) (101768)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_8' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 50):
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_2 = a_1[shift_sint32(arr_0, min_0)].
+Let x = 1 + j.
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n) /\
+      is_sint32(x) /\ is_sint32(a_1[shift_sint32(arr_0, j)]) /\
+      is_sint32(a_2).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i) /\ (i < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i) -> ((i <= i_1) ->
+      ((i_1 < n) ->
+      (a_1[shift_sint32(arr_0, i_2)] <= a_1[shift_sint32(arr_0, i_1)]))))).
+  (* Then *)
+  Have: (2 + i) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i <= min_0) /\ (min_0 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_1 : Z. ((i <= i_1) -> ((i_1 < j) ->
+      (a_2 <= a_1[shift_sint32(arr_0, i_1)]))).
+  (* Then *)
+  Have: j < n.
+}
+Prove: i <= x.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:10ms) (7ms) (24)
+Prover CVC4 1.6 returns Valid (Qed:10ms) (29ms) (12434)
+Prover Z3 4.8.6 returns Valid (Qed:10ms) (24ms) (96642)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_8' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 50):
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_9' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 52):
+Prove: true.
+Prover Qed returns Valid (17ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_9' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 52):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 35) (1/4):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 35) (2/4):
+Effect at line 37
+Prove: true.
+Prover Qed returns Valid (4ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 35) (3/4):
+Effect at line 59
+Prove: true.
+Prover Qed returns Valid (5ms)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 35) (4/4):
+Call Effect at line 64
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, j).
+Let x = i - 1.
+Let a_2 = shift_sint32(arr_0, x).
+Let a_3 = shift_sint32(arr_0, min_0).
+Let a_4 = a_1[a_2 <- v][a_3 <- a_1[a_2]].
+Let a_5 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_6 = a_5[a_3].
+Let a_7 = a_5[a_2].
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n) /\
+      is_sint32(x) /\ is_sint32(a_6) /\ is_sint32(a_7) /\
+      is_sint32(a_5[a_2 <- v][a_3 <- a_7][a_2]).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 < i) /\ (i <= n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_5, arr_0, 0, x).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_1 < n) -> (((2 + i_2) <= i) ->
+      ((i <= (1 + i_1)) ->
+      (a_5[shift_sint32(arr_0, i_2)] <= a_5[shift_sint32(arr_0, i_1)]))))).
+  (* Then *)
+  Have: i < n.
+  (* Invariant 'i_8' *)
+  Have: i <= (1 + n).
+  (* Invariant 'i_8' *)
+  Have: (j <= n) /\ (i <= (1 + j)).
+  (* Invariant 'i_9' *)
+  Have: (min_0 < n) /\ (i <= (1 + min_0)).
+  (* Invariant 'i_10' *)
+  Have: forall i_1 : Z. ((i_1 < j) -> ((i <= (1 + i_1)) ->
+      (a_6 <= a_5[shift_sint32(arr_0, i_1)]))).
+  (* Else *)
+  Have: n <= j.
+  (* Call 'swap' *)
+  Have: (a_4[a_2] = a_1[a_3]) /\ valid_rw(Malloc_0, a_3, 1) /\
+      valid_rw(Malloc_0, a_2, 1).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_4, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i) -> ((i <= i_1) ->
+      ((i_1 < j) ->
+      (a_4[shift_sint32(arr_0, i_2)] <= a_4[shift_sint32(arr_0, i_1)]))))).
+}
+Prove: (((!invalid(Malloc_0, a_3, 1)) -> included(a_3, 1, a, j))) /\
+    (((!invalid(Malloc_0, a_2, 1)) -> included(a_2, 1, a, j))).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:20ms) (26ms) (400)
+Prover CVC4 1.6 returns Valid (Qed:20ms) (41ms) (21137)
+Prover Z3 4.8.6 returns Valid (Qed:20ms) (36ms) (180809)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 57):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 20) in '_select_sort' (1/3):
+Effect at line 37
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 20) in '_select_sort' (2/3):
+Effect at line 59
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 20) in '_select_sort' (3/3):
+Call Effect at line 64
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 20) in '_select_sort':
+Effect at line 37
+Prove: true.
+Prover Qed returns Valid (0.84ms)
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 7) in 'swap'' in '_select_sort' at call 'swap' (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 64)
+:
+Let a = shift_sint32(arr_0, 0).
+Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, n).
+Let a_2 = shift_sint32(arr_0, min_0).
+Assume {
+  Type: is_sint32(i) /\ is_sint32(j) /\ is_sint32(min_0) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(arr_0.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a, n).
+  (* Invariant 'i_0' *)
+  Have: 0 < n.
+  (* Invariant 'i_2' *)
+  Have: P_sorted(Mint_0, arr_0, 0, 0).
+  (* Invariant 'i_0' *)
+  Have: (0 <= i) /\ (i < n).
+  (* Invariant 'i_2' *)
+  Have: P_sorted(a_1, arr_0, 0, i).
+  (* Invariant 'i_3' *)
+  Have: forall i_2,i_1 : Z. ((0 <= i_2) -> ((i_2 < i) -> ((i <= i_1) ->
+      ((i_1 < n) ->
+      (a_1[shift_sint32(arr_0, i_2)] <= a_1[shift_sint32(arr_0, i_1)]))))).
+  (* Then *)
+  Have: (2 + i) <= n.
+  (* Invariant 'i_8' *)
+  Have: (i <= j) /\ (j <= n).
+  (* Invariant 'i_9' *)
+  Have: (i <= min_0) /\ (min_0 < n).
+  (* Invariant 'i_10' *)
+  Have: forall i_1 : Z. ((i <= i_1) -> ((i_1 < j) ->
+      (a_1[a_2] <= a_1[shift_sint32(arr_0, i_1)]))).
+  (* Else *)
+  Have: n <= j.
+}
+Prove: valid_rw(Malloc_0, shift_sint32(arr_0, i), 1) /\
+    valid_rw(Malloc_0, a_2, 1).
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:11ms) (30ms) (129)
+Prover CVC4 1.6 returns Valid (Qed:11ms) (56ms) (18568)
+Prover Z3 4.8.6 returns Valid (Qed:11ms) (41ms) (172650)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function swap
+------------------------------------------------------------
+
+Goal Post-condition (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 9) in 'swap':
+Let x_1 = Mint_0[x].
+Let x_2 = Mint_0[y].
+Let x_3 = Mint_0[x <- x_2][y <- x_1][x].
+Assume {
+  Type: is_sint32(x_1) /\ is_sint32(x_2) /\ is_sint32(x_3).
+  (* Heap *)
+  Type: (region(x.base) <= 0) /\ (region(y.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, x, 1) /\ valid_rw(Malloc_0, y, 1).
+}
+Prove: x_3 = x_2.
+Prover Alt-Ergo 2.6.1 returns Valid (Qed:2ms) (11ms) (30)
+Prover CVC4 1.6 returns Valid (Qed:2ms) (24ms) (10590)
+Prover Z3 4.8.6 returns Valid (Qed:2ms) (10ms) (48926)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 8) in 'swap' (1/2):
+Effect at line 13
+Prove: true.
+Prover Qed returns Valid (0.66ms)
+
+------------------------------------------------------------
+
+Goal Assigns (file /home/wgy/algorithm/ResultAblation/acsl-algorithms/openai/gpt-5.1/_select_sort.c/_select_sort_verified_1.c, line 8) in 'swap' (2/2):
+Effect at line 14
+Prove: true.
+Prover Qed returns Valid (0.63ms)
+
+------------------------------------------------------------

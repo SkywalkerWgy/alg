@@ -1,0 +1,3236 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_7.c
+----------Code----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    /*@
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+------------------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= k && k <= 1;
+loop invariant 1 <= i;
+loop invariant j == i;
+loop invariant i + k == 2;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_3: i == 2 - k;
+```
+----------------------------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= k && k <= 1 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= k && k <= 1
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+i = i + 1; j = j + k; k = k - 1; //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant k >= 0;
+loop invariant i + k == 2;
+loop invariant j == 2 - k * k / 2 + k / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_3: i + k >= 1 && i + k <= 2;
+loop invariant i_4: i >= 1 && i <= 2 - k;
+```
+----------------------------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_6: \initial(k) && k == \old(k) ==> j == 2 - k * k / 2 + k / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_9: \initial(k) && k == \old(k) ==> j == 2 - k * k / 2 + k / 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_9: \initial(k) && k == \old(k) ==> j == 2 - k * k / 2 + k / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_3: i + k >= 1 && i + k <= 3;
+loop invariant i_4: i >= 1 && i <= 2;
+```
+----------------------------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_6: j == 1 + k * (k - 1) / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_3: i + k <= 2;
+loop invariant i_4: i <= 2 - k;
+loop invariant i_7: i + k >= 1 && i + k <= 2;
+loop invariant i_8: i >= 1 && i <= 2 - k;
+loop invariant i_10: i + k >= 1 && i + k <= 3;
+loop invariant i_11: i >= 1 && i <= 2;
+```
+----------------------------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_6: j == 1 + k * (k - 1) / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i + k == 1 + 1;
+```
+----------------------------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_6: j == 1 + (k * (k - 1)) / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_3: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i + k == 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i + k == 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= k && k <= 1;
+loop invariant i_1: 1 <= i;
+loop invariant i_2: j == i;
+loop invariant i_3: k == 1;
+loop invariant i_15: i + k == 1 + 1;
+```
+----------------------------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_6: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+loop invariant i_12: j == 1 + (k * (k - 1)) / 2;
+loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_3: i + k == 2
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_3: i + k == 2;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_6: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 2 - k * k / 2 + k / 2 too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 2 - k * k / 2 + k / 2
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j == 1 + (k * (k - 1)) / 2;
+loop invariant i == 1;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_4: i == 2 - k
+i_5: k >= 0
+i_6: j == 2 - k * k / 2 + k / 2
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_4: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 2 - k too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_6: j == 2 - k * k / 2 + k / 2;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 2 - k
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_1: 1 <= i;
+loop invariant i_2: j == i;
+loop invariant i_5: k >= 0;
+loop invariant i_14: i <= 2 - k;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_4: i == 2 - k
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_4: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 2 - k too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 2 - k
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= k && k <= 1;
+loop invariant i_1: 1 <= i;
+loop invariant i_2: j == i;
+loop invariant i_4: i <= 2 - k;
+```
+----------------------------
+-------------Preservation_self: i_12: preservation---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Invariant j == 1 + k * (k - 1) / 2 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] j == 1 + k * (k - 1) / 2
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+i = i + 1; j = j + k; k = k - 1; //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1);
+loop invariant k >= -1;
+loop invariant i + k == 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_4: i == 2 - k
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1)
+i_21: k >= -1
+i_22: i + k == 2
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1);
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Establishment_requires: i_20: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1);
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1)
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+```
+----------------------------
+-------------Establishment_requires: i_4: establishment---------------
+----------Prompt----------
+
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        [Hint] Loop invariant i == 2 - k too strong initially. Relax it.
+
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1);
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The following loop invariant of the loop labeled "A" cannot be established from the function's `requires` clauses:
+[Unprovable Initial Invariant] i == 2 - k
+This means the loop invariant is too strong at the loop entry, violating the establishment condition of loop correctness.  
+Your task is to relax or weaken the loop invariant at the position marked by: "[Hint] Loop invariant too strong initially. Relax it."
+IMPORTANT RULES:
+1. The relaxed invariants must still hold:
+   - Establishment: They must be provable solely from the function's requires clauses and the program state before entering the loop.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+2. Do NOT restate or print any of the existing loop invariants.  
+   Only output the modified (weakened) invariants necessary to make the establishment step succeed.
+3. Your answer must be solely in the form:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: 0 <= k && k <= 1;
+loop invariant i_1: 1 <= i;
+loop invariant i_2: j == i;
+loop invariant i_4: i + k == 2;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_4: i == 2 - k
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1)
+i_21: k >= -1
+i_22: i + k == 2
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_4: i == 2 - k;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_20: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1);
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_12: j == 1 + k * (k - 1) / 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_15: i + k == 1 + 1
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+i_21: k >= -1
+i_22: i + k == 2
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_12: j == 1 + k * (k - 1) / 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_15: i + k == 1 + 1;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_16: j == 1 + (k * (k - 1)) / 2
+i_17: k == 1
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+i_21: k >= -1
+i_22: i + k == 2
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_16: j == 1 + (k * (k - 1)) / 2;
+
+        loop invariant i_17: k == 1;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k
+i_19: i == 1
+i_21: k >= -1
+i_22: i + k == 2
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_18: j == 1 + (k * (k - 1)) / 2 + 1 - k;
+
+        loop invariant i_19: i == 1;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= k && k <= 1
+i_1: 1 <= i
+i_2: j == i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_21: k >= -1
+i_22: i + k == 2
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= k && k <= 1;
+
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_22: i + k == 2;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 1 <= i
+i_2: j == i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_21: k >= -1
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_2: j == i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 1 <= i
+i_5: k >= 0
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_21: k >= -1
+i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1)
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_5: k >= 0;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_21: k >= -1;
+
+        loop invariant i_23: j == 1 + (k * (k + 1)) / 2 + (i - 1) * (k + 1) || (i == 1 && j == 1 && k >= 0 && k <= 1);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 1 <= i
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_11: i >= 1 && i <= 2
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_21: k >= -1
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_11: i >= 1 && i <= 2;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_21: k >= -1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 1 <= i
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_13: i + k <= 2
+i_14: i <= 2 - k
+i_21: k >= -1
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+        loop invariant i_21: k >= -1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: 1 <= i
+i_7: i + k >= 1 && i + k <= 2
+i_8: i >= 1 && i <= 2 - k
+i_10: i + k >= 1 && i + k <= 3
+i_13: i + k <= 2
+i_14: i <= 2 - k
+------------------------------------
+----------Code with Invariants----------
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+----------------------------------------
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 280.3105888366699
+Proposal number: 21
+Verified code:
+// Source: Michael Colon, Sriram Sankaranarayanan, Henny Sipma: "Linear
+// Invariant Generation using Non-Linear Constraint Solving", CAV 2003.
+#include "assert.h"
+# define LARGE_INT 1000000
+
+/*@ 
+requires 0 <= k && k <= 1;
+*/
+int svcomp_7(int k) {
+    int i,j;
+    i = 1;
+    j = 1;
+    // Loop A
+    /*@
+        loop invariant i_1: 1 <= i;
+
+        loop invariant i_7: i + k >= 1 && i + k <= 2;
+
+        loop invariant i_8: i >= 1 && i <= 2 - k;
+
+        loop invariant i_10: i + k >= 1 && i + k <= 3;
+
+        loop invariant i_13: i + k <= 2;
+
+        loop invariant i_14: i <= 2 - k;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    while (i < LARGE_INT) {
+        i = i + 1;
+        j = j + k;
+        k = k - 1;
+        //@ assert 1 <= i + k && i + k <= 2 && i >= 1;
+    }
+    return 0;
+}
+------------------------

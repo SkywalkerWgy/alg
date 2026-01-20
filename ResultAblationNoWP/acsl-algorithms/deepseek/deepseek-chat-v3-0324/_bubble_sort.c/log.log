@@ -1,0 +1,1489 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_bubble_sort.c
+----------Code----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    /*@
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= up <= length;
+loop invariant \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre);
+loop invariant \valid(a+(0..length-1));
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= up <= length;
+
+        loop invariant i_1: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_2: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre);
+
+        loop invariant i_3: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          [Hint] Please infer the loop invariant for the following loop.
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:1 <= up <= length; i_1:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_2:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre); i_3:\valid(a+(0..length-1)); 
+    - Post-condition: i_0:1 <= up <= length; i_1:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_2:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre); i_3:\valid(a+(0..length-1)); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= down <= up;
+loop invariant \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; down <= m < k && a[k] == \at(a[m], Pre);
+loop invariant \valid(a+(0..length-1));
+loop invariant down < length ==> a[down] >= a[down - 1];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= up <= length
+i_1: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1)
+i_2: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre)
+i_3: \valid(a+(0..length-1))
+LOOP B:
+i_4: 0 <= down <= up
+i_5: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1)
+i_6: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; down <= m < k && a[k] == \at(a[m], Pre)
+i_7: \valid(a+(0..length-1))
+i_8: down < length ==> a[down] >= a[down - 1]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= up <= length;
+
+        loop invariant i_1: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_2: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; up <= m < k && a[k] == \at(a[m], Pre);
+
+        loop invariant i_3: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_4: 0 <= down <= up;
+
+          loop invariant i_5: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+
+          loop invariant i_6: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre) || \exists integer m; down <= m < k && a[k] == \at(a[m], Pre);
+
+          loop invariant i_7: \valid(a+(0..length-1));
+
+          loop invariant i_8: down < length ==> a[down] >= a[down - 1];
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_34_37), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the bubble sort implementation and the given pre/post conditions, here are the loop invariants for Loop A:
+
+```
+loop invariant 1 <= up <= length;
+loop invariant \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+loop invariant \forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2];
+loop invariant \valid(a+(0..length-1));
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_9: s for Loop A: ``` loop invariant 1 <= up <= length;
+
+        loop invariant i_10: 1 <= up <= length;
+
+        loop invariant i_11: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_12: \forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2];
+
+        loop invariant i_13: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          [Hint] Please infer the loop invariant for the following loop.
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_9:s for Loop A: ``` loop invariant 1 <= up <= length; i_10:1 <= up <= length; i_11:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_12:\forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2]; i_13:\valid(a+(0..length-1)); 
+    - Post-condition: i_9:s for Loop A: ``` loop invariant 1 <= up <= length; i_10:1 <= up <= length; i_11:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_12:\forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2]; i_13:\valid(a+(0..length-1)); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= down <= up;
+loop invariant \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; down <= k < up ==> sorted(a, down, k+1);
+loop invariant \forall integer k1, k2; 0 <= k1 < down <= k2 < length ==> a[k1] <= a[k2];
+loop invariant \valid(a+(0..length-1));
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_9: s for Loop A: ``` loop invariant 1 <= up <= length
+i_10: 1 <= up <= length
+i_11: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1)
+i_12: \forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2]
+i_13: \valid(a+(0..length-1))
+LOOP B:
+i_14: 0 <= down <= up
+i_15: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1)
+i_16: \forall integer k; down <= k < up ==> sorted(a, down, k+1)
+i_17: \forall integer k1, k2; 0 <= k1 < down <= k2 < length ==> a[k1] <= a[k2]
+i_18: \valid(a+(0..length-1))
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_9: s for Loop A: ``` loop invariant 1 <= up <= length;
+
+        loop invariant i_10: 1 <= up <= length;
+
+        loop invariant i_11: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_12: \forall integer k1, k2; 0 <= k1 < up <= k2 < length ==> a[k1] <= a[k2];
+
+        loop invariant i_13: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_14: 0 <= down <= up;
+
+          loop invariant i_15: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+
+          loop invariant i_16: \forall integer k; down <= k < up ==> sorted(a, down, k+1);
+
+          loop invariant i_17: \forall integer k1, k2; 0 <= k1 < down <= k2 < length ==> a[k1] <= a[k2];
+
+          loop invariant i_18: \valid(a+(0..length-1));
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= up <= length;
+loop invariant \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_19: 1 <= up <= length;
+
+        loop invariant i_20: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_21: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          [Hint] Please infer the loop invariant for the following loop.
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_19:1 <= up <= length; i_20:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_21:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre); 
+    - Post-condition: i_19:1 <= up <= length; i_20:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_21:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= down <= up;
+loop invariant \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre);
+loop invariant down < up ==> sorted(a, 0, down+1);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_19: 1 <= up <= length
+i_20: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1)
+i_21: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre)
+LOOP B:
+i_22: 0 <= down <= up
+i_23: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1)
+i_24: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre)
+i_25: down < up ==> sorted(a, 0, down+1)
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_19: 1 <= up <= length;
+
+        loop invariant i_20: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_21: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_22: 0 <= down <= up;
+
+          loop invariant i_23: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+
+          loop invariant i_24: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre);
+
+          loop invariant i_25: down < up ==> sorted(a, 0, down+1);
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_30_33), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \valid(a+(0..length-1));
+loop invariant 1 <= up <= length;
+loop invariant sorted(a, 0, up);
+loop invariant \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_26: \valid(a+(0..length-1));
+
+        loop invariant i_27: 1 <= up <= length;
+
+        loop invariant i_28: sorted(a, 0, up);
+
+        loop invariant i_29: \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k];
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          [Hint] Please infer the loop invariant for the following loop.
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_26:\valid(a+(0..length-1)); i_27:1 <= up <= length; i_28:sorted(a, 0, up); i_29:\forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k]; 
+    - Post-condition: i_26:\valid(a+(0..length-1)); i_27:1 <= up <= length; i_28:sorted(a, 0, up); i_29:\forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \valid(a+(0..length-1));
+loop invariant 0 <= down < length;
+loop invariant down <= up;
+loop invariant sorted(a, 0, down);
+loop invariant \forall integer k; down <= k < length ==> \forall integer p; 0 <= p < down ==> a[p] <= a[k];
+loop invariant \forall integer k; down < k < up ==> \forall integer p; 0 <= p < k ==> a[p] <= a[k];
+loop invariant \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_26: \valid(a+(0..length-1))
+i_27: 1 <= up <= length
+i_28: sorted(a, 0, up)
+i_29: \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k]
+LOOP B:
+i_30: \valid(a+(0..length-1))
+i_31: 0 <= down < length
+i_32: down <= up
+i_33: sorted(a, 0, down)
+i_34: \forall integer k; down <= k < length ==> \forall integer p; 0 <= p < down ==> a[p] <= a[k]
+i_35: \forall integer k; down < k < up ==> \forall integer p; 0 <= p < k ==> a[p] <= a[k]
+i_36: \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_26: \valid(a+(0..length-1));
+
+        loop invariant i_27: 1 <= up <= length;
+
+        loop invariant i_28: sorted(a, 0, up);
+
+        loop invariant i_29: \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k];
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_30: \valid(a+(0..length-1));
+
+          loop invariant i_31: 0 <= down < length;
+
+          loop invariant i_32: down <= up;
+
+          loop invariant i_33: sorted(a, 0, down);
+
+          loop invariant i_34: \forall integer k; down <= k < length ==> \forall integer p; 0 <= p < down ==> a[p] <= a[k];
+
+          loop invariant i_35: \forall integer k; down < k < up ==> \forall integer p; 0 <= p < k ==> a[p] <= a[k];
+
+          loop invariant i_36: \forall integer k; up <= k < length ==> \forall integer p; 0 <= p < up ==> a[p] <= a[k];
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_39_41), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the program's logic and the post-condition `sorted(a, 0, length)`, here are the loop invariants for Loop A:
+
+```
+loop invariant 1 <= up <= length;
+loop invariant \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+loop invariant \valid(a+(0..length-1));
+```
+
+These invariants ensure that:
+1. The loop variable `up` stays within bounds
+2. The array is sorted up to the current `up` position
+3. Elements beyond `up` remain unchanged from their initial state
+4. The array remains valid throughout the loop
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_37: s for Loop A: ``` loop invariant 1 <= up <= length;
+
+        loop invariant i_38: 1 <= up <= length;
+
+        loop invariant i_39: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_40: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+
+        loop invariant i_41: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          [Hint] Please infer the loop invariant for the following loop.
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_37:s for Loop A: ``` loop invariant 1 <= up <= length; i_38:1 <= up <= length; i_39:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_40:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre); i_41:\valid(a+(0..length-1)); 
+    - Post-condition: i_37:s for Loop A: ``` loop invariant 1 <= up <= length; i_38:1 <= up <= length; i_39:\forall integer k; 0 <= k < up ==> sorted(a, 0, k+1); i_40:\forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre); i_41:\valid(a+(0..length-1)); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= down <= up;
+loop invariant \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+loop invariant \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre);
+loop invariant \valid(a+(0..length-1));
+loop invariant \forall integer k; down < k < up ==> a[k] >= a[down];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_37: s for Loop A: ``` loop invariant 1 <= up <= length
+i_38: 1 <= up <= length
+i_39: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1)
+i_40: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre)
+i_41: \valid(a+(0..length-1))
+LOOP B:
+i_42: 0 <= down <= up
+i_43: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1)
+i_44: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre)
+i_45: \valid(a+(0..length-1))
+i_46: \forall integer k; down < k < up ==> a[k] >= a[down]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted{Here}(int* a, integer start_index, integer end_index) =
+    \forall integer k1, k2;
+    start_index <= k1 <= k2 < end_index ==> a[k1] <= a[k2];
+*/
+
+/*@
+  predicate swapped{L1,L2}(int* a, integer i, integer j) =
+  \at(a[i],L1) == \at(a[j],L2) &&
+  \at(a[j],L1) == \at(a[i],L2) &&
+  \forall integer k; k != i && k != j
+     ==> \at(a[k],L1) == \at(a[k],L2);
+  */
+
+/*@
+  requires \valid(t+i) && \valid(t+j);
+  assigns t[i],t[j];
+  ensures \forall integer k; 0 <= k < n && k != i && k != j ==> t[k] == \old(t[k]);
+  ensures swapped{Old,Here}(t,i,j);
+  */
+void sort_swap3(int t[], int i, int j, int n) {
+    int tmp = t[i];
+    t[i] = t[j];
+    t[j] = tmp;
+}
+
+/*@
+  requires 1 < length;
+  requires \valid(a+(0..length-1));
+  assigns a[0..length-1];
+  ensures e_1: sorted(a, 0, length);
+*/
+void _bubble_sort(int *a, int length) {
+    int up = 1;
+    int down;
+
+    // Loop A
+    /*@
+        loop invariant i_37: s for Loop A: ``` loop invariant 1 <= up <= length;
+
+        loop invariant i_38: 1 <= up <= length;
+
+        loop invariant i_39: \forall integer k; 0 <= k < up ==> sorted(a, 0, k+1);
+
+        loop invariant i_40: \forall integer k; up <= k < length ==> a[k] == \at(a[k], Pre);
+
+        loop invariant i_41: \valid(a+(0..length-1));
+
+
+        loop assigns down, up, a[0..length - 1];
+    */
+    for (; up < length; up++) {
+        down = up;
+      // Loop B
+        /*@
+          loop invariant i_42: 0 <= down <= up;
+
+          loop invariant i_43: \forall integer k; 0 <= k < down ==> sorted(a, 0, k+1);
+
+          loop invariant i_44: \forall integer k; down <= k < length ==> a[k] == \at(a[k], Pre);
+
+          loop invariant i_45: \valid(a+(0..length-1));
+
+          loop invariant i_46: \forall integer k; down < k < up ==> a[k] >= a[down];
+
+
+          loop assigns down, a[0..length - 1];          
+        */
+        while (0 < down && a[down] < a[down - 1]) {
+            sort_swap3(a, down, down - 1, length);
+            down = down - 1;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 106.5136604309082
+Proposal number: 5
+Verified code:
+
+------------------------

@@ -1,0 +1,1999 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_matrix_chain.c
+----------Code----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    /*@
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+[Loop <LOOP A>]
+loop invariant l >= 2 && l <= n && m[1][l] == 2147483647;
+
+[Loop <LOOP B>]
+loop invariant i >= 1 && i <= n - l + 1;
+
+[Loop <LOOP C>]
+loop invariant k >= i && k < end && m[i][k] >= m[i][end];
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: l >= 2 && l <= n && m[1][l] == 2147483647;
+
+        loop invariant i_1: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_2: k >= i && k < end && m[i][k] >= m[i][end];
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop C>]
+loop invariant k >= i && k < end && m[i][k] >= m[i][end];
+
+[Loop <Loop B>]
+loop invariant i >= 1 && i <= n - l + 1;
+
+[Loop <Loop A>]
+loop invariant l >= 2 && l <= n && m[1][l] == 2147483647;
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: l >= 2 && l <= n && m[1][l] == 2147483647;
+
+        loop invariant i_1: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_2: k >= i && k < end && m[i][k] >= m[i][end];
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_3: k >= i && k < end && m[i][k] >= m[i][end];
+
+                loop invariant i_4: i >= 1 && i <= n - l + 1;
+
+                loop invariant i_5: l >= 2 && l <= n && m[1][l] == 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant l >= 2 && l <= n && m[1][l] == 2147483647;
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant k >= i && k < end && m[i][k] >= m[i][end];
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant l >= 2 && l <= n && m[1][l] == 2147483647;
+
+[Loop C]
+loop invariant k >= i && k < end && m[i][k] >= m[i][end];
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant l >= 2 && l <= n && m[1][l] == 2147483647;
+loop invariant i >= 1 && i <= n - l + 1;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: l >= 2 && l <= n && m[1][l] == 2147483647
+i_1: i >= 1 && i <= n - l + 1
+i_2: k >= i && k < end && m[i][k] >= m[i][end]
+LOOP B:
+LOOP C:
+i_3: k >= i && k < end && m[i][k] >= m[i][end]
+i_4: i >= 1 && i <= n - l + 1
+i_5: l >= 2 && l <= n && m[1][l] == 2147483647
+------------------------------------
+---------- Code with Invariants ----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_0: l >= 2 && l <= n && m[1][l] == 2147483647;
+
+        loop invariant i_1: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_2: k >= i && k < end && m[i][k] >= m[i][end];
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_3: k >= i && k < end && m[i][k] >= m[i][end];
+
+                loop invariant i_4: i >= 1 && i <= n - l + 1;
+
+                loop invariant i_5: l >= 2 && l <= n && m[1][l] == 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 2 <= l <= n;
+
+[Loop <Loop B>]
+loop invariant 1 <= i <= n - l + 1;
+
+[Loop <Loop C>]  
+loop invariant i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_6: 2 <= l <= n;
+
+        loop invariant i_7: 1 <= i <= n - l + 1;
+
+        loop invariant i_8: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= l <= n;
+loop invariant 2 <= i <= n - l + 1;
+loop invariant i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_6: 2 <= l <= n;
+
+        loop invariant i_7: 1 <= i <= n - l + 1;
+
+        loop invariant i_8: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_9: 1 <= l <= n;
+
+                loop invariant i_10: 2 <= i <= n - l + 1;
+
+                loop invariant i_11: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <LOOP A>]
+loop invariant i_6: 2 <= l <= n;
+
+[Loop <LOOP B>]
+loop invariant i_7: 1 <= i <= n - l + 1;
+
+[Loop <LOOP C>]
+loop invariant i_8: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+loop invariant m[i][end] <= m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_6: 2 <= l <= n
+i_7: 1 <= i <= n - l + 1
+i_8: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1
+LOOP B:
+i_12: 2 <= l <= n
+i_13: 1 <= i <= n - l + 1
+i_14: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1
+i_15: m[i][end] <= m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end]
+LOOP C:
+i_9: 1 <= l <= n
+i_10: 2 <= i <= n - l + 1
+i_11: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1
+------------------------------------
+---------- Code with Invariants ----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_6: 2 <= l <= n;
+
+        loop invariant i_7: 1 <= i <= n - l + 1;
+
+        loop invariant i_8: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_12: 2 <= l <= n;
+
+            loop invariant i_13: 1 <= i <= n - l + 1;
+
+            loop invariant i_14: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+            loop invariant i_15: m[i][end] <= m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end];
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_9: 1 <= l <= n;
+
+                loop invariant i_10: 2 <= i <= n - l + 1;
+
+                loop invariant i_11: i >= 1 && i <= n - l + 1 && k >= i && k < i + l - 1;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant m[1][n] == 2147483647;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_16: m[1][n] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant m[1][n] == 2147483647;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_16: m[1][n] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_17: m[1][n] == 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_16 == 16;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_16: m[1][n] == 2147483647
+LOOP B:
+i_18: i_16 == 16
+LOOP C:
+i_17: m[1][n] == 2147483647
+------------------------------------
+---------- Code with Invariants ----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_16: m[1][n] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_18: i_16 == 16;
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_17: m[1][n] == 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant l < 10;
+loop invariant 2 <= l <= n;
+loop invariant \forall integer i; 0 <= i <= n - l + 1 && m[i][i + l - 1] == 2147483647;
+loop invariant \forall integer i, j; 0 <= i <= n - l + 1 && 0 <= j <= n - i && i != j ==> m[i][j] == 2147483647;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_19: l < 10;
+
+        loop invariant i_20: 2 <= l <= n;
+
+        loop invariant i_21: \forall integer i; 0 <= i <= n - l + 1 && m[i][i + l - 1] == 2147483647;
+
+        loop invariant i_22: \forall integer i, j; 0 <= i <= n - l + 1 && 0 <= j <= n - i && i != j ==> m[i][j] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop C]
+loop invariant l <= n;
+
+[Loop B]
+loop invariant i_20: 2 <= l <= n;
+
+[Loop C]
+loop invariant k >= i;
+
+[Loop C]
+loop invariant \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || 
+    m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end];
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_19: l < 10;
+
+        loop invariant i_20: 2 <= l <= n;
+
+        loop invariant i_21: \forall integer i; 0 <= i <= n - l + 1 && m[i][i + l - 1] == 2147483647;
+
+        loop invariant i_22: \forall integer i, j; 0 <= i <= n - l + 1 && 0 <= j <= n - i && i != j ==> m[i][j] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_24: 2 <= l <= n;
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_23: \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end];
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant 2 <= l <= n;
+
+[Loop <Loop C>]
+loop invariant \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_19: l < 10
+i_20: 2 <= l <= n
+i_21: \forall integer i; 0 <= i <= n - l + 1 && m[i][i + l - 1] == 2147483647
+i_22: \forall integer i, j; 0 <= i <= n - l + 1 && 0 <= j <= n - i && i != j ==> m[i][j] == 2147483647
+LOOP B:
+i_24: 2 <= l <= n
+i_25: \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end]
+LOOP C:
+i_23: \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end]
+------------------------------------
+---------- Code with Invariants ----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_19: l < 10;
+
+        loop invariant i_20: 2 <= l <= n;
+
+        loop invariant i_21: \forall integer i; 0 <= i <= n - l + 1 && m[i][i + l - 1] == 2147483647;
+
+        loop invariant i_22: \forall integer i, j; 0 <= i <= n - l + 1 && 0 <= j <= n - i && i != j ==> m[i][j] == 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_24: 2 <= l <= n;
+
+            loop invariant i_25: \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end];
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_23: \forall integer k; k >= i && k < end && m[i][k] < m[i][end] || m[i][k] + m[k+1][end] + p[i-1] * p[k] * p[end] >= m[i][end];
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant l >= 2;
+loop invariant 2 <= l <= n;
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant k >= i && k < end;
+loop invariant m[i][end] == 2147483647;
+loop invariant p[i-1] * p[k] * p[end] <= 2147483647;
+```
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_26: l >= 2;
+
+        loop invariant i_27: 2 <= l <= n;
+
+        loop invariant i_28: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_29: k >= i && k < end;
+
+        loop invariant i_30: m[i][end] == 2147483647;
+
+        loop invariant i_31: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                [Hint] Please infer the loop invariant for the following loop.
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop C]
+loop invariant l >= 2;
+loop invariant 2 <= l <= n;
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant m[i][end] == 2147483647;
+loop invariant p[i-1] * p[k] * p[end] <= 2147483647;
+----------------------------
+----------Prompt----------
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_26: l >= 2;
+
+        loop invariant i_27: 2 <= l <= n;
+
+        loop invariant i_28: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_29: k >= i && k < end;
+
+        loop invariant i_30: m[i][end] == 2147483647;
+
+        loop invariant i_31: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_32: l >= 2;
+
+                loop invariant i_33: 2 <= l <= n;
+
+                loop invariant i_34: i >= 1 && i <= n - l + 1;
+
+                loop invariant i_35: m[i][end] == 2147483647;
+
+                loop invariant i_36: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant l >= 2;
+loop invariant 2 <= l <= n;
+loop invariant i >= 1 && i <= n - l + 1;
+loop invariant m[i][end] == 2147483647;
+loop invariant p[i-1] * p[k] * p[end] <= 2147483647;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_26: l >= 2
+i_27: 2 <= l <= n
+i_28: i >= 1 && i <= n - l + 1
+i_29: k >= i && k < end
+i_30: m[i][end] == 2147483647
+i_31: p[i-1] * p[k] * p[end] <= 2147483647
+LOOP B:
+i_37: l >= 2
+i_38: 2 <= l <= n
+i_39: i >= 1 && i <= n - l + 1
+i_40: m[i][end] == 2147483647
+i_41: p[i-1] * p[k] * p[end] <= 2147483647
+LOOP C:
+i_32: l >= 2
+i_33: 2 <= l <= n
+i_34: i >= 1 && i <= n - l + 1
+i_35: m[i][end] == 2147483647
+i_36: p[i-1] * p[k] * p[end] <= 2147483647
+------------------------------------
+---------- Code with Invariants ----------
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+/*@
+    requires n == 10;
+    requires \valid(p + (0..(n)));
+    requires \valid(m + (0..(n)));
+    requires \valid(m[0..(n)] + (0..(n)));
+    requires \forall integer i, j; 0 <= i < n && 0 <= j < n && i != j ==> \separated(&m[i] + (0..(n)), &m[j] + (0..(n)), &p[0..(n)]);
+    requires \separated(&m[0..(n)] + (0..(n)), &p[0..(n)]);
+    requires \forall integer k; 0 <= k <= n ==> 0 < p[k] < 5;
+    requires \forall integer r; 0 <= r <= n ==> m[r][r] == 0;
+    requires \forall integer i, j; 0 <= i <= n  && 0 <= j <= n && i != j ==> m[i][j] == 2147483647;
+    ensures e_1: \forall integer j; 2 <= j <= n ==>
+                (\forall integer g; 1 <= g <= n - j + 1 ==> 
+                    (\forall integer h; g <= h < g + j - 1 ==> 
+                        m[g][g + j - 1] <= m[g][h] + m[h + 1][g + j - 1] + p[g - 1] * p[h] * p[g + j - 1]));
+    assigns m[1..(n)][1..(n)];
+*/
+int _matrix_chain(int p[], int** m, int n) {
+
+    // Loop A
+    /*@
+        loop invariant i_26: l >= 2;
+
+        loop invariant i_27: 2 <= l <= n;
+
+        loop invariant i_28: i >= 1 && i <= n - l + 1;
+
+        loop invariant i_29: k >= i && k < end;
+
+        loop invariant i_30: m[i][end] == 2147483647;
+
+        loop invariant i_31: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+        loop assigns l;
+        loop assigns m[1..(n)][1..(n)];
+    */
+    for (int l = 2; l <= n; l++) {
+        // Loop B
+        /*@
+            loop invariant i_37: l >= 2;
+
+            loop invariant i_38: 2 <= l <= n;
+
+            loop invariant i_39: i >= 1 && i <= n - l + 1;
+
+            loop invariant i_40: m[i][end] == 2147483647;
+
+            loop invariant i_41: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+            loop assigns m[1..(n)][1..(n)];
+            loop assigns i;
+        */
+        for (int i = 1; i <= n - l + 1; i++) {
+            int end = i + l - 1;
+            m[i][end] = 2147483647;
+            // Loop C
+            /*@
+                loop invariant i_32: l >= 2;
+
+                loop invariant i_33: 2 <= l <= n;
+
+                loop invariant i_34: i >= 1 && i <= n - l + 1;
+
+                loop invariant i_35: m[i][end] == 2147483647;
+
+                loop invariant i_36: p[i-1] * p[k] * p[end] <= 2147483647;
+
+
+                loop assigns m[i][end];
+                loop assigns k;
+            */
+            for (int k = i; k < end; k++) {
+                int q = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                if (q < m[i][end]) {
+                    m[i][end] = m[i][k] + m[k + 1][end] + p[i - 1] * p[k] * p[end];
+                }
+            }
+            
+        }
+    }
+    return m[1][n];
+}
+
+
+
+ 
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 164.4543697834015
+Proposal number: 5
+Verified code:
+
+------------------------

@@ -1,0 +1,732 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_binary_search.c
+----------Code----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    /*@ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == \null ==> \forall integer i; 0 <= i < n ==> base[i] != key; e_2:\result != \null ==> \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant l <= h;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: l <= h
+------------------------------------
+---------- Code with Invariants ----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@ 
+        loop invariant i_0: l <= h;
+
+
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------------------------
+Verification failed (Fail_6_9), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == \null ==> \forall integer i; 0 <= i < n ==> base[i] != key; e_2:\result != \null ==> \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant l <= h;
+loop invariant 0 <= m < n && l <= h;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_1: l <= h
+i_2: 0 <= m < n && l <= h
+------------------------------------
+---------- Code with Invariants ----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@ 
+        loop invariant i_1: l <= h;
+
+        loop invariant i_2: 0 <= m < n && l <= h;
+
+
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == \null ==> \forall integer i; 0 <= i < n ==> base[i] != key; e_2:\result != \null ==> \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant l <= h;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: l <= h
+------------------------------------
+---------- Code with Invariants ----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@ 
+        loop invariant i_3: l <= h;
+
+
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------------------------
+Verification failed (Fail_6_9), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == \null ==> \forall integer i; 0 <= i < n ==> base[i] != key; e_2:\result != \null ==> \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant l <= h;
+loop invariant \exists integer m; 0 <= m <= h && base[l] <= key <= base[h];
+loop invariant l + (h - l) / 2 == m;
+loop invariant 0 <= m < n;
+loop invariant l >= 0 && h < n;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: l <= h
+i_5: \exists integer m; 0 <= m <= h && base[l] <= key <= base[h]
+i_6: l + (h - l) / 2 == m
+i_7: 0 <= m < n
+i_8: l >= 0 && h < n
+------------------------------------
+---------- Code with Invariants ----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@ 
+        loop invariant i_4: l <= h;
+
+        loop invariant i_5: \exists integer m; 0 <= m <= h && base[l] <= key <= base[h];
+
+        loop invariant i_6: l + (h - l) / 2 == m;
+
+        loop invariant i_7: 0 <= m < n;
+
+        loop invariant i_8: l >= 0 && h < n;
+
+
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+ 
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == \null ==> \forall integer i; 0 <= i < n ==> base[i] != key; e_2:\result != \null ==> \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant l <= h;
+loop invariant \exists integer m; 0 <= m <= h && l <= m && h >= m;
+loop invariant l + h >= n - 1;
+loop invariant \at(base[l], End_l) == \at(base[h+1], End_h);
+loop invariant \forall integer k; 0 <= k < l ==> base[k] < key;
+loop invariant \forall integer k; 0 <= k < h ==> base[k] > key;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_9: l <= h
+i_10: \exists integer m; 0 <= m <= h && l <= m && h >= m
+i_11: l + h >= n - 1
+i_12: \at(base[l], End_l) == \at(base[h+1], End_h)
+i_13: \forall integer k; 0 <= k < l ==> base[k] < key
+i_14: \forall integer k; 0 <= k < h ==> base[k] > key
+------------------------------------
+---------- Code with Invariants ----------
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+/*@ requires n >= 0;
+    requires \valid(base + (0 .. n-1));
+    requires \forall integer k1, integer k2; 0 <= k1 < k2 < n ==> base[k1] < base[k2];
+
+    assigns \nothing;
+
+    ensures e_1: \result == \null ==>
+            \forall integer i; 0 <= i < n ==> base[i] != key;
+    ensures e_2: \result != \null ==>
+            \exists integer i; 0 <= i < n && base[i] == key && \result == (base + i);
+*/
+int *_binary_search(int base[], int n, int key) {
+    int l = 0;
+    int h = n - 1;
+
+    // Loop A
+    /*@ 
+        loop invariant i_9: l <= h;
+
+        loop invariant i_10: \exists integer m; 0 <= m <= h && l <= m && h >= m;
+
+        loop invariant i_11: l + h >= n - 1;
+
+        loop invariant i_12: \at(base[l], End_l) == \at(base[h+1], End_h);
+
+        loop invariant i_13: \forall integer k; 0 <= k < l ==> base[k] < key;
+
+        loop invariant i_14: \forall integer k; 0 <= k < h ==> base[k] > key;
+
+
+        loop assigns l, h;
+    */
+    while (l <= h) {
+        int m = l + (h - l) / 2;
+        int val = base[m];
+
+        if (val < key) {
+            l = m + 1;
+        } else if (val > key) {
+            h = m - 1;
+        } else {
+            return base + m;
+        }
+    }
+
+    return NULL;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 57.3897922039032
+Proposal number: 5
+Verified code:
+
+------------------------

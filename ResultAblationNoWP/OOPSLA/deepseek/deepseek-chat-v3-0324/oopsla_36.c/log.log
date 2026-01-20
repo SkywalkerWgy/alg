@@ -1,0 +1,3642 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/OOPSLA/oopsla_36.c
+----------Code----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    /*@
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant z >= 0 && w >= 0;
+loop invariant i == z && j == w;
+loop invariant k == j - i ==> k >= 0;
+loop invariant x == z && y == k;
+loop invariant (x % 2 == 0) ==> (y == k);
+loop invariant (x % 2 == 1) ==> (y == k - 1);
+loop invariant w == x + y + 1;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: z >= 0 && w >= 0;
+
+        loop invariant i_1: i == z && j == w;
+
+        loop invariant i_2: k == j - i ==> k >= 0;
+
+        loop invariant i_3: x == z && y == k;
+
+        loop invariant i_4: (x % 2 == 0) ==> (y == k);
+
+        loop invariant i_5: (x % 2 == 1) ==> (y == k - 1);
+
+        loop invariant i_6: w == x + y + 1;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:z >= 0 && w >= 0; i_1:i == z && j == w; i_2:k == j - i ==> k >= 0; i_3:x == z && y == k; i_4:(x % 2 == 0) ==> (y == k); i_5:(x % 2 == 1) ==> (y == k - 1); i_6:w == x + y + 1; 
+    - Post-condition: a_1:(w >= z && a - b == 0); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant a == b;
+loop invariant (flag ==> (a == c && b == d)) || (!flag ==> (a - c == \at(a - c, Pre) && b - d == \at(b - d, Pre)));
+loop invariant c == d;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: z >= 0 && w >= 0;
+
+        loop invariant i_1: i == z && j == w;
+
+        loop invariant i_2: k == j - i ==> k >= 0;
+
+        loop invariant i_3: x == z && y == k;
+
+        loop invariant i_4: (x % 2 == 0) ==> (y == k);
+
+        loop invariant i_5: (x % 2 == 1) ==> (y == k - 1);
+
+        loop invariant i_6: w == x + y + 1;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_7: a == b;
+
+        loop invariant i_8: (flag ==> (a == c && b == d)) || (!flag ==> (a - c == \at(a - c, Pre) && b - d == \at(b - d, Pre)));
+
+        loop invariant i_9: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:z >= 0 && w >= 0; i_1:i == z && j == w; i_2:k == j - i ==> k >= 0; i_3:x == z && y == k; i_4:(x % 2 == 0) ==> (y == k); i_5:(x % 2 == 1) ==> (y == k - 1); i_6:w == x + y + 1; 
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i <= j;
+loop invariant k == i - z;
+loop invariant z <= i <= w;
+loop invariant j == w;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: z >= 0 && w >= 0;
+
+        loop invariant i_1: i == z && j == w;
+
+        loop invariant i_2: k == j - i ==> k >= 0;
+
+        loop invariant i_3: x == z && y == k;
+
+        loop invariant i_4: (x % 2 == 0) ==> (y == k);
+
+        loop invariant i_5: (x % 2 == 1) ==> (y == k - 1);
+
+        loop invariant i_6: w == x + y + 1;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_10: i <= j;
+
+            loop invariant i_11: k == i - z;
+
+            loop invariant i_12: z <= i <= w;
+
+            loop invariant i_13: j == w;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_7: a == b;
+
+        loop invariant i_8: (flag ==> (a == c && b == d)) || (!flag ==> (a - c == \at(a - c, Pre) && b - d == \at(b - d, Pre)));
+
+        loop invariant i_9: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_10:i <= j; i_11:k == i - z; i_12:z <= i <= w; i_13:j == w; 
+    - Post-condition: i_0:z >= 0 && w >= 0; i_1:i == z && j == w; i_2:k == j - i ==> k >= 0; i_3:x == z && y == k; i_4:(x % 2 == 0) ==> (y == k); i_5:(x % 2 == 1) ==> (y == k - 1); i_6:w == x + y + 1; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x % 2 == 0 ==> y == k - (x - z) / 2;
+loop invariant x % 2 == 1 ==> y == (k - 1) - (x - z - 1) / 2;
+loop invariant y >= 0;
+loop invariant x >= z;
+loop invariant x + y == z + k - ((x - z) % 2);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: z >= 0 && w >= 0
+i_1: i == z && j == w
+i_2: k == j - i ==> k >= 0
+i_3: x == z && y == k
+i_4: (x % 2 == 0) ==> (y == k)
+i_5: (x % 2 == 1) ==> (y == k - 1)
+i_6: w == x + y + 1
+LOOP B:
+i_10: i <= j
+i_11: k == i - z
+i_12: z <= i <= w
+i_13: j == w
+LOOP C:
+i_14: x % 2 == 0 ==> y == k - (x - z) / 2
+i_15: x % 2 == 1 ==> y == (k - 1) - (x - z - 1) / 2
+i_16: y >= 0
+i_17: x >= z
+i_18: x + y == z + k - ((x - z) % 2)
+LOOP D:
+i_7: a == b
+i_8: (flag ==> (a == c && b == d)) || (!flag ==> (a - c == \at(a - c, Pre) && b - d == \at(b - d, Pre)))
+i_9: c == d
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_0: z >= 0 && w >= 0;
+
+        loop invariant i_1: i == z && j == w;
+
+        loop invariant i_2: k == j - i ==> k >= 0;
+
+        loop invariant i_3: x == z && y == k;
+
+        loop invariant i_4: (x % 2 == 0) ==> (y == k);
+
+        loop invariant i_5: (x % 2 == 1) ==> (y == k - 1);
+
+        loop invariant i_6: w == x + y + 1;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_10: i <= j;
+
+            loop invariant i_11: k == i - z;
+
+            loop invariant i_12: z <= i <= w;
+
+            loop invariant i_13: j == w;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_14: x % 2 == 0 ==> y == k - (x - z) / 2;
+
+            loop invariant i_15: x % 2 == 1 ==> y == (k - 1) - (x - z - 1) / 2;
+
+            loop invariant i_16: y >= 0;
+
+            loop invariant i_17: x >= z;
+
+            loop invariant i_18: x + y == z + k - ((x - z) % 2);
+
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_7: a == b;
+
+        loop invariant i_8: (flag ==> (a == c && b == d)) || (!flag ==> (a - c == \at(a - c, Pre) && b - d == \at(b - d, Pre)));
+
+        loop invariant i_9: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j == w;
+loop invariant i == z || (i >= z && i <= z + (w - \at(z, Pre)));
+loop invariant k == i - z;
+loop invariant x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1);
+loop invariant y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)));
+loop invariant w == x + y + 1;
+loop invariant z >= \at(z, Pre);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_19: j == w;
+
+        loop invariant i_20: i == z || (i >= z && i <= z + (w - \at(z, Pre)));
+
+        loop invariant i_21: k == i - z;
+
+        loop invariant i_22: x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1);
+
+        loop invariant i_23: y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)));
+
+        loop invariant i_24: w == x + y + 1;
+
+        loop invariant i_25: z >= \at(z, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_19:j == w; i_20:i == z || (i >= z && i <= z + (w - \at(z, Pre))); i_21:k == i - z; i_22:x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1); i_23:y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre))); i_24:w == x + y + 1; i_25:z >= \at(z, Pre); 
+    - Post-condition: a_1:(w >= z && a - b == 0); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant a == b;
+loop invariant (flag ==> (a == c && b == d)) || (!flag ==> (a == \at(a, Pre) + c * (c + 1) / 2 && b == \at(b, Pre) + d * (d + 1) / 2));
+loop invariant c == d;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_19: j == w;
+
+        loop invariant i_20: i == z || (i >= z && i <= z + (w - \at(z, Pre)));
+
+        loop invariant i_21: k == i - z;
+
+        loop invariant i_22: x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1);
+
+        loop invariant i_23: y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)));
+
+        loop invariant i_24: w == x + y + 1;
+
+        loop invariant i_25: z >= \at(z, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_26: a == b;
+
+        loop invariant i_27: (flag ==> (a == c && b == d)) || (!flag ==> (a == \at(a, Pre) + c * (c + 1) / 2 && b == \at(b, Pre) + d * (d + 1) / 2));
+
+        loop invariant i_28: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_19:j == w; i_20:i == z || (i >= z && i <= z + (w - \at(z, Pre))); i_21:k == i - z; i_22:x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1); i_23:y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre))); i_24:w == x + y + 1; i_25:z >= \at(z, Pre); 
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the program logic and surrounding invariants, here are the loop invariants for Loop B:
+
+```
+loop invariant i == \at(i, Pre) + k;
+loop invariant k == i - \at(i, Pre);
+loop invariant \at(i, Pre) <= i <= j;
+loop invariant k >= 0;
+loop invariant j == \at(j, Pre);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_19: j == w;
+
+        loop invariant i_20: i == z || (i >= z && i <= z + (w - \at(z, Pre)));
+
+        loop invariant i_21: k == i - z;
+
+        loop invariant i_22: x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1);
+
+        loop invariant i_23: y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)));
+
+        loop invariant i_24: w == x + y + 1;
+
+        loop invariant i_25: z >= \at(z, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_29: s for Loop B: ``` loop invariant i == \at(i, Pre) + k;
+
+            loop invariant i_30: i == \at(i, Pre) + k;
+
+            loop invariant i_31: k == i - \at(i, Pre);
+
+            loop invariant i_32: \at(i, Pre) <= i <= j;
+
+            loop invariant i_33: k >= 0;
+
+            loop invariant i_34: j == \at(j, Pre);
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_26: a == b;
+
+        loop invariant i_27: (flag ==> (a == c && b == d)) || (!flag ==> (a == \at(a, Pre) + c * (c + 1) / 2 && b == \at(b, Pre) + d * (d + 1) / 2));
+
+        loop invariant i_28: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_29:s for Loop B: ``` loop invariant i == \at(i, Pre) + k; i_30:i == \at(i, Pre) + k; i_31:k == i - \at(i, Pre); i_32:\at(i, Pre) <= i <= j; i_33:k >= 0; i_34:j == \at(j, Pre); 
+    - Post-condition: i_19:j == w; i_20:i == z || (i >= z && i <= z + (w - \at(z, Pre))); i_21:k == i - z; i_22:x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1); i_23:y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre))); i_24:w == x + y + 1; i_25:z >= \at(z, Pre); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x % 2 == 0 ==> y == \at(y, Pre) - (x - \at(x, Pre));
+loop invariant x % 2 == 1 ==> y == \at(y, Pre) - ((\at(x, Pre) % 2 == 0 ? x - \at(x, Pre) : x - \at(x, Pre) + 1));
+loop invariant y >= 0;
+loop invariant (x + y) == (\at(x, Pre) + \at(y, Pre));
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_19: j == w
+i_20: i == z || (i >= z && i <= z + (w - \at(z, Pre)))
+i_21: k == i - z
+i_22: x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1)
+i_23: y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)))
+i_24: w == x + y + 1
+i_25: z >= \at(z, Pre)
+LOOP B:
+i_29: s for Loop B: ``` loop invariant i == \at(i, Pre) + k
+i_30: i == \at(i, Pre) + k
+i_31: k == i - \at(i, Pre)
+i_32: \at(i, Pre) <= i <= j
+i_33: k >= 0
+i_34: j == \at(j, Pre)
+LOOP C:
+i_35: x % 2 == 0 ==> y == \at(y, Pre) - (x - \at(x, Pre))
+i_36: x % 2 == 1 ==> y == \at(y, Pre) - ((\at(x, Pre) % 2 == 0 ? x - \at(x, Pre) : x - \at(x, Pre) + 1))
+i_37: y >= 0
+i_38: (x + y) == (\at(x, Pre) + \at(y, Pre))
+LOOP D:
+i_26: a == b
+i_27: (flag ==> (a == c && b == d)) || (!flag ==> (a == \at(a, Pre) + c * (c + 1) / 2 && b == \at(b, Pre) + d * (d + 1) / 2))
+i_28: c == d
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_19: j == w;
+
+        loop invariant i_20: i == z || (i >= z && i <= z + (w - \at(z, Pre)));
+
+        loop invariant i_21: k == i - z;
+
+        loop invariant i_22: x == z || (x >= z && x <= z + (w - \at(z, Pre)) + 1);
+
+        loop invariant i_23: y == (w - \at(z, Pre)) - (x - z) || (y >= 0 && y <= (w - \at(z, Pre)));
+
+        loop invariant i_24: w == x + y + 1;
+
+        loop invariant i_25: z >= \at(z, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_29: s for Loop B: ``` loop invariant i == \at(i, Pre) + k;
+
+            loop invariant i_30: i == \at(i, Pre) + k;
+
+            loop invariant i_31: k == i - \at(i, Pre);
+
+            loop invariant i_32: \at(i, Pre) <= i <= j;
+
+            loop invariant i_33: k >= 0;
+
+            loop invariant i_34: j == \at(j, Pre);
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_35: x % 2 == 0 ==> y == \at(y, Pre) - (x - \at(x, Pre));
+
+            loop invariant i_36: x % 2 == 1 ==> y == \at(y, Pre) - ((\at(x, Pre) % 2 == 0 ? x - \at(x, Pre) : x - \at(x, Pre) + 1));
+
+            loop invariant i_37: y >= 0;
+
+            loop invariant i_38: (x + y) == (\at(x, Pre) + \at(y, Pre));
+
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_26: a == b;
+
+        loop invariant i_27: (flag ==> (a == c && b == d)) || (!flag ==> (a == \at(a, Pre) + c * (c + 1) / 2 && b == \at(b, Pre) + d * (d + 1) / 2));
+
+        loop invariant i_28: c == d;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant z >= 0;
+loop invariant w >= z;
+loop invariant (x % 2 == 0) ==> (y >= 0);
+loop invariant (x % 2 == 1) ==> (y >= 1);
+loop invariant w == x + y + 1;
+loop invariant \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre);
+loop invariant \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_39: z >= 0;
+
+        loop invariant i_40: w >= z;
+
+        loop invariant i_41: (x % 2 == 0) ==> (y >= 0);
+
+        loop invariant i_42: (x % 2 == 1) ==> (y >= 1);
+
+        loop invariant i_43: w == x + y + 1;
+
+        loop invariant i_44: \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre);
+
+        loop invariant i_45: \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_39:z >= 0; i_40:w >= z; i_41:(x % 2 == 0) ==> (y >= 0); i_42:(x % 2 == 1) ==> (y >= 1); i_43:w == x + y + 1; i_44:\at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre); i_45:\at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre); 
+    - Post-condition: a_1:(w >= z && a - b == 0); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant a == b;
+loop invariant c == d;
+loop invariant flag ==> (a == c && b == d);
+loop invariant !flag ==> (a >= c && b >= d);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_39: z >= 0;
+
+        loop invariant i_40: w >= z;
+
+        loop invariant i_41: (x % 2 == 0) ==> (y >= 0);
+
+        loop invariant i_42: (x % 2 == 1) ==> (y >= 1);
+
+        loop invariant i_43: w == x + y + 1;
+
+        loop invariant i_44: \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre);
+
+        loop invariant i_45: \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_46: a == b;
+
+        loop invariant i_47: c == d;
+
+        loop invariant i_48: flag ==> (a == c && b == d);
+
+        loop invariant i_49: !flag ==> (a >= c && b >= d);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_39:z >= 0; i_40:w >= z; i_41:(x % 2 == 0) ==> (y >= 0); i_42:(x % 2 == 1) ==> (y >= 1); i_43:w == x + y + 1; i_44:\at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre); i_45:\at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre); 
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i <= j;
+loop invariant k == i - \at(i, Pre);
+loop invariant \at(i, Pre) <= i <= j;
+loop invariant k >= 0;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_39: z >= 0;
+
+        loop invariant i_40: w >= z;
+
+        loop invariant i_41: (x % 2 == 0) ==> (y >= 0);
+
+        loop invariant i_42: (x % 2 == 1) ==> (y >= 1);
+
+        loop invariant i_43: w == x + y + 1;
+
+        loop invariant i_44: \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre);
+
+        loop invariant i_45: \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_50: i <= j;
+
+            loop invariant i_51: k == i - \at(i, Pre);
+
+            loop invariant i_52: \at(i, Pre) <= i <= j;
+
+            loop invariant i_53: k >= 0;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_46: a == b;
+
+        loop invariant i_47: c == d;
+
+        loop invariant i_48: flag ==> (a == c && b == d);
+
+        loop invariant i_49: !flag ==> (a >= c && b >= d);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_50:i <= j; i_51:k == i - \at(i, Pre); i_52:\at(i, Pre) <= i <= j; i_53:k >= 0; 
+    - Post-condition: i_39:z >= 0; i_40:w >= z; i_41:(x % 2 == 0) ==> (y >= 0); i_42:(x % 2 == 1) ==> (y >= 1); i_43:w == x + y + 1; i_44:\at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre); i_45:\at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant (x % 2 == 0) ==> (y >= 0);
+loop invariant (x % 2 == 1) ==> (y >= 1);
+loop invariant w == x + y + 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_39: z >= 0
+i_40: w >= z
+i_41: (x % 2 == 0) ==> (y >= 0)
+i_42: (x % 2 == 1) ==> (y >= 1)
+i_43: w == x + y + 1
+i_44: \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre)
+i_45: \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre)
+LOOP B:
+i_50: i <= j
+i_51: k == i - \at(i, Pre)
+i_52: \at(i, Pre) <= i <= j
+i_53: k >= 0
+LOOP C:
+i_54: (x % 2 == 0) ==> (y >= 0)
+i_55: (x % 2 == 1) ==> (y >= 1)
+i_56: w == x + y + 1
+LOOP D:
+i_46: a == b
+i_47: c == d
+i_48: flag ==> (a == c && b == d)
+i_49: !flag ==> (a >= c && b >= d)
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_39: z >= 0;
+
+        loop invariant i_40: w >= z;
+
+        loop invariant i_41: (x % 2 == 0) ==> (y >= 0);
+
+        loop invariant i_42: (x % 2 == 1) ==> (y >= 1);
+
+        loop invariant i_43: w == x + y + 1;
+
+        loop invariant i_44: \at(z, Pre) <= z <= \at(z, Pre) + \at(unknown1(), Pre);
+
+        loop invariant i_45: \at(w, Pre) <= w <= \at(w, Pre) + \at(unknown1(), Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_50: i <= j;
+
+            loop invariant i_51: k == i - \at(i, Pre);
+
+            loop invariant i_52: \at(i, Pre) <= i <= j;
+
+            loop invariant i_53: k >= 0;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_54: (x % 2 == 0) ==> (y >= 0);
+
+            loop invariant i_55: (x % 2 == 1) ==> (y >= 1);
+
+            loop invariant i_56: w == x + y + 1;
+
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_46: a == b;
+
+        loop invariant i_47: c == d;
+
+        loop invariant i_48: flag ==> (a == c && b == d);
+
+        loop invariant i_49: !flag ==> (a >= c && b >= d);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant z >= 0 && w >= z;
+loop invariant w == x + y + 1;
+loop invariant x == z + k;
+loop invariant y >= 0;
+loop invariant i == z && j == w ==> k == 0;
+loop invariant i == z + k && j == w ==> k >= 0;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_57: z >= 0 && w >= z;
+
+        loop invariant i_58: w == x + y + 1;
+
+        loop invariant i_59: x == z + k;
+
+        loop invariant i_60: y >= 0;
+
+        loop invariant i_61: i == z && j == w ==> k == 0;
+
+        loop invariant i_62: i == z + k && j == w ==> k >= 0;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_57:z >= 0 && w >= z; i_58:w == x + y + 1; i_59:x == z + k; i_60:y >= 0; i_61:i == z && j == w ==> k == 0; i_62:i == z + k && j == w ==> k >= 0; 
+    - Post-condition: a_1:(w >= z && a - b == 0); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant c == d;
+loop invariant a == b;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_57: z >= 0 && w >= z;
+
+        loop invariant i_58: w == x + y + 1;
+
+        loop invariant i_59: x == z + k;
+
+        loop invariant i_60: y >= 0;
+
+        loop invariant i_61: i == z && j == w ==> k == 0;
+
+        loop invariant i_62: i == z + k && j == w ==> k >= 0;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_63: c == d;
+
+        loop invariant i_64: a == b;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_57:z >= 0 && w >= z; i_58:w == x + y + 1; i_59:x == z + k; i_60:y >= 0; i_61:i == z && j == w ==> k == 0; i_62:i == z + k && j == w ==> k >= 0; 
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant j == w;
+loop invariant z <= i <= j;
+loop invariant k == i - z;
+loop invariant i >= z;
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_57: z >= 0 && w >= z;
+
+        loop invariant i_58: w == x + y + 1;
+
+        loop invariant i_59: x == z + k;
+
+        loop invariant i_60: y >= 0;
+
+        loop invariant i_61: i == z && j == w ==> k == 0;
+
+        loop invariant i_62: i == z + k && j == w ==> k >= 0;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_65: j == w;
+
+            loop invariant i_66: z <= i <= j;
+
+            loop invariant i_67: k == i - z;
+
+            loop invariant i_68: i >= z;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_63: c == d;
+
+        loop invariant i_64: a == b;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_65:j == w; i_66:z <= i <= j; i_67:k == i - z; i_68:i >= z; 
+    - Post-condition: i_57:z >= 0 && w >= z; i_58:w == x + y + 1; i_59:x == z + k; i_60:y >= 0; i_61:i == z && j == w ==> k == 0; i_62:i == z + k && j == w ==> k >= 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the program logic and the surrounding invariants, here are the loop invariants for Loop C:
+
+```
+loop invariant x + y == z + k;
+loop invariant y >= 0;
+loop invariant x >= z;
+loop invariant (x % 2 == 0) ==> (y % 2 == k % 2);
+loop invariant (x % 2 == 1) ==> (y % 2 != k % 2);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_57: z >= 0 && w >= z
+i_58: w == x + y + 1
+i_59: x == z + k
+i_60: y >= 0
+i_61: i == z && j == w ==> k == 0
+i_62: i == z + k && j == w ==> k >= 0
+LOOP B:
+i_65: j == w
+i_66: z <= i <= j
+i_67: k == i - z
+i_68: i >= z
+LOOP C:
+i_69: s for Loop C: ``` loop invariant x + y == z + k
+i_70: x + y == z + k
+i_71: y >= 0
+i_72: x >= z
+i_73: (x % 2 == 0) ==> (y % 2 == k % 2)
+i_74: (x % 2 == 1) ==> (y % 2 != k % 2)
+LOOP D:
+i_63: c == d
+i_64: a == b
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_57: z >= 0 && w >= z;
+
+        loop invariant i_58: w == x + y + 1;
+
+        loop invariant i_59: x == z + k;
+
+        loop invariant i_60: y >= 0;
+
+        loop invariant i_61: i == z && j == w ==> k == 0;
+
+        loop invariant i_62: i == z + k && j == w ==> k >= 0;
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_65: j == w;
+
+            loop invariant i_66: z <= i <= j;
+
+            loop invariant i_67: k == i - z;
+
+            loop invariant i_68: i >= z;
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_69: s for Loop C: ``` loop invariant x + y == z + k;
+
+            loop invariant i_70: x + y == z + k;
+
+            loop invariant i_71: y >= 0;
+
+            loop invariant i_72: x >= z;
+
+            loop invariant i_73: (x % 2 == 0) ==> (y % 2 == k % 2);
+
+            loop invariant i_74: (x % 2 == 1) ==> (y % 2 != k % 2);
+
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_63: c == d;
+
+        loop invariant i_64: a == b;
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant z >= 0 && w >= 0;
+loop invariant w == x + y + 1;
+loop invariant j == \at(w, Pre);
+loop invariant i == \at(z, Pre);
+loop invariant k == j - i;
+loop invariant x % 2 == 0;
+loop invariant y >= 0;
+loop invariant z == \at(z, Pre) + \at(k, Pre);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_75: z >= 0 && w >= 0;
+
+        loop invariant i_76: w == x + y + 1;
+
+        loop invariant i_77: j == \at(w, Pre);
+
+        loop invariant i_78: i == \at(z, Pre);
+
+        loop invariant i_79: k == j - i;
+
+        loop invariant i_80: x % 2 == 0;
+
+        loop invariant i_81: y >= 0;
+
+        loop invariant i_82: z == \at(z, Pre) + \at(k, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_75:z >= 0 && w >= 0; i_76:w == x + y + 1; i_77:j == \at(w, Pre); i_78:i == \at(z, Pre); i_79:k == j - i; i_80:x % 2 == 0; i_81:y >= 0; i_82:z == \at(z, Pre) + \at(k, Pre); 
+    - Post-condition: a_1:(w >= z && a - b == 0); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the program logic and the given pre/post conditions, here are the loop invariants for Loop D:
+
+```
+loop invariant a == b;
+loop invariant flag ==> (a == c && b == d);
+loop invariant !flag ==> (a - b == c - d);
+loop invariant c == d;
+loop invariant \at(c, Pre) <= c <= \at(c, LoopEntry);
+loop invariant \at(d, Pre) <= d <= \at(d, LoopEntry);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_75: z >= 0 && w >= 0;
+
+        loop invariant i_76: w == x + y + 1;
+
+        loop invariant i_77: j == \at(w, Pre);
+
+        loop invariant i_78: i == \at(z, Pre);
+
+        loop invariant i_79: k == j - i;
+
+        loop invariant i_80: x % 2 == 0;
+
+        loop invariant i_81: y >= 0;
+
+        loop invariant i_82: z == \at(z, Pre) + \at(k, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_83: s for Loop D: ``` loop invariant a == b;
+
+        loop invariant i_84: a == b;
+
+        loop invariant i_85: flag ==> (a == c && b == d);
+
+        loop invariant i_86: !flag ==> (a - b == c - d);
+
+        loop invariant i_87: c == d;
+
+        loop invariant i_88: \at(c, Pre) <= c <= \at(c, LoopEntry);
+
+        loop invariant i_89: \at(d, Pre) <= d <= \at(d, LoopEntry);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_75:z >= 0 && w >= 0; i_76:w == x + y + 1; i_77:j == \at(w, Pre); i_78:i == \at(z, Pre); i_79:k == j - i; i_80:x % 2 == 0; i_81:y >= 0; i_82:z == \at(z, Pre) + \at(k, Pre); 
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the code and the surrounding invariants, here are the loop invariants for Loop B:
+
+```
+loop invariant i <= j;
+loop invariant k == i - \at(i, Pre);
+loop invariant \at(j, Pre) == j;
+loop invariant z == \at(z, Pre);
+loop invariant w == \at(w, Pre);
+loop invariant x == \at(x, Pre);
+loop invariant y == \at(y, Pre);
+```
+----------------------------
+----------Prompt----------
+
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_75: z >= 0 && w >= 0;
+
+        loop invariant i_76: w == x + y + 1;
+
+        loop invariant i_77: j == \at(w, Pre);
+
+        loop invariant i_78: i == \at(z, Pre);
+
+        loop invariant i_79: k == j - i;
+
+        loop invariant i_80: x % 2 == 0;
+
+        loop invariant i_81: y >= 0;
+
+        loop invariant i_82: z == \at(z, Pre) + \at(k, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_90: s for Loop B: ``` loop invariant i <= j;
+
+            loop invariant i_91: i <= j;
+
+            loop invariant i_92: k == i - \at(i, Pre);
+
+            loop invariant i_93: \at(j, Pre) == j;
+
+            loop invariant i_94: z == \at(z, Pre);
+
+            loop invariant i_95: w == \at(w, Pre);
+
+            loop invariant i_96: x == \at(x, Pre);
+
+            loop invariant i_97: y == \at(y, Pre);
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_83: s for Loop D: ``` loop invariant a == b;
+
+        loop invariant i_84: a == b;
+
+        loop invariant i_85: flag ==> (a == c && b == d);
+
+        loop invariant i_86: !flag ==> (a - b == c - d);
+
+        loop invariant i_87: c == d;
+
+        loop invariant i_88: \at(c, Pre) <= c <= \at(c, LoopEntry);
+
+        loop invariant i_89: \at(d, Pre) <= d <= \at(d, LoopEntry);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_90:s for Loop B: ``` loop invariant i <= j; i_91:i <= j; i_92:k == i - \at(i, Pre); i_93:\at(j, Pre) == j; i_94:z == \at(z, Pre); i_95:w == \at(w, Pre); i_96:x == \at(x, Pre); i_97:y == \at(y, Pre); 
+    - Post-condition: i_75:z >= 0 && w >= 0; i_76:w == x + y + 1; i_77:j == \at(w, Pre); i_78:i == \at(z, Pre); i_79:k == j - i; i_80:x % 2 == 0; i_81:y >= 0; i_82:z == \at(z, Pre) + \at(k, Pre); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant x % 2 == 0 && y >= 0;
+loop invariant x + y == \at(x, Pre) + \at(y, Pre);
+loop invariant (x % 2 == 0) ==> (y % 2 == 0);
+loop invariant (x % 2 == 1) ==> (y % 2 == 1);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_75: z >= 0 && w >= 0
+i_76: w == x + y + 1
+i_77: j == \at(w, Pre)
+i_78: i == \at(z, Pre)
+i_79: k == j - i
+i_80: x % 2 == 0
+i_81: y >= 0
+i_82: z == \at(z, Pre) + \at(k, Pre)
+LOOP B:
+i_90: s for Loop B: ``` loop invariant i <= j
+i_91: i <= j
+i_92: k == i - \at(i, Pre)
+i_93: \at(j, Pre) == j
+i_94: z == \at(z, Pre)
+i_95: w == \at(w, Pre)
+i_96: x == \at(x, Pre)
+i_97: y == \at(y, Pre)
+LOOP C:
+i_98: x % 2 == 0 && y >= 0
+i_99: x + y == \at(x, Pre) + \at(y, Pre)
+i_100: (x % 2 == 0) ==> (y % 2 == 0)
+i_101: (x % 2 == 1) ==> (y % 2 == 1)
+LOOP D:
+i_83: s for Loop D: ``` loop invariant a == b
+i_84: a == b
+i_85: flag ==> (a == c && b == d)
+i_86: !flag ==> (a - b == c - d)
+i_87: c == d
+i_88: \at(c, Pre) <= c <= \at(c, LoopEntry)
+i_89: \at(d, Pre) <= d <= \at(d, LoopEntry)
+------------------------------------
+---------- Code with Invariants ----------
+int unknown1();
+int unknown2();
+int unknown3();
+
+void oopsla_36(int flag) {
+    int a = 0;
+    int b = 0;
+    int x = 0;
+    int y = 0;
+    int z = 0;
+    int w = 0;
+    int j = w;
+    int i = z;
+    int k = 0;
+
+    // Loop A
+    /*@
+        loop invariant i_75: z >= 0 && w >= 0;
+
+        loop invariant i_76: w == x + y + 1;
+
+        loop invariant i_77: j == \at(w, Pre);
+
+        loop invariant i_78: i == \at(z, Pre);
+
+        loop invariant i_79: k == j - i;
+
+        loop invariant i_80: x % 2 == 0;
+
+        loop invariant i_81: y >= 0;
+
+        loop invariant i_82: z == \at(z, Pre) + \at(k, Pre);
+
+
+        loop assigns i, j, k, x, y, z, w;
+    */
+    while (unknown1()) {
+        i = z;
+        j = w;
+        k = 0;
+
+        // Loop B
+        /*@
+            loop invariant i_90: s for Loop B: ``` loop invariant i <= j;
+
+            loop invariant i_91: i <= j;
+
+            loop invariant i_92: k == i - \at(i, Pre);
+
+            loop invariant i_93: \at(j, Pre) == j;
+
+            loop invariant i_94: z == \at(z, Pre);
+
+            loop invariant i_95: w == \at(w, Pre);
+
+            loop invariant i_96: x == \at(x, Pre);
+
+            loop invariant i_97: y == \at(y, Pre);
+
+
+            loop assigns k, i;
+        */
+        while (i < j) {
+            k++;
+            i++;
+        }
+
+        x = z;
+        y = k;
+
+        if (x % 2 == 1) {
+            x++;
+            y--;
+        }
+
+        // Loop C
+        /*@
+            loop invariant i_98: x % 2 == 0 && y >= 0;
+
+            loop invariant i_99: x + y == \at(x, Pre) + \at(y, Pre);
+
+            loop invariant i_100: (x % 2 == 0) ==> (y % 2 == 0);
+
+            loop invariant i_101: (x % 2 == 1) ==> (y % 2 == 1);
+
+
+            loop assigns x, y;
+        */
+        while (unknown2()) {
+            if (x % 2 == 0) {
+                x += 2;
+                y -= 2;
+            } 
+            else {
+                x--;
+                y--;
+            }
+        }
+        z++;
+        w = x + y + 1;
+    }
+
+    int c = 0;
+    int d = 0;
+    
+    // Loop D
+    /*@
+        loop invariant i_83: s for Loop D: ``` loop invariant a == b;
+
+        loop invariant i_84: a == b;
+
+        loop invariant i_85: flag ==> (a == c && b == d);
+
+        loop invariant i_86: !flag ==> (a - b == c - d);
+
+        loop invariant i_87: c == d;
+
+        loop invariant i_88: \at(c, Pre) <= c <= \at(c, LoopEntry);
+
+        loop invariant i_89: \at(d, Pre) <= d <= \at(d, LoopEntry);
+
+
+        loop assigns a, b, c, d;
+    */
+    while (unknown3()) {
+        c++;
+        d++;
+        if (flag) {
+            a++;
+            b++;
+        } else {
+            a += c;
+            b += d;
+        }
+    }
+
+    //@ assert a_1: (w >= z && a - b == 0);
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 277.325541973114
+Proposal number: 5
+Verified code:
+
+------------------------

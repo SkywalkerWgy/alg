@@ -1,0 +1,92 @@
+/*@
+  predicate max_heap{L}(int* a, integer n, integer i) =
+    (i >= n) ||
+    (((2 * i + 1 >= n) || (2 * i + 1 < n && a[i] >= a[2 * i + 1] && max_heap(a, n, 2 * i + 1))) &&
+    ((2 * i + 2 >= n) || (2 * i + 2 < n && a[i] >= a[2 * i + 2] && max_heap(a, n, 2 * i + 2))));
+*/
+
+/*@
+    predicate is_max3(int * a, integer dad, integer leftson, integer rightson, integer n, integer result) =
+        (0 <= dad < n && a[result] >= a[dad]) && 
+        (leftson < n ==> a[result] >= a[leftson]) && 
+        (rightson < n ==> a[result] >= a[rightson]) &&
+        (0 <= result < n) &&
+        (result == dad || result == leftson || result == rightson);
+*/
+
+/*@
+    requires n >= 0;
+    requires 0 <= dad < n;
+    requires leftson == 2 * dad + 1;
+    requires rightson == 2 * dad + 2;
+    requires \valid(a + (0..(n - 1)));
+    assigns \nothing;
+    ensures is_max3(a, dad, leftson, rightson, n, \result);
+    ensures \result < n;
+*/
+int max3(int* a, int dad, int leftson, int rightson, int n) {
+  int max_val = dad;
+  if (leftson < n) max_val = a[max_val] >= a[leftson] ? max_val : leftson;
+  if (rightson < n) max_val = a[max_val] >= a[rightson] ? max_val : rightson;
+  return max_val;
+}
+
+/*@
+    requires n >= 0;
+    requires \valid(a + (0..(n - 1)));
+    requires \forall integer i; 0 < i < n ==> (
+            (2 * i + 1 < n ==> a[i] >= a[2 * i + 1]) && 
+            (2 * i + 2 < n ==> a[i] >= a[2 * i + 2]) 
+            );
+    assigns a[0..(n - 1)];
+    ensures e_1: \forall integer i; 0 <= i < n ==> (
+            (2 * i + 1 < n ==> a[i] >= a[2 * i + 1]) && 
+            (2 * i + 2 < n ==> a[i] >= a[2 * i + 2]) 
+            );
+*/
+void _heapify(int* a, int n) {
+    if (n == 0){
+        return;
+    }
+    int dad = 0;
+    int leftson = 1;
+    int rightson = 2;
+    int swapindex = max3(a, dad, leftson, rightson, n);
+    // Loop A
+    /*@
+        loop invariant i_0: n >= 0;
+        loop invariant i_1: \valid(a + (0..(n - 1)));
+        loop invariant i_2: 0 <= dad < n;
+        loop invariant i_3: leftson == 2 * dad + 1;
+        loop invariant i_4: rightson == 2 * dad + 2;
+        loop invariant i_5: 0 <= swapindex < n;
+        loop invariant i_6: is_max3(a, dad, leftson, rightson, n, swapindex);
+        loop invariant i_7: \forall integer i; 0 < i < n && i != dad ==> ((2 * i + 1 < n ==> a[i] >= a[2 * i + 1]) && (2 * i + 2 < n ==> a[i] >= a[2 * i + 2]));
+        loop invariant i_8: dad > 0 ==> ((2 * 0 + 1 < n ==> a[0] >= a[1]) && (2 * 0 + 2 < n ==> a[0] >= a[2]));
+        loop invariant i_9: dad > 0 ==> a[(dad - 1) / 2] >= a[dad];
+        loop invariant i_11: \true;
+        loop invariant i_12: \forall integer j; 0 < j < n && j != dad ==> ((2 * j + 1 < n ==> a[j] >= a[2 * j + 1]) && (2 * j + 2 < n ==> a[j] >= a[2 * j + 2]));
+        loop invariant i_13: \forall integer j; 0 < j < n && j != dad ==> \true;
+        loop invariant i_14: \forall integer j; 0 < j < n && j != dad ==> 0 <= (j - 1) / 2 < n;
+        loop invariant i_15: \forall integer j; 0 < j < n && j != dad ==> a[j] >= a[j];
+        loop invariant i_16: \forall integer i; dad < i < n ==> ((2 * i + 1 < n ==> a[i] >= a[2 * i + 1]) && (2 * i + 2 < n ==> a[i] >= a[2 * i + 2]));
+        loop invariant i_17: dad > 0 ==> a[0] >= a[dad];
+
+        loop assigns a[0..(n - 1)];
+        loop assigns dad, leftson, rightson, swapindex;
+    */
+    while (1) { 
+        if (dad == swapindex){
+            return;
+        }
+        else{
+            int temp = a[dad];
+            a[dad] = a[swapindex];
+            a[swapindex] = temp;
+            dad = swapindex;
+            leftson = dad * 2 + 1;
+            rightson = dad * 2 + 2;
+            swapindex = max3(a, dad, leftson, rightson, n);
+        }
+    }
+}

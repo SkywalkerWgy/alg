@@ -1,0 +1,1293 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_select_sort.c
+----------Code----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    /*@
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 0 <= i < n;
+loop invariant \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:0 <= i < n; i_1:\exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min]; 
+    - Post-condition: i_0:0 <= i < n; i_1:\exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <CUR_LOOP>]
+loop invariant 0 <= i < n;
+loop invariant \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= i < n
+i_1: \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min]
+LOOP B:
+i_2: 0 <= i < n
+i_3: \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= i < n;
+
+        loop invariant i_1: \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min];
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_2: 0 <= i < n;
+
+            loop invariant i_3: \exists integer min; \forall integer j; i <= j < n && arr[j] >= arr[min];
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------------------------
+Verification failed (Fail_23_24), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 0 <= i < n-1 && \valid(&arr[i]);
+loop invariant \exists integer min;  0 <= min <= i && arr[min] is the minimum in arr[0..i];
+loop invariant sorted(arr, 0, n-1);
+
+[Loop <Loop B>]
+loop invariant 0 <= j <= n-1;
+loop invariant \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i];
+loop invariant \forall integer k; arr[min] <= arr[k] for all k in [0..i]; 
+
+[Loop <Swap>]
+loop invariant \valid(&arr[min], &arr[i]);
+loop invariant arr[min] == the element at position min after swap;
+loop invariant arr[i] == the element at position i after swap;
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_4: 0 <= i < n-1 && \valid(&arr[i]);
+
+        loop invariant i_5: \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i];
+
+        loop invariant i_6: sorted(arr, 0, n-1);
+
+        loop invariant i_7: 0 <= j <= n-1;
+
+        loop invariant i_8: \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i];
+
+        loop invariant i_9: \forall integer k; arr[min] <= arr[k] for all k in [0..i];
+
+        loop invariant i_10: \valid(&arr[min], &arr[i]);
+
+        loop invariant i_11: arr[min] == the element at position min after swap;
+
+        loop invariant i_12: arr[i] == the element at position i after swap;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_4:0 <= i < n-1 && \valid(&arr[i]); i_5:\exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i]; i_6:sorted(arr, 0, n-1); i_7:0 <= j <= n-1; i_8:\exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i]; i_9:\forall integer k; arr[min] <= arr[k] for all k in [0..i]; i_10:\valid(&arr[min], &arr[i]); i_11:arr[min] == the element at position min after swap; i_12:arr[i] == the element at position i after swap; 
+    - Post-condition: i_4:0 <= i < n-1 && \valid(&arr[i]); i_5:\exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i]; i_6:sorted(arr, 0, n-1); i_7:0 <= j <= n-1; i_8:\exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i]; i_9:\forall integer k; arr[min] <= arr[k] for all k in [0..i]; i_10:\valid(&arr[min], &arr[i]); i_11:arr[min] == the element at position min after swap; i_12:arr[i] == the element at position i after swap; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 0 <= i < n-1 && \valid(&arr[i]);
+
+[Loop <Loop B>]
+loop invariant \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i];
+
+loop invariant sorted(arr, 0, n-1);
+
+loop invariant 0 <= j <= n-1;
+
+loop invariant \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i];
+
+loop invariant \forall integer k; arr[min] <= arr[k] for all k in [0..i];
+
+loop invariant \valid(&arr[min], &arr[i]);
+
+loop invariant arr[min] == the element at position min after swap;
+
+loop invariant arr[i] == the element at position i after swap;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: 0 <= i < n-1 && \valid(&arr[i])
+i_5: \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i]
+i_6: sorted(arr, 0, n-1)
+i_7: 0 <= j <= n-1
+i_8: \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i]
+i_9: \forall integer k; arr[min] <= arr[k] for all k in [0..i]
+i_10: \valid(&arr[min], &arr[i])
+i_11: arr[min] == the element at position min after swap
+i_12: arr[i] == the element at position i after swap
+LOOP B:
+i_13: 0 <= i < n-1 && \valid(&arr[i])
+i_14: \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i]
+i_15: sorted(arr, 0, n-1)
+i_16: 0 <= j <= n-1
+i_17: \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i]
+i_18: \forall integer k; arr[min] <= arr[k] for all k in [0..i]
+i_19: \valid(&arr[min], &arr[i])
+i_20: arr[min] == the element at position min after swap
+i_21: arr[i] == the element at position i after swap
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_4: 0 <= i < n-1 && \valid(&arr[i]);
+
+        loop invariant i_5: \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i];
+
+        loop invariant i_6: sorted(arr, 0, n-1);
+
+        loop invariant i_7: 0 <= j <= n-1;
+
+        loop invariant i_8: \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i];
+
+        loop invariant i_9: \forall integer k; arr[min] <= arr[k] for all k in [0..i];
+
+        loop invariant i_10: \valid(&arr[min], &arr[i]);
+
+        loop invariant i_11: arr[min] == the element at position min after swap;
+
+        loop invariant i_12: arr[i] == the element at position i after swap;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_13: 0 <= i < n-1 && \valid(&arr[i]);
+
+            loop invariant i_14: \exists integer min; 0 <= min <= i && arr[min] is the minimum in arr[0..i];
+
+            loop invariant i_15: sorted(arr, 0, n-1);
+
+            loop invariant i_16: 0 <= j <= n-1;
+
+            loop invariant i_17: \exists integer min; min is the minimum in arr[0..i] and arr[min] is the minimum element in arr[0..i];
+
+            loop invariant i_18: \forall integer k; arr[min] <= arr[k] for all k in [0..i];
+
+            loop invariant i_19: \valid(&arr[min], &arr[i]);
+
+            loop invariant i_20: arr[min] == the element at position min after swap;
+
+            loop invariant i_21: arr[i] == the element at position i after swap;
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 < n && n > 0;
+loop invariant \exists integer min; 0 <= min < i;
+loop invariant 0 <= i < n;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_22: 1 < n && n > 0;
+
+        loop invariant i_23: \exists integer min; 0 <= min < i;
+
+        loop invariant i_24: 0 <= i < n;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_22:1 < n && n > 0; i_23:\exists integer min; 0 <= min < i; i_24:0 <= i < n; 
+    - Post-condition: i_22:1 < n && n > 0; i_23:\exists integer min; 0 <= min < i; i_24:0 <= i < n; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant 1 < n && n > 0;
+loop invariant \exists integer min; 0 <= min < i;
+loop invariant 0 <= i < n;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_22: 1 < n && n > 0
+i_23: \exists integer min; 0 <= min < i
+i_24: 0 <= i < n
+LOOP B:
+i_25: 1 < n && n > 0
+i_26: \exists integer min; 0 <= min < i
+i_27: 0 <= i < n
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_22: 1 < n && n > 0;
+
+        loop invariant i_23: \exists integer min; 0 <= min < i;
+
+        loop invariant i_24: 0 <= i < n;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_25: 1 < n && n > 0;
+
+            loop invariant i_26: \exists integer min; 0 <= min < i;
+
+            loop invariant i_27: 0 <= i < n;
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------------------------
+Verification failed (Fail_26_28), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant _select_sort(arr, n) implies \valid(arr+(0..(n - 1)));
+loop invariant i < n - 1;
+loop invariant \exists integer min;  0 <= min < i && arr[min] is the minimum element among arr[0..i];
+loop invariant 0 <= i <= n - 1;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_28: _select_sort(arr, n) implies \valid(arr+(0..(n - 1)));
+
+        loop invariant i_29: i < n - 1;
+
+        loop invariant i_30: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i];
+
+        loop invariant i_31: 0 <= i <= n - 1;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_28:_select_sort(arr, n) implies \valid(arr+(0..(n - 1))); i_29:i < n - 1; i_30:\exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i]; i_31:0 <= i <= n - 1; 
+    - Post-condition: i_28:_select_sort(arr, n) implies \valid(arr+(0..(n - 1))); i_29:i < n - 1; i_30:\exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i]; i_31:0 <= i <= n - 1; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_28: _select_sort(arr, n) implies \valid(arr+(0..(n - 1))); 
+loop invariant i_29: i < n - 1;
+loop invariant i_30: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i];
+loop invariant i_31: 0 <= i <= n - 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_28: _select_sort(arr, n) implies \valid(arr+(0..(n - 1)))
+i_29: i < n - 1
+i_30: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i]
+i_31: 0 <= i <= n - 1
+LOOP B:
+i_32: _select_sort(arr, n) implies \valid(arr+(0..(n - 1)))
+i_33: i < n - 1
+i_34: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i]
+i_35: 0 <= i <= n - 1
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_28: _select_sort(arr, n) implies \valid(arr+(0..(n - 1)));
+
+        loop invariant i_29: i < n - 1;
+
+        loop invariant i_30: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i];
+
+        loop invariant i_31: 0 <= i <= n - 1;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop invariant i_32: _select_sort(arr, n) implies \valid(arr+(0..(n - 1)));
+
+            loop invariant i_33: i < n - 1;
+
+            loop invariant i_34: \exists integer min; 0 <= min < i && arr[min] is the minimum element among arr[0..i];
+
+            loop invariant i_35: 0 <= i <= n - 1;
+
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 0 <= i < n && \valid(arr + i);
+loop invariant \exists integer min; 0 <= min < n && arr[min] <= arr[i];
+loop invariant i < n - 1 || i == n - 1;
+
+[Loop <Loop B>]
+loop invariant 0 <= j >= i && j < n;
+loop invariant 0 <= min <= j && arr[min] <= arr[j];
+loop invariant \exists integer k; 0 <= k < i && arr[k] == min;
+loop invariant \forall integer p; arr[i] == min && arr[p] <= arr[i] ==> arr[p] <= arr[min];
+loop invariant \forall integer p; min == i && arr[i] <= arr[min] && arr[p] >= arr[i] ==> min <= p;
+loop invariant \forall integer p; p >= i && p < n && arr[p] <= arr[i] ==> min >= i;
+loop invariant \forall integer p; p >= i && p < n && arr[p] < arr[i] ==> min < p;
+loop invariant \forall integer p; p < n && arr[p] == arr[i] ==> min <= p;
+loop invariant \forall integer p; p >= i && p < n && arr[p] == arr[i] ==> min == i;
+loop invariant \forall integer k; i < n - 1 ==> min <= i && \exists integer k; min == k;
+loop invariant \forall integer k; i < n - 1 || k == n - 1;
+loop invariant \forall integer k; k >= i && k < n;
+loop invariant \forall integer k; k >= i && k < n && arr[k] <= arr[i] || k == min;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@
+    requires \valid(x) && \valid(y);
+    assigns *x, *y;
+    ensures *x == \old(*y) && *y == \old(*x);
+*/
+void swap(int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+/*@ requires \valid(arr+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: sorted(arr, 0, n);
+    assigns arr[0..(n - 1)];
+*/
+void _select_sort(int* arr, int n)
+{
+    // Loop A
+    /*@
+        loop invariant i_36: 0 <= i < n && \valid(arr + i);
+
+        loop invariant i_37: \exists integer min; 0 <= min < n && arr[min] <= arr[i];
+
+        loop invariant i_38: i < n - 1 || i == n - 1;
+
+        loop invariant i_39: 0 <= j >= i && j < n;
+
+        loop invariant i_40: 0 <= min <= j && arr[min] <= arr[j];
+
+        loop invariant i_41: \exists integer k; 0 <= k < i && arr[k] == min;
+
+        loop invariant i_42: \forall integer p; arr[i] == min && arr[p] <= arr[i] ==> arr[p] <= arr[min];
+
+        loop invariant i_43: \forall integer p; min == i && arr[i] <= arr[min] && arr[p] >= arr[i] ==> min <= p;
+
+        loop invariant i_44: \forall integer p; p >= i && p < n && arr[p] <= arr[i] ==> min >= i;
+
+        loop invariant i_45: \forall integer p; p >= i && p < n && arr[p] < arr[i] ==> min < p;
+
+        loop invariant i_46: \forall integer p; p < n && arr[p] == arr[i] ==> min <= p;
+
+        loop invariant i_47: \forall integer p; p >= i && p < n && arr[p] == arr[i] ==> min == i;
+
+        loop invariant i_48: \forall integer k; i < n - 1 ==> min <= i && \exists integer k; min == k;
+
+        loop invariant i_49: \forall integer k; i < n - 1 || k == n - 1;
+
+        loop invariant i_50: \forall integer k; k >= i && k < n;
+
+        loop invariant i_51: \forall integer k; k >= i && k < n && arr[k] <= arr[i] || k == min;
+
+
+        loop assigns i, arr[0..(n - 1)];
+    */
+    for (int i = 0; i < n - 1; i++)
+    {
+        int min = i;
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, min;
+        */
+        for (int j = i; j < n; j++){  
+            if (arr[j] < arr[min]){
+                min = j;    
+            }
+        } 
+        swap(&arr[min], &arr[i]);   
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_36:0 <= i < n && \valid(arr + i); i_37:\exists integer min; 0 <= min < n && arr[min] <= arr[i]; i_38:i < n - 1 || i == n - 1; i_39:0 <= j >= i && j < n; i_40:0 <= min <= j && arr[min] <= arr[j]; i_41:\exists integer k; 0 <= k < i && arr[k] == min; i_42:\forall integer p; arr[i] == min && arr[p] <= arr[i] ==> arr[p] <= arr[min]; i_43:\forall integer p; min == i && arr[i] <= arr[min] && arr[p] >= arr[i] ==> min <= p; i_44:\forall integer p; p >= i && p < n && arr[p] <= arr[i] ==> min >= i; i_45:\forall integer p; p >= i && p < n && arr[p] < arr[i] ==> min < p; i_46:\forall integer p; p < n && arr[p] == arr[i] ==> min <= p; i_47:\forall integer p; p >= i && p < n && arr[p] == arr[i] ==> min == i; i_48:\forall integer k; i < n - 1 ==> min <= i && \exists integer k; min == k; i_49:\forall integer k; i < n - 1 || k == n - 1; i_50:\forall integer k; k >= i && k < n; i_51:\forall integer k; k >= i && k < n && arr[k] <= arr[i] || k == min; 
+    - Post-condition: i_36:0 <= i < n && \valid(arr + i); i_37:\exists integer min; 0 <= min < n && arr[min] <= arr[i]; i_38:i < n - 1 || i == n - 1; i_39:0 <= j >= i && j < n; i_40:0 <= min <= j && arr[min] <= arr[j]; i_41:\exists integer k; 0 <= k < i && arr[k] == min; i_42:\forall integer p; arr[i] == min && arr[p] <= arr[i] ==> arr[p] <= arr[min]; i_43:\forall integer p; min == i && arr[i] <= arr[min] && arr[p] >= arr[i] ==> min <= p; i_44:\forall integer p; p >= i && p < n && arr[p] <= arr[i] ==> min >= i; i_45:\forall integer p; p >= i && p < n && arr[p] < arr[i] ==> min < p; i_46:\forall integer p; p < n && arr[p] == arr[i] ==> min <= p; i_47:\forall integer p; p >= i && p < n && arr[p] == arr[i] ==> min == i; i_48:\forall integer k; i < n - 1 ==> min <= i && \exists integer k; min == k; i_49:\forall integer k; i < n - 1 || k == n - 1; i_50:\forall integer k; k >= i && k < n; i_51:\forall integer k; k >= i && k < n && arr[k] <= arr[i] || k == min; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------

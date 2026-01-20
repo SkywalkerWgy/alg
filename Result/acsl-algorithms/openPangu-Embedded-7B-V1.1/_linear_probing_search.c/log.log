@@ -1,0 +1,1787 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_linear_probing_search.c
+----------Code----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    /*@
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+------------------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: e_1:\result == -1 || table[\result] == data; e_2:((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && index == (index_0 + iterations);
+```
+----------------------------
+-------------Ensure Revise: e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_1: index < size && index >= 0 && index == (index_0 + iterations);
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && index == (index_0 + iterations);
+loop invariant index < size && index >= 0 && index == (index_0 + iterations);
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_1: index < size && index >= 0 && index == (index_0 + iterations)
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_1: index < size && index >= 0 && index == (index_0 + iterations);
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && table[index] != data;
+```
+----------------------------
+-------------Ensure Revise: e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Please strengthen the loop invariant in the following loop.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_2: index < size && index >= 0 && table[index] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+The program has failed to prove the following `ensures` clause:
+[Unproved Ensures]  ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+To help Frama-C discharge this postcondition, you must strengthen the loop invariant of the LAST executed loop, which is the loop labeled by alphabet "A".  
+You should insert additional `loop invariant` clauses only at the location marked by "[Hint] Please strengthen the loop invariant in the following loop."
+IMPORTANT RULES:
+1. Do NOT repeat or reprint the existing loop invariants already present in the code.
+2. Your task is to provide only the new invariants that are necessary to establish the failed ensures clause.
+3. The new invariants must be strong enough to imply the ensures clause upon normal loop termination.
+4. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+5. Your answer should follow the following format:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+5. All invariants must follow ACSL syntax and be valid loop invariants.
+6. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: index < size && index >= 0;
+
+loop invariant i_1: index < size && index >= 0 && table[index] != data;
+
+loop invariant i_3: index < size && index >= 0 && 
+    \forall integer i; (data % size) <= i < index ==> table[i] != data;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_2: index < size && index >= 0 && table[index] != data
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_2: index < size && index >= 0 && table[index] != data;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant i_0: index < size && index >= 0;
+
+loop invariant i_1: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+loop invariant i_2: index < size && index >= 0;
+
+loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0;
+
+loop invariant index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+loop invariant \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+loop assigns index;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i_0: index < size && index >= 0;
+
+loop invariant i_1: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+loop invariant i_2: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_0: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]loop invariant index < size && index >= 0 && table[index] != data;
+
+loop invariant \forall integer i; (data % size) <= i < index ==> table[i] != data;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: index < size && index >= 0
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_5: index < size && index >= 0 && table[index] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_0: index < size && index >= 0;
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_5: index < size && index >= 0 && table[index] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && index < size;
+loop invariant index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_7: index < size && index >= 0 && index < size
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_7: index < size && index >= 0 && index < size;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_3: preservation---------------
+----------Prompt----------
+
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        [Hint] Invariant index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_7: index < size && index >= 0 && index < size;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+index = index + 1;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant index < size && index >= 0 && index < size;
+
+loop invariant \forall integer i; (data % size) <= i < index ==> table[i] != data;
+```
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_7: index < size && index >= 0 && index < size
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_3: index < size && index >= 0 && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_7: index < size && index >= 0 && index < size;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_7: index < size && index >= 0 && index < size
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_6: index < size && index >= 0 && index < size && \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_7: index < size && index >= 0 && index < size;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+i_7: index < size && index >= 0 && index < size
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+        loop invariant i_7: index < size && index >= 0 && index < size;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data
+------------------------------------
+----------Code with Invariants----------
+/*@
+    predicate hashtable(int* a, integer length, integer key, integer data) =
+        \exists integer i; 0 <= i < length && 
+        key == (data + i) % length &&
+        a[(data + i) % length] == data && 
+        (\forall integer key; 0 <= key < i ==> a[(data + i) % length] != (0 - 1));
+*/
+
+//@ lemma mod_property: \forall integer x, y; x > 0 && y > 0 ==> 0 <= x % y < y;
+
+/*@
+    requires \valid_read(table+(0..(size - 1)));
+    requires size > 0;
+    requires data > 0;
+    assigns \nothing;
+    ensures e_1: \result == -1 || table[\result] == data;
+    ensures e_2: ((\result == -1) && (\forall integer i; (data % size) <= i < size ==> table[i] != data)) || \forall integer i; (data % size) <= i < \result ==> table[i] != data;
+*/
+int _linear_probing_search(int table[], int size, int data) {
+    int index = data % size;
+
+    // Loop A
+    /*@
+        loop invariant i_4: \forall integer i; (data % size) <= i < index ==> table[i] != data;
+
+
+        loop assigns index;
+    */
+    while (table[index] != data && index < size) {
+        index = index + 1;
+    }
+    if (index == size) {
+        return -1;
+    }
+    else if (table[index] == data){
+        return index;
+    }
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 254.33387541770935
+Proposal number: 15
+Verified code:
+
+------------------------

@@ -1,0 +1,156 @@
+[kernel] Parsing /root/data1/wgy/algorithm-new/ResultAblationLLMOnly/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_3.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] User Error: Prover 'cvc4' not found in why3.conf
+[wp] 11 goals scheduled
+[wp] [Timeout] typed_max_seq_not_empty_ensures_e_3 (Qed 8ms) (Alt-Ergo)
+[wp] [Timeout] typed_max_seq_loop_invariant_i_4_preserved (Qed 17ms) (Alt-Ergo)
+[wp] Proved goals:   10 / 12
+  Unreachable:       1
+  Qed:               7 (2ms-3ms-17ms)
+  Alt-Ergo 2.6.2:    1 (56ms)
+  Z3 4.15.4:         1 (19ms)
+  Timeout:           2
+------------------------------------------------------------
+  Function _max_seq
+------------------------------------------------------------
+
+Goal Complete behaviors 'empty', 'not_empty':
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+}
+Prove: (n = 0) \/ (0 < n).
+Prover Z3 4.15.4 returns Valid (Qed:2ms) (19ms) (35085)
+
+------------------------------------------------------------
+
+Goal Disjoint behaviors 'empty', 'not_empty':
+Prove: true.
+Prover Qed returns Valid (0.53ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/ResultAblationLLMOnly/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_3.c, line 24):
+Let x = Mint_0[shift_sint32(a, max_1)].
+Let x_1 = Mint_0[shift_sint32(a, max_0)].
+Assume {
+  Type: is_sint32(max_0) /\ is_sint32(max_1) /\ is_sint32(n) /\
+      is_sint32(x_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Residual *)
+  When: x < x_1.
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+  (* Invariant 'i_4' *)
+  Have: 0 < n.
+  (* Invariant 'i_4' *)
+  Have: (0 <= max_1) /\ (max_1 < n).
+  (* Then *)
+  Have: max_0 < n.
+}
+Prove: 0 <= max_0.
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:17ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:17ms) (10s)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'i_4' (file /root/data1/wgy/algorithm-new/ResultAblationLLMOnly/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_3.c, line 24):
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Else *)
+  Have: n != 0.
+}
+Prove: 0 < n.
+Prover Alt-Ergo 2.6.2 returns Valid (Qed:3ms) (56ms) (13)
+Prover Z3 4.15.4 returns Valid (Qed:3ms) (19ms) (35089)
+
+------------------------------------------------------------
+
+Goal Loop assigns (file /root/data1/wgy/algorithm-new/ResultAblationLLMOnly/acsl-algorithms/openPangu-Embedded-7B-V1.1/_max_seq.c/_max_seq_verified_3.c, line 27):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (1/3):
+Effect at line 18
+Prove: true.
+Prover Qed returns Valid (0.91ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (2/3):
+Effect at line 29
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '_max_seq' (3/3):
+Effect at line 34
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior empty
+------------------------------------------------------------
+
+Goal Post-condition for 'empty' 'e_1' in '_max_seq':
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+------------------------------------------------------------
+  Function _max_seq with behavior not_empty
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_2' in '_max_seq':
+Prove: true.
+Prover Qed returns Valid (3ms)
+
+------------------------------------------------------------
+
+Goal Post-condition for 'not_empty' 'e_3' in '_max_seq':
+Assume {
+  Type: is_sint32(_max_seq_0) /\ is_sint32(i_1) /\ is_sint32(n).
+  (* Heap *)
+  Type: (region(a.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < n).
+  (* Pre-condition *)
+  Have: 0 <= n.
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_sint32(a, 0), n).
+  (* Pre-condition for 'not_empty' *)
+  Have: 0 < n.
+  (* Invariant 'i_4' *)
+  Have: (0 <= _max_seq_0) /\ (_max_seq_0 < n).
+  (* Else *)
+  Have: n <= i_1.
+}
+Prove: Mint_0[shift_sint32(a, i)] <= Mint_0[shift_sint32(a, _max_seq_0)].
+Prover Alt-Ergo 2.6.2 returns Timeout (Qed:8ms) (10s)
+Prover Z3 4.15.4 returns Timeout (Qed:8ms) (10s)
+
+------------------------------------------------------------
+[wp] Deferred error message was emitted during execution:
+  Prover 'cvc4' not found in why3.conf
+[kernel] Plug-in wp aborted: invalid user input.

@@ -1,0 +1,1017 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_insertion_sort.c
+----------Code----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    /*@
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= n;
+loop invariant 1 <= j <= i;
+loop invariant \forall integer k < i; t[k] <= t[i];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 1 <= j <= i;
+
+        loop invariant i_2: \forall integer k < i; t[k] <= t[i];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant 1 <= j <= i;
+loop invariant \forall integer k < j; t[k] <= t[j];
+
+[Loop <Loop A>]
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k < i; t[k] <= t[i];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= n
+i_1: 1 <= j <= i
+i_2: \forall integer k < i; t[k] <= t[i]
+LOOP B:
+i_3: 1 <= j <= i
+i_4: \forall integer k < j; t[k] <= t[j]
+i_5: 1 <= i <= n
+i_6: \forall integer k < i; t[k] <= t[i]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 1 <= j <= i;
+
+        loop invariant i_2: \forall integer k < i; t[k] <= t[i];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop invariant i_3: 1 <= j <= i;
+
+            loop invariant i_4: \forall integer k < j; t[k] <= t[j];
+
+            loop invariant i_5: 1 <= i <= n;
+
+            loop invariant i_6: \forall integer k < i; t[k] <= t[i];
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i >= 1 && j >= i && j <= i+1 && t[i] == mv;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_7: i >= 1 && j >= i && j <= i+1 && t[i] == mv;
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop B]
+loop invariant 1 <= i && j >= 1 && j <= i+1 && t[j] == mv;
+
+[Loop A]
+loop invariant 1 <= i && i <= n-1 && t[i] == mv;
+
+loop invariant 1 <= j && j <= i+1 && t[j] == mv;
+
+loop invariant \exists integer k; 1 <= k <= i && t[k] == mv;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_7: i >= 1 && j >= i && j <= i+1 && t[i] == mv
+i_9: 1 <= i && i <= n-1 && t[i] == mv
+i_10: 1 <= j && j <= i+1 && t[j] == mv
+i_11: \exists integer k; 1 <= k <= i && t[k] == mv
+LOOP B:
+i_8: 1 <= i && j >= 1 && j <= i+1 && t[j] == mv
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_7: i >= 1 && j >= i && j <= i+1 && t[i] == mv;
+
+        loop invariant i_9: 1 <= i && i <= n-1 && t[i] == mv;
+
+        loop invariant i_10: 1 <= j && j <= i+1 && t[j] == mv;
+
+        loop invariant i_11: \exists integer k; 1 <= k <= i && t[k] == mv;
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop invariant i_8: 1 <= i && j >= 1 && j <= i+1 && t[j] == mv;
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------------------------
+Verification failed (Fail_16_21), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant i >= 1;
+loop invariant j >= i;
+loop invariant mv == t[i];
+loop invariant t[0..i] is sorted;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_12: i >= 1;
+
+        loop invariant i_13: j >= i;
+
+        loop invariant i_14: mv == t[i];
+
+        loop invariant i_15: t[0..i] is sorted;
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant j >= i;
+
+[Loop <Loop A>]
+loop invariant i >= 1;
+loop invariant mv == t[i];
+loop invariant t[0..i] is sorted;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_12: i >= 1
+i_13: j >= i
+i_14: mv == t[i]
+i_15: t[0..i] is sorted
+LOOP B:
+i_16: j >= i
+i_17: i >= 1
+i_18: mv == t[i]
+i_19: t[0..i] is sorted
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_12: i >= 1;
+
+        loop invariant i_13: j >= i;
+
+        loop invariant i_14: mv == t[i];
+
+        loop invariant i_15: t[0..i] is sorted;
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop invariant i_16: j >= i;
+
+            loop invariant i_17: i >= 1;
+
+            loop invariant i_18: mv == t[i];
+
+            loop invariant i_19: t[0..i] is sorted;
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+// Loop A
+loop invariant 1 <= i <= n && 0 <= j <= i && \forall integer k in [0, i-1]; t[k] <= t[i];
+loop invariant j >= 0 && j <= i-1 && \forall integer k in [j, i-1]; t[k] <= t[i];
+
+// Loop B
+loop invariant 0 <= j <= i && \forall integer k in [0, j]; t[k] <= t[j];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_20: 1 <= i <= n && 0 <= j <= i && \forall integer k in [0, i-1]; t[k] <= t[i];
+
+        loop invariant i_21: j >= 0 && j <= i-1 && \forall integer k in [j, i-1]; t[k] <= t[i];
+
+        loop invariant i_22: 0 <= j <= i && \forall integer k in [0, j]; t[k] <= t[j];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <B>]
+loop invariant 1 <= j <= i && \forall integer k in [j, i-1]; t[k] <= t[i];
+loop invariant 0 <= j && j <= i-1;
+loop invariant \exists integer mv; t[j] == mv && \forall integer k in [0, j-1]; t[k] <= t[j];
+
+[Loop <A>]
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_20: 1 <= i <= n && 0 <= j <= i && \forall integer k in [0, i-1]; t[k] <= t[i]
+i_21: j >= 0 && j <= i-1 && \forall integer k in [j, i-1]; t[k] <= t[i]
+i_22: 0 <= j <= i && \forall integer k in [0, j]; t[k] <= t[j]
+LOOP B:
+i_23: 1 <= j <= i && \forall integer k in [j, i-1]; t[k] <= t[i]
+i_24: 0 <= j && j <= i-1
+i_25: \exists integer mv; t[j] == mv && \forall integer k in [0, j-1]; t[k] <= t[j]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_20: 1 <= i <= n && 0 <= j <= i && \forall integer k in [0, i-1]; t[k] <= t[i];
+
+        loop invariant i_21: j >= 0 && j <= i-1 && \forall integer k in [j, i-1]; t[k] <= t[i];
+
+        loop invariant i_22: 0 <= j <= i && \forall integer k in [0, j]; t[k] <= t[j];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop invariant i_23: 1 <= j <= i && \forall integer k in [j, i-1]; t[k] <= t[i];
+
+            loop invariant i_24: 0 <= j && j <= i-1;
+
+            loop invariant i_25: \exists integer mv; t[j] == mv && \forall integer k in [0, j-1]; t[k] <= t[j];
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop A]
+loop invariant 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i];
+[Loop B]
+loop invariant j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv;
+[Loop A]
+loop invariant 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i];
+[Loop B]
+loop invariant j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv;
+[Loop A]
+loop invariant 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i];
+[Loop B]
+loop invariant j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_26: 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_27: j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv;
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop B>]
+loop invariant 1 <= j <= i && \exists integer k in [0, j]; t[k] <= t[i] && mv == t[i] && \forall integer k in [j, i-1]; t[k] >= t[i];
+loop invariant j >= 1;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_26: 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i]
+LOOP B:
+i_27: j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv
+i_28: 1 <= j <= i && \exists integer k in [0, j]; t[k] <= t[i] && mv == t[i] && \forall integer k in [j, i-1]; t[k] >= t[i]
+i_29: j >= 1
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+  predicate Sorted(int *t, integer lo, integer hi) =
+    \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ requires \valid(t+(0..(n - 1)));
+    requires n > 0;
+    ensures e_1: Sorted(t, 0, n);
+    assigns t[0..n-1];
+ */
+void _insertion_sort(int t[], int n) {
+    int i = 1, j = 1;
+    int mv;
+    
+    // Loop A
+    /*@
+        loop invariant i_26: 1 <= i <= n && 1 <= j <= i && mv == t[i] && \forall integer k in [0, i-1]; t[k] <= t[i];
+
+
+        loop assigns i, j, mv, t[0..n-1];
+     */
+    for (i = 1; i < n; i++) {
+        mv = t[i];
+        // Loop B
+        /*@
+            loop invariant i_27: j >= 1 && j <= i && \exists integer k in [0, j]; t[k] <= mv;
+
+            loop invariant i_28: 1 <= j <= i && \exists integer k in [0, j]; t[k] <= t[i] && mv == t[i] && \forall integer k in [j, i-1]; t[k] >= t[i];
+
+            loop invariant i_29: j >= 1;
+
+
+            loop assigns j, t[0..i];
+         */
+        for (j = i; j > 0; j--) {
+            if (t[j - 1] <= mv) break;
+            t[j] = t[j - 1];
+        }
+        t[j] = mv;
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 116.35060906410217
+Proposal number: 5
+Verified code:
+
+------------------------

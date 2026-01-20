@@ -1,0 +1,1526 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_compute_prefix_function.c
+----------Code----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    /*@
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= n;
+loop invariant 0 <= j <= n;
+loop invariant \forall integer k; 0 <= k < i ==> pi[k] == j;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 0 <= j <= n;
+
+        loop invariant i_2: \forall integer k; 0 <= k < i ==> pi[k] == j;
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 1 <= i <= n;
+loop invariant 0 <= j <= n;
+loop invariant \forall integer k; 0 <= k < i ==> pi[k] == j;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= n
+i_1: 0 <= j <= n
+i_2: \forall integer k; 0 <= k < i ==> pi[k] == j
+LOOP B:
+i_3: 1 <= i <= n
+i_4: 0 <= j <= n
+i_5: \forall integer k; 0 <= k < i ==> pi[k] == j
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 0 <= j <= n;
+
+        loop invariant i_2: \forall integer k; 0 <= k < i ==> pi[k] == j;
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop invariant i_3: 1 <= i <= n;
+
+            loop invariant i_4: 0 <= j <= n;
+
+            loop invariant i_5: \forall integer k; 0 <= k < i ==> pi[k] == j;
+
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 1 <= i <= n;
+
+[Loop <Loop B>] 
+loop invariant j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k]; && \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_6: 1 <= i <= n;
+
+        loop invariant i_7: j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 1 <= i <= n;
+
+[Loop <Loop B>]
+loop invariant j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_6: 1 <= i <= n
+i_7: j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k]
+LOOP B:
+i_8: 1 <= i <= n
+i_9: j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_6: 1 <= i <= n;
+
+        loop invariant i_7: j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop invariant i_8: 1 <= i <= n;
+
+            loop invariant i_9: j >= 0 && j <= i && \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <compute_prefix_function>]
+loop invariant 1 <= i <= n-1;
+loop invariant 0 <= pi[i-1] <= i;
+loop invariant j <= i;
+loop invariant s[i] == s[pi[i-1] - 1];
+loop invariant \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+loop invariant \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+[Loop <while>]  
+loop invariant 1 <= j <= pi[i-1];
+loop invariant 0 <= pi[j-1] <= j;
+loop invariant s[i] == s[pi[j-1] - 1];
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[j-1] + 1 + k];
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_10: 1 <= i <= n-1;
+
+        loop invariant i_11: 0 <= pi[i-1] <= i;
+
+        loop invariant i_12: j <= i;
+
+        loop invariant i_13: s[i] == s[pi[i-1] - 1];
+
+        loop invariant i_14: \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+
+        loop invariant i_15: \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+        loop invariant i_16: 1 <= j <= pi[i-1];
+
+        loop invariant i_17: 0 <= pi[j-1] <= j;
+
+        loop invariant i_18: s[i] == s[pi[j-1] - 1];
+
+        loop invariant i_19: \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[j-1] + 1 + k];
+
+        loop invariant i_20: \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <LOOP A>]
+loop invariant 1 <= i <= n-1;
+
+loop invariant 0 <= pi[i-1] <= i;
+
+loop invariant j <= i;
+
+loop invariant s[i] == s[pi[i-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[i-1];
+
+loop invariant \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+[Loop <CUR_LOOP>]
+loop invariant j >= 0;
+
+loop invariant \forall integer k; 0 <= k < j ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant s[i] == s[pi[j-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+[Loop <LOOP B>]
+loop invariant j >= 0;
+
+loop invariant \forall integer k; 0 <= k < j ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant s[i] == s[pi[j-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant s[i] == s[pi[j-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+[Loop <LOOP A>]  
+loop invariant 1 <= i <= n-1;
+
+loop invariant 0 <= pi[i-1] <= i;
+
+loop invariant j <= i;
+
+loop invariant s[i] == s[pi[i-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[i-1];
+
+loop invariant \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+[Loop <CUR_LOOP>]  
+loop invariant j >= 0;
+
+loop invariant \forall integer k; 0 <= k < j ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant s[i] == s[pi[j-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+loop invariant s[i] == s[pi[j-1] - 1];
+
+loop invariant \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+loop invariant 1 <= j <= pi[j-1];
+
+loop invariant \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_10: 1 <= i <= n-1
+i_11: 0 <= pi[i-1] <= i
+i_12: j <= i
+i_13: s[i] == s[pi[i-1] - 1]
+i_14: \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k]
+i_15: \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j])
+i_16: 1 <= j <= pi[i-1]
+i_17: 0 <= pi[j-1] <= j
+i_18: s[i] == s[pi[j-1] - 1]
+i_19: \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[j-1] + 1 + k]
+i_20: \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j])
+LOOP B:
+i_21: 1 <= i <= n-1
+i_22: 0 <= pi[i-1] <= i
+i_23: j <= i
+i_24: s[i] == s[pi[i-1] - 1]
+i_25: \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k]
+i_26: 1 <= j <= pi[i-1]
+i_27: \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j])
+i_28: j >= 0
+i_29: \forall integer k; 0 <= k < j ==> s[k] == s[i - pi[k-1] + 1 + k]
+i_30: 1 <= j <= pi[j-1]
+i_31: \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k]
+i_32: \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j])
+i_33: s[i] == s[pi[j-1] - 1]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_10: 1 <= i <= n-1;
+
+        loop invariant i_11: 0 <= pi[i-1] <= i;
+
+        loop invariant i_12: j <= i;
+
+        loop invariant i_13: s[i] == s[pi[i-1] - 1];
+
+        loop invariant i_14: \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+
+        loop invariant i_15: \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+        loop invariant i_16: 1 <= j <= pi[i-1];
+
+        loop invariant i_17: 0 <= pi[j-1] <= j;
+
+        loop invariant i_18: s[i] == s[pi[j-1] - 1];
+
+        loop invariant i_19: \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[j-1] + 1 + k];
+
+        loop invariant i_20: \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop invariant i_21: 1 <= i <= n-1;
+
+            loop invariant i_22: 0 <= pi[i-1] <= i;
+
+            loop invariant i_23: j <= i;
+
+            loop invariant i_24: s[i] == s[pi[i-1] - 1];
+
+            loop invariant i_25: \forall integer k; 0 <= k < pi[i-1] ==> s[k] == s[i - pi[i-1] + 1 + k];
+
+            loop invariant i_26: 1 <= j <= pi[i-1];
+
+            loop invariant i_27: \forall integer j; 0 <= j < i ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+            loop invariant i_28: j >= 0;
+
+            loop invariant i_29: \forall integer k; 0 <= k < j ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+            loop invariant i_30: 1 <= j <= pi[j-1];
+
+            loop invariant i_31: \forall integer k; 0 <= k < pi[j-1] ==> s[k] == s[i - pi[k-1] + 1 + k];
+
+            loop invariant i_32: \forall integer j; 0 <= j < j <= pi[j-1] ==> pi[j] == 0 || (pi[j] > 0 && s[j] == s[i - j]);
+
+            loop invariant i_33: s[i] == s[pi[j-1] - 1];
+
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <LOOP A>]
+loop invariant 1 <= i <= n;
+
+[Loop <LOOP B>]
+loop invariant j >= 0;
+loop invariant \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+loop invariant \forall integer k; 0 <= k < j && s[k] != s[j] ==> true;
+
+[Loop <LOOP B>]
+loop invariant j >= 0;
+loop invariant \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_34: 1 <= i <= n;
+
+        loop invariant i_35: j >= 0;
+
+        loop invariant i_36: \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+
+        loop invariant i_37: \forall integer k; 0 <= k < j && s[k] != s[j] ==> true;
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 1 <= i <= n;
+loop invariant j >= 0;
+loop invariant \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+loop invariant \forall integer k; 0 <= k < j && s[k] != s[j] ==> true;
+
+[Loop <Loop B>]
+loop invariant j >= 0;
+loop invariant \exists integer k; 0 <= k < j && s[k] == s[j];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_34: 1 <= i <= n
+i_35: j >= 0
+i_36: \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k]
+i_37: \forall integer k; 0 <= k < j && s[k] != s[j] ==> true
+LOOP B:
+i_38: 1 <= i <= n
+i_39: j >= 0
+i_40: \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k]
+i_41: \forall integer k; 0 <= k < j && s[k] != s[j] ==> true
+i_42: \exists integer k; 0 <= k < j && s[k] == s[j]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_34: 1 <= i <= n;
+
+        loop invariant i_35: j >= 0;
+
+        loop invariant i_36: \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+
+        loop invariant i_37: \forall integer k; 0 <= k < j && s[k] != s[j] ==> true;
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop invariant i_38: 1 <= i <= n;
+
+            loop invariant i_39: j >= 0;
+
+            loop invariant i_40: \forall integer k; 0 <= k < j < i ==> pi[k] == s[i] == s[k];
+
+            loop invariant i_41: \forall integer k; 0 <= k < j && s[k] != s[j] ==> true;
+
+            loop invariant i_42: \exists integer k; 0 <= k < j && s[k] == s[j];
+
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 1 <= i <= n;
+
+[Loop <Loop B>]  
+loop invariant 1 <= j <= i+1;  
+loop invariant s[i] == s[j];  
+loop invariant pi[i] == j;  
+loop invariant 0 <= j < n;  
+loop invariant j >= 0;  
+loop invariant i < n;  
+loop invariant \exists index; 0 <= index < i ==> pi[index] == j;  
+loop invariant j < n;  
+loop invariant \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_43: 1 <= i <= n;
+
+        loop invariant i_44: 1 <= j <= i+1;
+
+        loop invariant i_45: s[i] == s[j];
+
+        loop invariant i_46: pi[i] == j;
+
+        loop invariant i_47: 0 <= j < n;
+
+        loop invariant i_48: j >= 0;
+
+        loop invariant i_49: i < n;
+
+        loop invariant i_50: \exists index; 0 <= index < i ==> pi[index] == j;
+
+        loop invariant i_51: j < n;
+
+        loop invariant i_52: \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 1 <= i <= n;
+loop invariant 1 <= j <= i+1;
+loop invariant s[i] == s[j];
+loop invariant pi[i] == j;
+loop invariant 0 <= j < n;
+loop invariant j >= 0;
+loop invariant i < n;
+loop invariant \exists index; 0 <= index < i ==> pi[index] == j;
+loop invariant j < n;
+loop invariant \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+[Loop <Loop B>]
+loop invariant 1 <= j <= n;
+loop invariant j >= 1;
+loop invariant s[i] == s[j];
+loop invariant pi[j] == i;
+loop invariant \exists k; 0 <= k < j; s[k] == s[j - k + 1 + k];
+loop invariant j < n;
+loop invariant \exists index; 0 <= index < j; pi[index] == i;
+loop invariant \forall integer k; 0 <= k < j ==> pi[k] == i;
+loop invariant i < n;
+loop invariant \exists m; 0 <= m < i; pi[m] == j;
+loop invariant j >= 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_43: 1 <= i <= n
+i_44: 1 <= j <= i+1
+i_45: s[i] == s[j]
+i_46: pi[i] == j
+i_47: 0 <= j < n
+i_48: j >= 0
+i_49: i < n
+i_50: \exists index; 0 <= index < i ==> pi[index] == j
+i_51: j < n
+i_52: \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k]
+LOOP B:
+i_53: 1 <= i <= n
+i_54: 1 <= j <= i+1
+i_55: s[i] == s[j]
+i_56: pi[i] == j
+i_57: 0 <= j < n
+i_58: j >= 0
+i_59: i < n
+i_60: \exists index; 0 <= index < i ==> pi[index] == j
+i_61: j < n
+i_62: \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k]
+i_63: 1 <= j <= n
+i_64: j >= 1
+i_65: pi[j] == i
+i_66: \exists k; 0 <= k < j
+i_67: \exists index; 0 <= index < j
+i_68: \forall integer k; 0 <= k < j ==> pi[k] == i
+i_69: \exists m; 0 <= m < i
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate pre_post(char* s, integer i, integer j) =
+        j == 0 || \forall integer k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+*/
+
+/*@
+    predicate pre_post_not(char* s, integer i, integer j) =
+        \exists integer k; 0 <= k < j && s[k] != s[i - j + 1 + k];
+*/
+
+/*@
+    requires \valid_read(s);
+    requires \valid_read(pi);
+    requires \valid(s + (0..n - 1));
+    requires \valid(pi + (0..n - 1));
+    requires \separated(&pi[0..(n - 1)], &s[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> pi[k] == 0;
+    requires n > 0;
+    assigns pi[0..(n - 1)];
+    ensures e_1: \forall integer k; 0 <= k < n ==> pre_post(s, k, pi[k]);
+*/
+void _compute_prefix_function(char* s, int* pi, int n) {
+    // Loop A
+    /*@
+        loop invariant i_43: 1 <= i <= n;
+
+        loop invariant i_44: 1 <= j <= i+1;
+
+        loop invariant i_45: s[i] == s[j];
+
+        loop invariant i_46: pi[i] == j;
+
+        loop invariant i_47: 0 <= j < n;
+
+        loop invariant i_48: j >= 0;
+
+        loop invariant i_49: i < n;
+
+        loop invariant i_50: \exists index; 0 <= index < i ==> pi[index] == j;
+
+        loop invariant i_51: j < n;
+
+        loop invariant i_52: \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+
+        loop assigns i, pi[1..(n - 1)];
+    */
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        // Loop B
+        /*@
+            loop invariant i_53: 1 <= i <= n;
+
+            loop invariant i_54: 1 <= j <= i+1;
+
+            loop invariant i_55: s[i] == s[j];
+
+            loop invariant i_56: pi[i] == j;
+
+            loop invariant i_57: 0 <= j < n;
+
+            loop invariant i_58: j >= 0;
+
+            loop invariant i_59: i < n;
+
+            loop invariant i_60: \exists index; 0 <= index < i ==> pi[index] == j;
+
+            loop invariant i_61: j < n;
+
+            loop invariant i_62: \exists k; 0 <= k < j ==> s[k] == s[i - j + 1 + k];
+
+            loop invariant i_63: 1 <= j <= n;
+
+            loop invariant i_64: j >= 1;
+
+            loop invariant i_65: pi[j] == i;
+
+            loop invariant i_66: \exists k; 0 <= k < j;
+
+            loop invariant i_67: \exists index; 0 <= index < j;
+
+            loop invariant i_68: \forall integer k; 0 <= k < j ==> pi[k] == i;
+
+            loop invariant i_69: \exists m; 0 <= m < i;
+
+
+            loop assigns j;
+        */
+        while (j > 0 && s[i] != s[j]){
+            if (s[i] == s[j]){
+                j++;
+                pi[i] = j;
+                break;
+            }
+            else{
+                j = pi[j - 1];
+            }
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: openPangu-Embedded-7B-V1.1
+Running time: 325.376179933548
+Proposal number: 5
+Verified code:
+
+------------------------

@@ -1,0 +1,2711 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_trap_rain.c
+----------Code----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    /*@
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+loop invariant \forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k];
+loop invariant 1 <= i <= n;
+loop invariant leftMax[0] == height[0];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_0: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k];
+
+        loop invariant i_2: 1 <= i <= n;
+
+        loop invariant i_3: leftMax[0] == height[0];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; e_2:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; e_3:\result == trap_rain(leftMax, rightMax, height, 0, n, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n);
+loop invariant \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) >= height[k];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_0: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k];
+
+        loop invariant i_2: 1 <= i <= n;
+
+        loop invariant i_3: leftMax[0] == height[0];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_4: 0 <= i <= n;
+
+        loop invariant i_5: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n);
+
+        loop invariant i_6: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) >= height[k];
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_0:\forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]); i_1:\forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k]; i_2:1 <= i <= n; i_3:leftMax[0] == height[0]; 
+    - Post-condition: i_4:0 <= i <= n; i_5:\forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n); i_6:\forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) >= height[k]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_0: \forall integer k; i < k < n - 1 ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+loop invariant i_1: \forall integer k; i < k < n - 1 ==> \forall integer l; k <= l < n ==> height[l] <= rightMax[k];
+loop invariant i_2: -1 <= i <= n - 2;
+loop invariant i_3: rightMax[n - 1] == height[n - 1];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k])
+i_1: \forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k]
+i_2: 1 <= i <= n
+i_3: leftMax[0] == height[0]
+LOOP B:
+i_7: \forall integer k; i < k < n - 1 ==> rightMax[k] == max(rightMax[k + 1], height[k])
+i_8: \forall integer k; i < k < n - 1 ==> \forall integer l; k <= l < n ==> height[l] <= rightMax[k]
+i_9: -1 <= i <= n - 2
+i_10: rightMax[n - 1] == height[n - 1]
+LOOP C:
+i_4: 0 <= i <= n
+i_5: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n)
+i_6: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) >= height[k]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_0: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_1: \forall integer k; 0 <= k < i ==> \forall integer l; 0 <= l <= k ==> height[l] <= leftMax[k];
+
+        loop invariant i_2: 1 <= i <= n;
+
+        loop invariant i_3: leftMax[0] == height[0];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop invariant i_7: \forall integer k; i < k < n - 1 ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+
+        loop invariant i_8: \forall integer k; i < k < n - 1 ==> \forall integer l; k <= l < n ==> height[l] <= rightMax[k];
+
+        loop invariant i_9: -1 <= i <= n - 2;
+
+        loop invariant i_10: rightMax[n - 1] == height[n - 1];
+
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_4: 0 <= i <= n;
+
+        loop invariant i_5: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n);
+
+        loop invariant i_6: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) >= height[k];
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+loop invariant \forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k];
+loop invariant \forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1];
+loop invariant 1 <= i <= n - 1;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_11: \forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_12: \forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k];
+
+        loop invariant i_13: \forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1];
+
+        loop invariant i_14: 1 <= i <= n - 1;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; e_2:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; e_3:\result == trap_rain(leftMax, rightMax, height, 0, n, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+loop invariant \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_11: \forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_12: \forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k];
+
+        loop invariant i_13: \forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1];
+
+        loop invariant i_14: 1 <= i <= n - 1;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_15: 0 <= i <= n;
+
+        loop invariant i_16: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_17: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_11:\forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k]); i_12:\forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k]; i_13:\forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1]; i_14:1 <= i <= n - 1; 
+    - Post-condition: i_15:0 <= i <= n; i_16:ans == trap_rain(leftMax, rightMax, height, 0, i, n); i_17:\forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant i_21: \forall integer k; i <= k < n ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+loop invariant i_22: \forall integer k; i <= k < n ==> rightMax[k] >= height[k];
+loop invariant i_23: \forall integer k; i <= k < n ==> rightMax[k] >= rightMax[k + 1];
+loop invariant i_24: -1 <= i <= n - 2;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_11: \forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k])
+i_12: \forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k]
+i_13: \forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1]
+i_14: 1 <= i <= n - 1
+LOOP B:
+i_18: \forall integer k; i <= k < n ==> rightMax[k] == max(rightMax[k + 1], height[k])
+i_19: \forall integer k; i <= k < n ==> rightMax[k] >= height[k]
+i_20: \forall integer k; i <= k < n ==> rightMax[k] >= rightMax[k + 1]
+i_21: -1 <= i <= n - 2
+LOOP C:
+i_15: 0 <= i <= n
+i_16: ans == trap_rain(leftMax, rightMax, height, 0, i, n)
+i_17: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n)
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_11: \forall integer k; 0 <= k <= i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_12: \forall integer k; 0 <= k <= i ==> leftMax[k] >= height[k];
+
+        loop invariant i_13: \forall integer k; 0 <= k <= i ==> leftMax[k] >= leftMax[k - 1];
+
+        loop invariant i_14: 1 <= i <= n - 1;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop invariant i_18: \forall integer k; i <= k < n ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+
+        loop invariant i_19: \forall integer k; i <= k < n ==> rightMax[k] >= height[k];
+
+        loop invariant i_20: \forall integer k; i <= k < n ==> rightMax[k] >= rightMax[k + 1];
+
+        loop invariant i_21: -1 <= i <= n - 2;
+
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_15: 0 <= i <= n;
+
+        loop invariant i_16: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_17: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k]);
+loop invariant \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+loop invariant 1 <= i <= n;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_22: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k]);
+
+        loop invariant i_23: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+        loop invariant i_24: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; e_2:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; e_3:\result == trap_rain(leftMax, rightMax, height, 0, n, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+loop invariant \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) - height[k] >= 0;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_22: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k]);
+
+        loop invariant i_23: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+        loop invariant i_24: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_25: 0 <= i <= n;
+
+        loop invariant i_26: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_27: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) - height[k] >= 0;
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_22:\forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k]); i_23:\forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k]; i_24:1 <= i <= n; 
+    - Post-condition: i_25:0 <= i <= n; i_26:ans == trap_rain(leftMax, rightMax, height, 0, i, n); i_27:\forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) - height[k] >= 0; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; i < k <= n - 1 ==> rightMax[k] == max(rightMax[\at(k+1, Here)], height[k]);
+loop invariant \forall integer k; i < k <= n - 1 ==> \forall integer p; k <= p <= n - 1 ==> height[p] <= rightMax[k];
+loop invariant -1 <= i <= n - 1;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_22: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k])
+i_23: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k]
+i_24: 1 <= i <= n
+LOOP B:
+i_28: \forall integer k; i < k <= n - 1 ==> rightMax[k] == max(rightMax[\at(k+1, Here)], height[k])
+i_29: \forall integer k; i < k <= n - 1 ==> \forall integer p; k <= p <= n - 1 ==> height[p] <= rightMax[k]
+i_30: -1 <= i <= n - 1
+LOOP C:
+i_25: 0 <= i <= n
+i_26: ans == trap_rain(leftMax, rightMax, height, 0, i, n)
+i_27: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) - height[k] >= 0
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_22: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[\at(k-1, Here)], height[k]);
+
+        loop invariant i_23: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+        loop invariant i_24: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop invariant i_28: \forall integer k; i < k <= n - 1 ==> rightMax[k] == max(rightMax[\at(k+1, Here)], height[k]);
+
+        loop invariant i_29: \forall integer k; i < k <= n - 1 ==> \forall integer p; k <= p <= n - 1 ==> height[p] <= rightMax[k];
+
+        loop invariant i_30: -1 <= i <= n - 1;
+
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_25: 0 <= i <= n;
+
+        loop invariant i_26: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_27: \forall integer k; 0 <= k < i ==> min(leftMax[k], rightMax[k]) - height[k] >= 0;
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 4 ==========
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 1 <= i <= n;
+loop invariant \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+loop invariant \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_31: 1 <= i <= n;
+
+        loop invariant i_32: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_33: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; e_2:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; e_3:\result == trap_rain(leftMax, rightMax, height, 0, n, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant 0 <= i <= n;
+loop invariant ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+loop invariant \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n) + (min(leftMax[k], rightMax[k]) - height[k]);
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_31: 1 <= i <= n;
+
+        loop invariant i_32: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_33: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_34: 0 <= i <= n;
+
+        loop invariant i_35: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_36: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n) + (min(leftMax[k], rightMax[k]) - height[k]);
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_31:1 <= i <= n; i_32:\forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]); i_33:\forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k]; 
+    - Post-condition: i_34:0 <= i <= n; i_35:ans == trap_rain(leftMax, rightMax, height, 0, i, n); i_36:\forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n) + (min(leftMax[k], rightMax[k]) - height[k]); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant n - 2 >= i >= -1;
+loop invariant \forall integer k; i < k < n ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+loop invariant \forall integer k; i < k < n ==> \forall integer q; k <= q < n ==> height[q] <= rightMax[k];
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_31: 1 <= i <= n
+i_32: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k])
+i_33: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k]
+LOOP B:
+i_37: n - 2 >= i >= -1
+i_38: \forall integer k; i < k < n ==> rightMax[k] == max(rightMax[k + 1], height[k])
+i_39: \forall integer k; i < k < n ==> \forall integer q; k <= q < n ==> height[q] <= rightMax[k]
+LOOP C:
+i_34: 0 <= i <= n
+i_35: ans == trap_rain(leftMax, rightMax, height, 0, i, n)
+i_36: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n) + (min(leftMax[k], rightMax[k]) - height[k])
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_31: 1 <= i <= n;
+
+        loop invariant i_32: \forall integer k; 0 <= k < i ==> leftMax[k] == max(leftMax[k - 1], height[k]);
+
+        loop invariant i_33: \forall integer k; 0 <= k < i ==> \forall integer p; 0 <= p <= k ==> height[p] <= leftMax[k];
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop invariant i_37: n - 2 >= i >= -1;
+
+        loop invariant i_38: \forall integer k; i < k < n ==> rightMax[k] == max(rightMax[k + 1], height[k]);
+
+        loop invariant i_39: \forall integer k; i < k < n ==> \forall integer q; k <= q < n ==> height[q] <= rightMax[k];
+
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_34: 0 <= i <= n;
+
+        loop invariant i_35: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_36: \forall integer k; 0 <= k < i ==> ans == trap_rain(leftMax, rightMax, height, 0, k, n) + (min(leftMax[k], rightMax[k]) - height[k]);
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 5 ==========
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: the function's `requires` clauses
+    - Post-condition: 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l]);
+loop invariant \forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1];
+loop invariant 1 <= i <= n;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_40: \forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l]);
+
+        loop invariant i_41: \forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1];
+
+        loop invariant i_42: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: 
+    - Post-condition: e_1:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; e_2:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; e_3:\result == trap_rain(leftMax, rightMax, height, 0, n, n); 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+Based on the program's logic and the given pre/post-conditions, here are the loop invariants for Loop C:
+
+```
+loop invariant 0 <= i <= n;
+loop invariant ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+loop invariant \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+loop invariant \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+loop invariant \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_40: \forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l]);
+
+        loop invariant i_41: \forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1];
+
+        loop invariant i_42: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_43: s for Loop C: ``` loop invariant 0 <= i <= n;
+
+        loop invariant i_44: 0 <= i <= n;
+
+        loop invariant i_45: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_46: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+
+        loop invariant i_47: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+
+        loop invariant i_48: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.
+Specifically, for the current verification task:
+    - Pre-condition: i_40:\forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l]); i_41:\forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1]; i_42:1 <= i <= n; 
+    - Post-condition: i_43:s for Loop C: ``` loop invariant 0 <= i <= n; i_44:0 <= i <= n; i_45:ans == trap_rain(leftMax, rightMax, height, 0, i, n); i_46:\forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n); i_47:\forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]; i_48:\forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]; 
+Please verify that the generated loop invariant is consistent with these constraints. If these specific pre- or post-conditions are not provided or empty, please infer the loop invariant strictly based on the program's execution logic and standard correctness.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```
+loop invariant \forall integer k; i <= k < n ==> rightMax[k] == \max(i <= l < n; height[l]);
+loop invariant \forall integer p; i < p < n ==> rightMax[p] <= rightMax[p-1];
+loop invariant -1 <= i <= n-2;
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_40: \forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l])
+i_41: \forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1]
+i_42: 1 <= i <= n
+LOOP B:
+i_49: \forall integer k; i <= k < n ==> rightMax[k] == \max(i <= l < n; height[l])
+i_50: \forall integer p; i < p < n ==> rightMax[p] <= rightMax[p-1]
+i_51: -1 <= i <= n-2
+LOOP C:
+i_43: s for Loop C: ``` loop invariant 0 <= i <= n
+i_44: 0 <= i <= n
+i_45: ans == trap_rain(leftMax, rightMax, height, 0, i, n)
+i_46: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n)
+i_47: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q]
+i_48: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate is_max(integer a, integer b, integer result) =
+        result >= a && 
+        result >= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_max(a, b, \result);
+*/
+int max(int a, int b) {
+  int max_val = a >= b ? a : b;
+  return max_val;
+}
+
+/*@
+    predicate is_min(integer a, integer b, integer result) =
+        result <= a && 
+        result <= b && 
+        (result == a || result == b);
+*/
+
+/*@
+    assigns \nothing;
+    ensures is_min(a, b, \result);
+*/
+int min(int a, int b) {
+  int min_val = a >= b ? b : a;
+  return min_val;
+}
+
+/*@
+  logic integer trap_rain(int* leftMax, int* rightMax, int* height, integer i, integer j, integer n) =
+    (i >= 0 && j >= 0 && n > 0 && i < j && i < n && j <= n) ? trap_rain(leftMax, rightMax, height, i, j - 1, n) + (leftMax[j - 1] >= rightMax[j - 1] ? rightMax[j - 1] : leftMax[j - 1]) - height[j - 1] : 0;
+*/
+
+/*@
+    requires n > 0;
+    requires \valid(height + (0..(n - 1)));
+    requires \valid(leftMax + (0..(n - 1)));
+    requires \valid(rightMax + (0..(n - 1)));
+    requires \separated(&height[0..(n - 1)], &leftMax[0..(n - 1)], &rightMax[0..(n - 1)]);
+    requires \forall integer i; 0 <= i < n ==> height[i] >= 0;
+    requires \forall integer i; 0 <= i < n ==> leftMax[i] == 0;
+    requires \forall integer i; 0 <= i < n ==> rightMax[i] == 0;
+    assigns leftMax[0..(n - 1)];
+    assigns rightMax[0..(n - 1)];
+    ensures e_1: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+    ensures e_2: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+    ensures e_3: \result == trap_rain(leftMax, rightMax, height, 0, n, n);
+*/
+int _trap_rain(int* height, int* leftMax, int* rightMax, int n) {
+    leftMax[0] = height[0];
+    // Loop A
+    /*@
+        loop invariant i_40: \forall integer k; 0 <= k <= i ==> leftMax[k] == \max(0 <= l <= k; height[l]);
+
+        loop invariant i_41: \forall integer p; 0 <= p < i ==> leftMax[p] <= leftMax[p+1];
+
+        loop invariant i_42: 1 <= i <= n;
+
+
+        loop assigns leftMax[1..(n - 1)];
+        loop assigns i;
+    */
+    for (int i = 1; i < n; ++i) {
+        leftMax[i] = max(leftMax[i - 1], height[i]);
+    }
+
+    rightMax[n - 1] = height[n - 1];
+    // Loop B
+    /*@
+        loop invariant i_49: \forall integer k; i <= k < n ==> rightMax[k] == \max(i <= l < n; height[l]);
+
+        loop invariant i_50: \forall integer p; i < p < n ==> rightMax[p] <= rightMax[p-1];
+
+        loop invariant i_51: -1 <= i <= n-2;
+
+
+        loop assigns rightMax[0..(n - 2)];
+        loop assigns i;
+    */
+    for (int i = n - 2; i >= 0; --i) {
+        rightMax[i] = max(rightMax[i + 1], height[i]);
+    }
+
+    int ans = 0;
+
+    // Loop C
+    /*@
+        loop invariant i_43: s for Loop C: ``` loop invariant 0 <= i <= n;
+
+        loop invariant i_44: 0 <= i <= n;
+
+        loop invariant i_45: ans == trap_rain(leftMax, rightMax, height, 0, i, n);
+
+        loop invariant i_46: \forall integer k; 0 <= k < i ==> ans >= trap_rain(leftMax, rightMax, height, 0, k, n);
+
+        loop invariant i_47: \forall integer p, q; 0 <= p <= q < n ==> height[p] <= leftMax[q];
+
+        loop invariant i_48: \forall integer p, q; 0 <= p <= q < n ==> height[q] <= rightMax[p];
+
+
+        loop assigns ans;
+        loop assigns i;
+    */
+    for (int i = 0; i < n; ++i) {
+        ans += min(leftMax[i], rightMax[i]) - height[i];
+    }
+    return ans;
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+Verification failed: reached maximum attempts.
+---------Result---------
+Fail
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 66.6472680568695
+Proposal number: 5
+Verified code:
+
+------------------------

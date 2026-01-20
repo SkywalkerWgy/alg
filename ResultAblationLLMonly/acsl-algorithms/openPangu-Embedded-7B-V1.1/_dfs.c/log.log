@@ -1,0 +1,1224 @@
+-----------Model-----------
+Model type:
+PanguEmbeddedForCausalLM(
+  (model): PanguEmbeddedModel(
+    (embed_tokens): Embedding(153376, 4096, padding_idx=0)
+    (layers): ModuleList(
+      (0-33): 34 x PanguEmbeddedDecoderLayer(
+        (self_attn): PanguEmbeddedAttention(
+          (q_proj): Linear(in_features=4096, out_features=4096, bias=True)
+          (k_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (v_proj): Linear(in_features=4096, out_features=1024, bias=True)
+          (o_proj): Linear(in_features=4096, out_features=4096, bias=True)
+        )
+        (mlp): PanguEmbeddedMLP(
+          (gate_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (up_proj): Linear(in_features=4096, out_features=12800, bias=False)
+          (down_proj): Linear(in_features=12800, out_features=4096, bias=False)
+          (act_fn): SiLU()
+        )
+        (input_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+        (post_attention_layernorm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+      )
+    )
+    (norm): PanguEmbeddedRMSNorm((4096,), eps=1e-05)
+    (rotary_emb): PanguEmbeddedRotaryEmbedding()
+  )
+  (lm_head): Linear(in_features=4096, out_features=153376, bias=False)
+)
+Model device:
+npu:1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_dfs.c
+----------Code----------
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    /*@
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        /*@
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant 0 <= top && top < n;
+loop invariant top != node || top == n;
+```
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= top && top < n;
+
+        loop invariant i_1: top != node || top == n;
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <Loop A>]
+loop invariant 0 <= top && top < n;
+
+[Loop <Loop B>]
+loop invariant top != node || top == n;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 0 <= top && top < n
+i_1: top != node || top == n
+LOOP B:
+i_2: 0 <= top && top < n
+i_3: top != node || top == n
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_0: 0 <= top && top < n;
+
+        loop invariant i_1: top != node || top == n;
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop invariant i_2: 0 <= top && top < n;
+
+            loop invariant i_3: top != node || top == n;
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Fail_17_21), removing all invariants and retrying.
+========== Attempt 2 ==========
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop A]
+loop invariant && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+[Loop B]
+loop invariant && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+// Invariant 1: This invariant holds at the beginning of each iteration. However, note that during loop body, visited[i] is set to 1 and dist[i] is set to dist[node] + 1 (which is not -1), so this invariant is not preserved during the loop body. Therefore, it cannot be a true loop invariant.
+
+// Let's consider a modified invariant that holds during the loop body:
+
+loop invariant && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1);
+
+// But even this invariant might not hold because we are setting visited[i] and dist[i] for a specific i.
+
+// Alternatively, let's think about the state of the loop:
+
+// At the start of the loop, we have:
+//   top = initial value
+//   node = start
+//   dist and visited are unchanged, with all values set to -1 (initialization)
+//   stack is unchanged
+
+// At the end of the loop (after the for loop and the decrement and condition):
+//   If top >= 0, then node is set to stack[top], and top is decremented by 1.
+//   If top < 0, then the loop breaks.
+
+// The invariant that can be maintained throughout the loop is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// But this invariant is only true for the current node, not for all i.
+
+// Let's consider the following invariant:
+
+loop invariant && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (graph[node][i] == 1 && visited[i] == 0 && dist[i] == dist[node] + 1 && 0 <= i <= top);
+
+// This invariant has two parts:
+// 1. For all i not being the current node, visited[i] == 0 and dist[i] == -1.
+// 2. For the current node i (i <= top), if graph[node][i] == 1, then we have visited[i] == 1 and dist[i] == dist[node] + 1.
+
+// However, this invariant is not preserved during the assignment inside the loop because:
+// - When we assign visited[i] = 1 and dist[i] = dist[node] + 1, we are setting visited[i] and dist[i] for a specific i.
+// - But the invariant requires that for all i not being the current node, visited[i] == 0 and dist[i] == -1, which is not true because we are setting visited[i] to 1.
+
+// After careful analysis, the correct loop invariant that holds at the beginning of each iteration is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// But this invariant is only about the state before the loop body, not during the entire loop.
+
+// Let's consider the invariant that is preserved at the end of the loop body (after the for loop and the decrement and condition):
+
+// After the for loop and the decrement, the following holds:
+//   If top >= 0, then:
+//      node = stack[top]
+//      top is decremented by 1
+//   If top < 0, then the loop breaks.
+
+// The invariant that holds at the end of the loop (before the if condition) is:
+
+//   \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// But this invariant is the same as the initial state.
+
+// Given the complexity, the most accurate loop invariant for the entire loop is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// But note that this invariant is only true at the beginning of the loop, not during the loop body.
+
+// Alternatively, we can think of the loop invariant as:
+
+//   The stack contains at most n elements, and for any index in the stack, the corresponding node has been visited and its distance is set correctly.
+
+// However, the invariant that can be maintained throughout the loop is:
+
+//   For every index i in the stack (i.e., for every i such that 0 <= i <= top), we have visited[i] == 1 and dist[i] == dist[node] + 1.
+
+// But this is not true because the stack might contain multiple nodes.
+
+// After careful consideration, the correct loop invariant is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// This invariant is true at the beginning of each iteration. But it is not preserved during the loop body because the for loop updates visited and dist for some i.
+
+// Therefore, the loop invariant should be:
+
+loop invariant && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// This invariant is true at the start of each iteration, but it is not preserved during the loop body.
+
+// Given the above, I must conclude that the loop invariant is not preserved during the loop body, so there is no loop invariant that holds throughout the loop.
+
+// However, let's consider the invariant:
+
+//   At the end of the loop (after the for loop and the decrement), the following holds:
+
+//   If top >= 0, then:
+//      Let i = stack[top]
+//      Then: visited[i] == 1 and dist[i] == dist[node] + 1
+
+//   This is preserved from the for loop body.
+
+//   Also, the value of top is decremented by 1.
+
+//   And if top < 0, then the loop breaks.
+
+// So, the invariant that can be maintained throughout the loop is:
+
+//   \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+
+// But this is only true at the beginning.
+
+// Given the complexity, the correct loop invariant for the loop is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// This is the same as the initial invariant.
+
+// Therefore, I must admit that there is no invariant that holds throughout the loop body.
+
+// However, there is an invariant that holds at the end of the loop:
+
+//   After the loop, the following holds:
+//      If top >= 0, then:
+//          node = stack[top]
+//          top = top - 1
+//          And for this node, visited[node] == 1 and dist[node] == dist[node] + 1 (which is true because dist[node] is not changed)
+
+// But this is not a loop invariant.
+
+// Given the above, I think the correct answer is:
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+// This is the same as the initial invariant.
+
+// So, I will output this as the loop invariant.
+
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_4: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop invariant i_5: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+            loop invariant i_6: . // Let's consider a modified invariant that holds during the loop body: loop invariant && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1);
+
+            loop invariant i_7: && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1);
+
+            loop invariant i_8: && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_9: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (graph[node][i] == 1 && visited[i] == 0 && dist[i] == dist[node] + 1 && 0 <= i <= top);
+
+            loop invariant i_10: that holds at the beginning of each iteration is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_11: for the entire loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_12: // The stack contains at most n elements, and for any index in the stack, the corresponding node has been visited and its distance is set correctly. // However, the invariant that can be maintained throughout the loop is: // For every index i in the stack (i.e., for every i such that 0 <= i <= top), we have visited[i] == 1 and dist[i] == dist[node] + 1. // But this is not true because the stack might contain multiple nodes. // After careful consideration, the correct loop invariant is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_13: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_14: should be: loop invariant && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_15: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_16: is not preserved during the loop body, so there is no loop invariant that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_17: that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_18: for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_19: . // Given the above, I think the correct answer is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_20: . loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17]```
+loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+```
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_4: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0
+LOOP B:
+i_5: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0
+i_6: . // Let's consider a modified invariant that holds during the loop body: loop invariant && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1)
+i_7: && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1)
+i_8: && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_9: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (graph[node][i] == 1 && visited[i] == 0 && dist[i] == dist[node] + 1 && 0 <= i <= top)
+i_10: that holds at the beginning of each iteration is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_11: for the entire loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_12: // The stack contains at most n elements, and for any index in the stack, the corresponding node has been visited and its distance is set correctly. // However, the invariant that can be maintained throughout the loop is: // For every index i in the stack (i.e., for every i such that 0 <= i <= top), we have visited[i] == 1 and dist[i] == dist[node] + 1. // But this is not true because the stack might contain multiple nodes. // After careful consideration, the correct loop invariant is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_13: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_14: should be: loop invariant && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_15: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_16: is not preserved during the loop body, so there is no loop invariant that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_17: that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_18: for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_19: . // Given the above, I think the correct answer is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+i_20: . loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1)
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_4: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop invariant i_5: && \forall integer i; 0 <= i <= top && visited[i] == 0 && dist[i] == -1 && graph[node][i] == 0;
+
+            loop invariant i_6: . // Let's consider a modified invariant that holds during the loop body: loop invariant && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1);
+
+            loop invariant i_7: && \forall integer i; 0 <= i <= top && \forall integer k; 0 <= k <= n && (k != i || visited[k] == 0 || dist[k] == -1);
+
+            loop invariant i_8: && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_9: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (graph[node][i] == 1 && visited[i] == 0 && dist[i] == dist[node] + 1 && 0 <= i <= top);
+
+            loop invariant i_10: that holds at the beginning of each iteration is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_11: for the entire loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_12: // The stack contains at most n elements, and for any index in the stack, the corresponding node has been visited and its distance is set correctly. // However, the invariant that can be maintained throughout the loop is: // For every index i in the stack (i.e., for every i such that 0 <= i <= top), we have visited[i] == 1 and dist[i] == dist[node] + 1. // But this is not true because the stack might contain multiple nodes. // After careful consideration, the correct loop invariant is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_13: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_14: should be: loop invariant && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_15: && \forall integer i; (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_16: is not preserved during the loop body, so there is no loop invariant that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_17: that holds throughout the loop. // However, let's consider the invariant: // At the end of the loop (after the for loop and the decrement), the following holds: // If top >= 0, then: // Let i = stack[top] // Then: visited[i] == 1 and dist[i] == dist[node] + 1 // This is preserved from the for loop body. // Also, the value of top is decremented by 1. // And if top < 0, then the loop breaks. // So, the invariant that can be maintained throughout the loop is: // \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1) // But this is only true at the beginning. // Given the complexity, the correct loop invariant for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_18: for the loop is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_19: . // Given the above, I think the correct answer is: loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+            loop invariant i_20: . loop invariant && \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1) || (i == node && visited[i] == 1 && dist[i] == dist[node] + 1);
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+------------------------------------------
+Verification failed (Invalid), removing all invariants and retrying.
+========== Attempt 3 ==========
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <LOOP A>]
+loop invariant 0 <= top && top < n;
+loop invariant \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != node || graph[node][i] == 0);
+loop invariant \forall integer i; 0 <= i <= n && stack[i] == top;
+loop invariant \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || top == i);
+loop invariant \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == node);
+
+[Loop <LOOP B>]
+loop invariant 0 <= top && top < n;
+loop invariant \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != top || graph[top][i] == 0);
+loop invariant \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+loop invariant \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+----------------------------
+----------Prompt----------
+
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_21: 0 <= top && top < n;
+
+        loop invariant i_22: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != node || graph[node][i] == 0);
+
+        loop invariant i_23: \forall integer i; 0 <= i <= n && stack[i] == top;
+
+        loop invariant i_24: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || top == i);
+
+        loop invariant i_25: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == node);
+
+        loop invariant i_26: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != top || graph[top][i] == 0);
+
+        loop invariant i_27: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+        loop invariant i_28: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            [Hint] Please infer the loop invariant for the following loop.
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+ /no_think
+--------------------------
+----------Response----------
+[unused16][unused17][Loop <CUR_LOOP>]
+loop invariant 0 <= top && top < n;
+
+[Loop <CUR_LOOP>]
+loop invariant \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+[Loop <PRE_LOOP>]  
+loop invariant \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_21: 0 <= top && top < n
+i_22: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != node || graph[node][i] == 0)
+i_23: \forall integer i; 0 <= i <= n && stack[i] == top
+i_24: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || top == i)
+i_25: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == node)
+i_26: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != top || graph[top][i] == 0)
+i_27: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top)
+i_28: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top)
+LOOP B:
+i_29: 0 <= top && top < n
+i_30: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top)
+i_31: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top)
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_21: 0 <= top && top < n;
+
+        loop invariant i_22: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != node || graph[node][i] == 0);
+
+        loop invariant i_23: \forall integer i; 0 <= i <= n && stack[i] == top;
+
+        loop invariant i_24: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || top == i);
+
+        loop invariant i_25: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == node);
+
+        loop invariant i_26: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != top || graph[top][i] == 0);
+
+        loop invariant i_27: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+        loop invariant i_28: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop invariant i_29: 0 <= top && top < n;
+
+            loop invariant i_30: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+            loop invariant i_31: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openPangu-Embedded-7B-V1.1
+Running time: 331.36675548553467
+Proposal number: 3
+Verified code:
+/*@
+    predicate connect(int** graph, integer i, integer j, integer n) =
+        0 <= i < n && 0 <= j < n && ((i == j) || (graph[i][j] == 1) || (graph[j][i] == 1) || (\exists integer k; 0 <= k < n && connect(graph, i, k, n) && connect(graph, k, j, n)));
+*/
+
+/*@
+    requires 0 <= start < n;
+    requires \valid(graph + (0..(n)));
+    requires \valid(graph[0..(n)] + (0..(n)));
+    requires \valid(dist + (0..(n)));
+    requires \valid(visited + (0..(n)));
+    requires \valid(stack + (0..(n)));
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n && i != j ==> \separated(&graph[i] + (0..(n)), &graph[j] + (0..(n)), &dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \separated(&dist[0..(n)], &visited[0..(n)], &stack[0..(n)]);
+    requires \forall integer j; 0 <= j <= n && j != start ==> visited[j] == 0 && dist[j] == -1;
+    requires visited[start] == 1 && dist[start] == 0;
+    requires stack[0] == start;
+    requires \forall integer i, j; 0 <= i <= n ==> graph[i][i] == 1;
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> graph[i][j] == graph[j][i];
+    requires \forall integer i, j; 0 <= i <= n && 0 <= j <= n ==> (graph[i][j] == 0 || graph[i][j] == 1);
+    ensures e_1: \forall integer i; (0 <= i < n && visited[i] == 1) ==> connect(graph, i, start, n);
+    assigns dist[0..(n)], visited[0..(n)], stack[0..(n)];
+*/
+void _dfs(int** graph, int* dist, int* visited, int* stack, int start, int n) {
+    int top = 0;
+    int node = start;
+    // Loop A
+    /*@
+        loop invariant i_21: 0 <= top && top < n;
+
+        loop invariant i_22: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != node || graph[node][i] == 0);
+
+        loop invariant i_23: \forall integer i; 0 <= i <= n && stack[i] == top;
+
+        loop invariant i_24: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || top == i);
+
+        loop invariant i_25: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == node);
+
+        loop invariant i_26: \forall integer i; 0 <= i <= n && visited[i] == 0 && dist[i] == -1 && (i != top || graph[top][i] == 0);
+
+        loop invariant i_27: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+        loop invariant i_28: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+
+
+        loop assigns top;
+        loop assigns node;
+        loop assigns stack[0..(n)];
+        loop assigns dist[0..(n)];
+        loop assigns visited[0..(n)];
+    */
+    while (0 <= top && top < n) {
+        // Loop B
+        /*@
+            loop invariant i_29: 0 <= top && top < n;
+
+            loop invariant i_30: \forall integer i; 0 <= i <= n && (visited[i] == 0 && dist[i] == -1 || i == top);
+
+            loop invariant i_31: \exists integer k; 0 <= k <= node && (stack[k] == top && visited[k] == 0 && dist[k] == -1 || k == top);
+
+
+            loop assigns top;
+            loop assigns stack[0..(n)];
+            loop assigns dist[0..(n)];
+            loop assigns visited[0..(n)];
+            loop assigns i;
+        */
+        for (int i = 0; i < n; i++) {
+            if (graph[node][i] == 1 && visited[i] == 0 && top < n) { 
+                top++;
+                stack[top] = i;
+                visited[i] = 1;
+                dist[i] = dist[node] + 1;
+            }
+        }
+        top -= 1;
+        if(0 <= top){
+            node = stack[top];
+        }
+        else{
+            break;
+        }
+    }
+}
+------------------------

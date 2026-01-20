@@ -1,0 +1,210 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_greedy_selector.c
+----------Code----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    /*@
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------
+========== Attempt 1 ==========
+----------Prompt----------
+
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 1 <= i <= n;
+loop invariant 0 <= j < i;
+loop invariant selected[j] == 1;
+loop invariant \forall integer k; j < k < i ==> selected[k] == 0;
+loop invariant \forall integer k; i <= k < n ==> selected[k] == 0;
+loop invariant \forall integer p, q; 0 <= p < q < i && selected[p] == 1 && selected[q] == 1 ==> s[q] >= f[p];
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: 1 <= i <= n
+i_1: 0 <= j < i
+i_2: selected[j] == 1
+i_3: \forall integer k; j < k < i ==> selected[k] == 0
+i_4: \forall integer k; i <= k < n ==> selected[k] == 0
+i_5: \forall integer p, q; 0 <= p < q < i && selected[p] == 1 && selected[q] == 1 ==> s[q] >= f[p]
+------------------------------------
+---------- Code with Invariants ----------
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 0 <= j < i;
+
+        loop invariant i_2: selected[j] == 1;
+
+        loop invariant i_3: \forall integer k; j < k < i ==> selected[k] == 0;
+
+        loop invariant i_4: \forall integer k; i <= k < n ==> selected[k] == 0;
+
+        loop invariant i_5: \forall integer p, q; 0 <= p < q < i && selected[p] == 1 && selected[q] == 1 ==> s[q] >= f[p];
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: openai/gpt-5.1
+Running time: 33.92246985435486
+Proposal number: 1
+Verified code:
+/*@
+    predicate sorted(int *t, integer lo, integer hi) =
+        \forall integer i, j; lo <= i <= j < hi ==> t[i] <= t[j];
+*/
+
+/*@ 
+    requires \valid(s + (0..(n - 1)));
+    requires \valid(f + (0..(n - 1)));
+    requires \valid(selected + (0..(n - 1)));
+    requires n > 0;
+    requires sorted(f, 0, n);
+    requires \separated(&s[0..(n - 1)], &f[0..(n - 1)], &selected[0..(n - 1)]);
+    requires \forall integer k; 0 <= k < n ==> s[k] < f[k];
+    requires \forall integer k; 0 <= k < n ==> selected[k] == 0;
+    assigns selected[0..(n - 1)];
+    ensures e_1: \forall integer p, q; (0 <= p < q < n && selected[p] == 1 && selected[q] == 1) ==> s[q] >= f[p];
+*/
+void _greedy_selector(int n, int* s, int* f, int* selected)
+{
+	int j = 0;
+    selected[0] = 1;
+    // Loop A
+    /*@
+        loop invariant i_0: 1 <= i <= n;
+
+        loop invariant i_1: 0 <= j < i;
+
+        loop invariant i_2: selected[j] == 1;
+
+        loop invariant i_3: \forall integer k; j < k < i ==> selected[k] == 0;
+
+        loop invariant i_4: \forall integer k; i <= k < n ==> selected[k] == 0;
+
+        loop invariant i_5: \forall integer p, q; 0 <= p < q < i && selected[p] == 1 && selected[q] == 1 ==> s[q] >= f[p];
+
+
+        loop assigns i, j, selected[0..(n - 1)];
+    */
+	for (int i = 1; i < n; i++){
+		if (s[i] >= f[j]) { 
+			selected[i] = 1;
+			j = i;
+		}
+    }
+}
+------------------------

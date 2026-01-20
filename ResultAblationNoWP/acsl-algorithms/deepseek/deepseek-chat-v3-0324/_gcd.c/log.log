@@ -1,0 +1,113 @@
+-----------Model-----------
+Model type:
+deepseek/deepseek-chat-v3-0324
+---------------------------
+File Path: ../Benchmark/acsl-algorithms/_gcd.c
+----------Code----------
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------
+========== Attempt 1 ==========
+------------Invariant Info-----------
+------------------------------------
+---------- Code with Invariants ----------
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------------------------
+Verification succeeded.
+---------Result---------
+Success
+Model: deepseek/deepseek-chat-v3-0324
+Running time: 0.8320763111114502
+Proposal number: 1
+Verified code:
+/*@ inductive is_gcd(integer a, integer b, integer d) {
+       case gcd_zero:
+          \forall integer n; is_gcd(n,0,n);
+       case gcd_succ:
+          \forall integer a,b,d; is_gcd(b, a % b, d) ==> is_gcd(a,b,d);
+    }
+ */
+
+/*@ axiomatic gcd {
+       logic integer gcd(integer a, integer b);
+
+       axiom nil:
+          \forall integer n; gcd(n,0) == n;
+       axiom next:
+          \forall integer a,b; gcd(b, a % b) == gcd(a,b);
+    }
+ */
+
+/*@
+    decreases b;
+    assigns \nothing;
+    ensures e_1: is_gcd(a, b, \result);
+    ensures e_2: \result == gcd(a, b);
+ */
+unsigned _gcd(unsigned a, unsigned b) {
+    if (b == 0)
+        return a;
+
+    return _gcd(b, a % b);
+}
+
+------------------------

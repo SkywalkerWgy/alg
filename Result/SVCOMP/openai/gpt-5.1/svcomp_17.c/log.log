@@ -1,0 +1,4086 @@
+-----------Model-----------
+Model type:
+openai/gpt-5.1
+---------------------------
+File Path: ../Benchmark/SVCOMP/svcomp_17.c
+----------Code----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    /*@
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+------------------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Please infer the loop invariant for the following loop.
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in program verification, and please generate loop invariant as C annotation comments at the hint location (annotated by "[Hint] Please infer the loop invariant for the following loop.") using ACSL language.
+ACSL is a specification language for C programs that conforms to the design by contract paradigm, utilizing Hoare style pre- and postconditions and invariants. Note that the `loop invariant` clause is a condition that is true at the beginning and end of every loop iteration.The pre- and post-conditions of functions are written as `requires` and `ensures` clauses, respectively.
+In order to get a correct answer, You may want to consider both the situation of not entering the loop and the situation of jumping out of the loop. If some of the pre-conditions are also loop invariant, you need to add them to your answer as well.
+Use '&&', '||', '==>', '\forall' or '\exists' if necessary. For instance:
+```
+loop invariant 1 <= x;
+loop invariant x == y;
+loop invariant 0 < x ==> y <= z;
+loop invariant z % 2 == 1 || x == y;
+loop invariant z % 2 == 1 && x <= y;
+loop invariant \forall integer k;  0 <= k < i ==> max >=  a[k];
+loop invariant \exists integer k;  0 <= k < i &&  max == a[k];
+loop invariant \forall integer p; 0 <= p < \at(k, End_l) ==> res[p] == \at(res[p], End_l);
+```
+Your answer should follow the following format:
+```
+loop invariant ...;
+loop invariant ...;
+...
+```
+No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant INT_MIN < n && n < INT_MAX;
+loop invariant INT_MIN < m && m < INT_MAX;
+loop invariant INT_MIN < l && l < INT_MAX;
+loop invariant 3 * n <= m + l;
+loop invariant 0 <= i;
+loop invariant n < 0 ==> i == 0;
+loop invariant n >= 0 ==> i <= n;
+----------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+loop invariant (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant INT_MIN < n && INT_MIN < m && INT_MIN < l;
+loop invariant n < INT_MAX && m < INT_MAX && l < INT_MAX;
+loop invariant m + l >= 3 * n;
+loop invariant (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant (0 <= i && i <= n) || (n < 0 && i == 0);
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i_6: n >= 0 ==> 0 <= i;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant i >= 0;
+loop invariant (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+loop invariant i < INT_MAX;
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+```c
+loop invariant 0 <= i <= n || (n <= 0 && i == 0);
+```
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant n >= 0 ==> i <= n + 1;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant (n <= 0 ==> i == 0);
+loop invariant (n > 0 ==> 0 <= i && i <= n);
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant n <= 0 || 0 <= i <= n;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_4: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant 0 <= i not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] 0 <= i
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant (n <= 0 && i == 0) || (0 <= i && i <= n);
+----------------------------
+-------------Preservation_self: i_6: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant n >= 0 ==> i <= n not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] n >= 0 ==> i <= n
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant n >= 0 ==> i <= n + 1;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_4: 0 <= i
+i_5: n < 0 ==> i == 0
+i_6: n >= 0 ==> i <= n
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_4: 0 <= i;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_6: n >= 0 ==> i <= n;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_8: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant 0 <= i;
+loop invariant n < 0 || (0 <= i && i <= n);
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_8: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant !(i < 0);
+loop invariant n < 0 || (n >= 0 && 0 <= i && i <= n);
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+----------Begin Revise----------
+-------------Preservation_self: i_8: preservation---------------
+----------Prompt----------
+
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        [Hint] Invariant (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n) not preserved in this loop. Fix or supplement invariants.
+
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+You are an expert in deductive program verification using ACSL and Frama-C.
+[Unprovable Invariant] (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+The above loop invariant of loop "A" fails the preservation (inductive) condition:
+after executing one iteration of the loop body, the invariant cannot be re-established.
+[Loop Body]
+//@ assert k-i <= 2*n ; i++;
+This failure indicates that the current invariant may be incorrect or incomplete.  
+There are two typical causes:
+  1) The invariant is logically incorrect, so it does not hold after the loop body executes once.
+     - In this case, you must adjust the invariant so that it is preserved by the loop body.
+  2) The invariant is insufficient, i.e., it misses essential supporting conditions needed to re-establish itself.
+     - In this case, you must introduce additional invariants so that the whole set becomes inductive.
+Your task is to produce the corrected and/or auxiliary invariants that make the preservation step succeed.
+IMPORTANT RULES:
+1. You MUST NOT output any of the original invariants already in the code. Only output the new or modified invariants.
+2. All invariants you produce must satisfy:
+   - Establishment: they hold on loop entry.
+   - Preservation: after executing the loop body exactly once, the invariant still holds.
+   - Zero-iteration case: the invariant is valid even if the loop never executes.
+3. The answer must follow this format exactly:
+   ```
+   loop invariant ...;
+   loop invariant ...;
+   ...
+   ```
+4. All invariants must follow ACSL syntax and be valid loop invariants.
+5. No explanation. No commentary. Just show me the loop invariant.
+
+--------------------------
+----------Response----------
+loop invariant n >= 0 ==> 0 <= i && i <= n;
+----------------------------
+--------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n)
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_8: (n < 0 ==> i == 0) && (n >= 0 ==> 0 <= i <= n);
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n)
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_12: (n < 0 && i == 0) || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_13: (0 <= i && i <= n) || (n < 0 && i == 0)
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_13: (0 <= i && i <= n) || (n < 0 && i == 0);
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_14: n >= 0 ==> 0 <= i
+i_15: i >= 0
+i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n)
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_14: n >= 0 ==> 0 <= i;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_16: (n <= 0 ==> i == 0) && (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_15: i >= 0
+i_17: i < INT_MAX
+i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n)
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_15: i >= 0;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_18: (n <= 0 && i == 0) || (n > 0 && 0 <= i && i <= n);
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_19: 0 <= i <= n || (n <= 0 && i == 0)
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_19: 0 <= i <= n || (n <= 0 && i == 0);
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_20: n >= 0 ==> i <= n + 1
+i_21: (n <= 0 ==> i == 0)
+i_22: (n > 0 ==> 0 <= i && i <= n)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_20: n >= 0 ==> i <= n + 1;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_22: (n > 0 ==> 0 <= i && i <= n);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+i_23: n <= 0 || 0 <= i <= n
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_23: n <= 0 || 0 <= i <= n;
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+i_24: (n <= 0 && i == 0) || (0 <= i && i <= n)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_24: (n <= 0 && i == 0) || (0 <= i && i <= n);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+i_25: 0 <= i
+i_26: n < 0 || (0 <= i && i <= n)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_25: 0 <= i;
+
+        loop invariant i_26: n < 0 || (0 <= i && i <= n);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+i_27: !(i < 0)
+i_28: n < 0 || (n >= 0 && 0 <= i && i <= n)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_27: !(i < 0);
+
+        loop invariant i_28: n < 0 || (n >= 0 && 0 <= i && i <= n);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+i_29: n >= 0 ==> 0 <= i && i <= n
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+        loop invariant i_29: n >= 0 ==> 0 <= i && i <= n;
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+------------Invariant Info-----------
+LOOP A:
+i_0: INT_MIN < n && n < INT_MAX
+i_1: INT_MIN < m && m < INT_MAX
+i_2: INT_MIN < l && l < INT_MAX
+i_3: 3 * n <= m + l
+i_5: n < 0 ==> i == 0
+i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l
+i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l
+i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX
+i_11: m + l >= 3 * n
+i_17: i < INT_MAX
+i_21: (n <= 0 ==> i == 0)
+------------------------------------
+----------Code with Invariants----------
+# define INT_MAX 2147483647
+# define INT_MIN -2147483648
+/*@
+    requires INT_MIN < n && n < INT_MAX;
+    requires INT_MIN < m && m < INT_MAX;
+    requires INT_MIN < l && l < INT_MAX;
+*/
+int svcomp_17(int n, int m , int l) {
+    int i, j, k;
+
+    if(3 * n <= m + l); else goto END;
+    
+    // Loop A
+    /*@
+        loop invariant i_0: INT_MIN < n && n < INT_MAX;
+
+        loop invariant i_1: INT_MIN < m && m < INT_MAX;
+
+        loop invariant i_2: INT_MIN < l && l < INT_MAX;
+
+        loop invariant i_3: 3 * n <= m + l;
+
+        loop invariant i_5: n < 0 ==> i == 0;
+
+        loop invariant i_7: INT_MIN < n && n < INT_MAX && INT_MIN < m && m < INT_MAX && INT_MIN < l && l < INT_MAX && 3 * n <= m + l;
+
+        loop invariant i_9: INT_MIN < n && INT_MIN < m && INT_MIN < l;
+
+        loop invariant i_10: n < INT_MAX && m < INT_MAX && l < INT_MAX;
+
+        loop invariant i_11: m + l >= 3 * n;
+
+        loop invariant i_17: i < INT_MAX;
+
+        loop invariant i_21: (n <= 0 ==> i == 0);
+
+
+        loop assigns k;
+        loop assigns j;
+        loop assigns i;
+    */
+    for (i=0;i<n;i++)
+        /*@
+            loop assigns k;
+            loop assigns j;
+            loop assigns i;
+        */
+        for (j = 2*i;j<3*i;j++)
+            /*@
+                loop assigns k;
+            */
+            for (k = i; k< j; k++) {
+                //@ assert k-i <= 2*n ;
+            }
+END:
+    return 0;
+}
+----------------------------------------
+---------Result---------
+Fail
+Model: openai/gpt-5.1
+Running time: 2269.3797702789307
+Proposal number: 23
+Verified code:
+
+------------------------

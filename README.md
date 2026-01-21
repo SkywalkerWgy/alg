@@ -1,7 +1,7 @@
 
 
 # Algorithm Loop invariants inference
-
+This project is an automated loop invariant inference framework powered by the openPangu model.
 ## 1. Installation and Deployment
 
 ### 1.1 Conda Environment
